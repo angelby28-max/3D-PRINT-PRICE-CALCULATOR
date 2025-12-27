@@ -253,6 +253,11 @@
           </div>
 
           <div>
+            <label data-i18n="bulkDiscountPct">Bulk discount (%) — applies to batch total</label>
+            <input id="bulkDiscountPct" type="number" min="0" step="0.1" data-i18n-placeholder="ph_bulkDiscountPct" placeholder="e.g., 5" />
+          </div>
+
+          <div>
             <label data-i18n="printHours">Print time (hours) — per unit</label>
             <input id="printHours" type="number" min="0" step="0.01" data-i18n-placeholder="ph_printHours" placeholder="From slicer (e.g., 6)" />
           </div>
@@ -325,6 +330,10 @@
 
         <div class="note" data-i18n-html="batchNote">
           Batch note: Quantity multiplies <b>print time, filament, packaging, consumables</b>. Labor can be total or per unit (checkbox).
+        </div>
+
+        <div class="note" data-i18n-html="bulkNote">
+          Bulk discount applies to the <b>batch total</b> (before platform fees). It will not drop below <b>your total cost</b>.
         </div>
 
         <div class="advanced-only">
@@ -509,7 +518,9 @@
 
         quantity: "Quantity",
         laborPerUnit: "Labor minutes are per unit",
+        bulkDiscountPct: "Bulk discount (%) — applies to batch total",
         batchNote: "Batch note: Quantity multiplies <b>print time, filament, packaging, consumables</b>. Labor can be total or per unit (checkbox).",
+        bulkNote: "Bulk discount applies to the <b>batch total</b> (before platform fees). It will not drop below <b>your total cost</b>.",
 
         printHours: "Print time (hours) — per unit",
         gramsUsed: "Filament used (grams) — per unit",
@@ -575,6 +586,7 @@
 
         // placeholders
         ph_quantity: "e.g., 10",
+        ph_bulkDiscountPct: "e.g., 5",
         ph_printHours: "From slicer (e.g., 6)",
         ph_gramsUsed: "From slicer (e.g., 100)",
         ph_spoolPrice: "e.g., 20",
@@ -643,6 +655,8 @@
         bd_overhead: "Overhead",
         bd_profit: "Profit (target)",
         bd_target: "Target before platform fees",
+        bd_bulkDiscount: "Bulk discount",
+        bd_targetAfterDiscount: "Target after discount",
         bd_platform: "Platform fees added",
         bd_minApplied: "Minimum fee applied?",
 
@@ -735,7 +749,9 @@
 
         quantity: "Cantidad",
         laborPerUnit: "Mano de obra (minutos) por unidad",
+        bulkDiscountPct: "Descuento por volumen (%) — se aplica al total",
         batchNote: "Nota: La cantidad multiplica <b>tiempo, filamento, empaque, consumibles</b>. La mano de obra puede ser total o por unidad (casilla).",
+        bulkNote: "El descuento se aplica al <b>total del lote</b> (antes de comisiones). No bajará de <b>tu costo total</b>.",
 
         printHours: "Tiempo de impresión (horas) — por unidad",
         gramsUsed: "Filamento usado (gramos) — por unidad",
@@ -801,6 +817,7 @@
 
         // placeholders
         ph_quantity: "ej., 10",
+        ph_bulkDiscountPct: "ej., 5",
         ph_printHours: "Del slicer (ej., 6)",
         ph_gramsUsed: "Del slicer (ej., 100)",
         ph_spoolPrice: "ej., 20",
@@ -869,6 +886,8 @@
         bd_overhead: "Gastos generales",
         bd_profit: "Ganancia (objetivo)",
         bd_target: "Objetivo antes de comisiones",
+        bd_bulkDiscount: "Descuento por volumen",
+        bd_targetAfterDiscount: "Objetivo después del descuento",
         bd_platform: "Comisiones agregadas",
         bd_minApplied: "¿Aplicó mínimo?",
 
@@ -1023,7 +1042,7 @@
 
     // Inputs managed
     const inputIds = [
-      "quantity","printHours","gramsUsed","spoolPrice","spoolWeight","wastePct",
+      "quantity","bulkDiscountPct","printHours","gramsUsed","spoolPrice","spoolWeight","wastePct",
       "packagingCost","consumablesCost",
       "powerKW","elecRate","laborRate","laborMin","overheadPct","profitPct","minFee",
       "printerPrice","printerLifeHours","maintenancePerHr",
@@ -1149,6 +1168,8 @@
         <div class="line-item"><div class="k">${t("bd_overhead")}</div><div class="v">$0.00</div></div>
         <div class="line-item"><div class="k">${t("bd_profit")}</div><div class="v">$0.00</div></div>
         <div class="line-item"><div class="k">${t("bd_target")}</div><div class="v">$0.00</div></div>
+        <div class="line-item"><div class="k">${t("bd_bulkDiscount")}</div><div class="v">$0.00</div></div>
+        <div class="line-item"><div class="k">${t("bd_targetAfterDiscount")}</div><div class="v">$0.00</div></div>
         <div class="line-item"><div class="k">${t("bd_platform")}</div><div class="v">$0.00</div></div>
         <div class="line-item"><div class="k">${t("bd_minApplied")}</div><div class="v">No</div></div>
       `;
@@ -1185,6 +1206,8 @@
       // Per-unit inputs
       const printHoursUnit = num("printHours");
       const gramsUsedUnit = num("gramsUsed");
+
+      const bulkDiscountPct = Math.max(0, num("bulkDiscountPct")) / 100;
 
       const spoolPrice = num("spoolPrice");
       const spoolWeight = Math.max(1, num("spoolWeight"));
@@ -1240,7 +1263,21 @@
       const targetWithMin = Math.max(targetBeforeFees, Math.max(0, minFee));
       const minApplied = targetWithMin > targetBeforeFees;
 
-      let final = targetWithMin;
+      // Bulk discount (only meaningful when qty > 1)
+      let bulkDiscountAmt = 0;
+      if (qty > 1 && bulkDiscountPct > 0){
+        bulkDiscountAmt = targetWithMin * bulkDiscountPct;
+      }
+
+      // Discounted target (never below your cost, and never below minFee if you set one)
+      let discountedTarget = targetWithMin - bulkDiscountAmt;
+      const floor = Math.max(costWithOverhead, Math.max(0, minFee));
+      if (discountedTarget < floor) discountedTarget = floor;
+
+      // If we had to floor it, recompute the displayed discount as actual difference
+      bulkDiscountAmt = Math.max(0, targetWithMin - discountedTarget);
+
+      let final = discountedTarget;
       let platformAdded = 0;
 
       if (includePlatformFees){
@@ -1248,17 +1285,17 @@
         const fixed = Math.max(0, platformFixedFee) + Math.max(0, platformListingFee);
 
         if (pct >= 0.999){
-          final = targetWithMin + fixed;
+          final = discountedTarget + fixed;
           platformAdded = fixed;
           setStatusKey("status_platformPctTooHigh");
         } else {
-          const gross = (targetWithMin + fixed) / (1 - pct);
+          const gross = (discountedTarget + fixed) / (1 - pct);
           final = gross;
-          platformAdded = gross - targetWithMin;
+          platformAdded = gross - discountedTarget;
         }
       }
 
-      const totalCost = costWithOverhead + platformAdded;
+      const totalCost = costWithOverhead + platformAdded; // discount reduces price, not cost
       const profitDollars = final - totalCost;
       const profitPctActual = (final > 0) ? (profitDollars / final) : 0;
 
@@ -1279,6 +1316,8 @@
         ["bd_overhead", overheadCost, "money"],
         ["bd_profit", (targetWithMin - costWithOverhead), "money"],
         ["bd_target", targetWithMin, "money"],
+        ["bd_bulkDiscount", -bulkDiscountAmt, "moneySigned"],
+        ["bd_targetAfterDiscount", discountedTarget, "money"],
         ["bd_platform", platformAdded, "money"],
         ["bd_minApplied", minApplied ? 1 : 0, "bool"]
       ];
@@ -1292,7 +1331,11 @@
         if (type === "bool") val = v ? yes : no;
         else if (type === "hours") val = `${(Number(v)||0).toFixed(2)} h`;
         else if (type === "qty") val = `${v}`;
-        else val = money(v);
+        else if (type === "moneySigned"){
+          const n = Number(v) || 0;
+          const sign = n < 0 ? "-" : "";
+          val = sign + money(Math.abs(n));
+        } else val = money(v);
         return `<div class="line-item"><div class="k">${label}</div><div class="v">${val}</div></div>`;
       }).join("");
 
@@ -1315,8 +1358,9 @@
         printHours, gramsUsed, effectiveGrams,
         materialCost, packaging, consumables,
         electricityCost, machineCost, laborCost,
-        overheadCost, targetWithMin, platformAdded, minApplied,
-        laborMinTotal
+        overheadCost, targetWithMin, discountedTarget,
+        platformAdded, minApplied, laborMinTotal,
+        bulkDiscountAmt
       };
     }
 
@@ -1409,7 +1453,7 @@
     // Export/Import jobs
     function exportJobs(){
       const jobs = loadJobs();
-      const payload = { exportedAt: new Date().toISOString(), version: 8, jobs };
+      const payload = { exportedAt: new Date().toISOString(), version: 9, jobs };
       const text = JSON.stringify(payload, null, 2);
       navigator.clipboard.writeText(text).then(() => {
         setStatusKey("status_exportOk");
@@ -1452,6 +1496,7 @@
       const qtyLbl = (lang === "es") ? "Cantidad" : "Quantity";
       const timeLbl = (lang === "es") ? "Tiempo total" : "Total time";
       const filLbl = (lang === "es") ? "Filamento total" : "Total filament";
+      const discLbl = (lang === "es") ? "Descuento por volumen" : "Bulk discount";
       const costLbl = (lang === "es") ? "Costo total" : "Total cost";
       const profLbl = (lang === "es") ? "Ganancia" : "Profit";
       const finalLbl = (lang === "es") ? "Final (total)" : "Final (total)";
@@ -1462,6 +1507,7 @@
 - ${qtyLbl}: ${r.qty}
 - ${timeLbl}: ${r.printHours.toFixed(2)} hr
 - ${filLbl}: ${r.gramsUsed} g
+- ${discLbl}: ${money(r.bulkDiscountAmt)}
 - ${costLbl}: ${money(r.totalCost)}
 - ${profLbl}: ${money(r.profitDollars)} (${(r.profitPctActual*100).toFixed(1)}%)
 - ${finalLbl}: ${money(r.final)}
@@ -1571,6 +1617,7 @@
 
           // state
           quantity: $("quantity")?.value || "",
+          bulkDiscountPct: $("bulkDiscountPct")?.value || "",
           laborPerUnit: $("laborPerUnit")?.checked || false,
 
           printHours: $("printHours")?.value || "",
