@@ -6,18 +6,18 @@
   <title>3D Print Price Calculator</title>
   <meta name="theme-color" content="#111827" />
   <style>
-    :root { --bg:#0b1220; --card:#111827; --text:#e5e7eb; --muted:#9ca3af; --line:#1f2937; --accent:#22c55e; --warn:#f59e0b; }
+    :root { --bg:#0b1220; --card:#111827; --text:#e5e7eb; --muted:#9ca3af; --line:#1f2937; --accent:#22c55e; --warn:#f59e0b; --danger:#ef4444; }
     *{ box-sizing:border-box; }
     body{
       margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
       background: radial-gradient(1200px 800px at 10% 10%, #0f1a33 0%, var(--bg) 55%);
       color:var(--text);
     }
-    .wrap{ max-width:1100px; margin:0 auto; padding:18px; }
+    .wrap{ max-width:1200px; margin:0 auto; padding:18px; }
     h1{ font-size:20px; margin:6px 0 2px; }
-    p.sub{ margin:0 0 16px; color:var(--muted); font-size:13px; }
-    .grid{ display:grid; grid-template-columns: 1.1fr .9fr; gap:14px; }
-    @media (max-width: 980px){ .grid{ grid-template-columns:1fr; } }
+    p.sub{ margin:0 0 16px; color:var(--muted); font-size:13px; line-height:1.35; }
+    .grid{ display:grid; grid-template-columns: 1.25fr .75fr; gap:14px; }
+    @media (max-width: 1100px){ .grid{ grid-template-columns:1fr; } }
     .card{
       background: rgba(17,24,39,.9);
       border:1px solid var(--line);
@@ -29,16 +29,17 @@
     .sec-title h2{ font-size:14px; margin:0; }
     .sec-title span{ color:var(--muted); font-size:12px; }
     .fields{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    @media (max-width: 560px){ .fields{ grid-template-columns:1fr; } }
+    @media (max-width: 640px){ .fields{ grid-template-columns:1fr; } }
     label{ display:block; font-size:12px; color:var(--muted); margin:0 0 6px; }
-    input, select{
+    input, select, textarea{
       width:100%; padding:10px 10px;
       border-radius:10px; border:1px solid var(--line);
       background:#0b1020; color:var(--text);
       outline:none;
     }
-    input:focus, select:focus{ border-color:#334155; box-shadow: 0 0 0 3px rgba(34,197,94,.12); }
-    input::placeholder{ color: rgba(156,163,175,.7); }
+    textarea{ min-height:76px; resize:vertical; }
+    input:focus, select:focus, textarea:focus{ border-color:#334155; box-shadow: 0 0 0 3px rgba(34,197,94,.12); }
+    input::placeholder, textarea::placeholder{ color: rgba(156,163,175,.7); }
     .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
     .btns{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
     button{
@@ -47,6 +48,7 @@
     }
     button.secondary{ background:#0b1020; color:var(--text); border:1px solid var(--line); font-weight:600; }
     button.warn{ background: rgba(245,158,11,.15); border:1px solid rgba(245,158,11,.4); color:#ffedd5; }
+    button.danger{ background: rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.35); color:#fee2e2; }
     .note{ color:var(--muted); font-size:12px; margin-top:8px; line-height:1.35; }
     .breakdown{ margin-top:8px; border-top:1px dashed var(--line); padding-top:10px; }
     .line-item{ display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(31,41,55,.5); gap:10px; }
@@ -61,7 +63,7 @@
     }
     .total .k{ color:#bbf7d0; }
     .total .v{ font-size:18px; font-weight:900; }
-    .tiny{ font-size:11px; color:var(--muted); margin-top:8px; }
+    .tiny{ font-size:11px; color:var(--muted); margin-top:8px; line-height:1.35; }
     .pill{
       display:inline-flex; gap:6px; align-items:center; padding:6px 10px; border-radius:999px;
       background:#0b1020; border:1px solid var(--line); color:var(--muted); font-size:12px;
@@ -72,15 +74,36 @@
       user-select:none;
     }
     .toggle input{ width:auto; }
+    .jobs{
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .jobcard{
+      border:1px solid rgba(31,41,55,.8);
+      background:#0b1020;
+      border-radius:12px;
+      padding:10px;
+    }
+    .jobhead{
+      display:flex; justify-content:space-between; gap:10px; align-items:flex-start;
+      margin-bottom:8px;
+    }
+    .jobtitle{ font-weight:800; font-size:13px; }
+    .jobmeta{ color:var(--muted); font-size:11px; line-height:1.3; }
+    .jobactions{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .jobactions button{ padding:8px 10px; border-radius:10px; font-weight:700; }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1>3D Print Price Calculator</h1>
-    <p class="sub">Single-file version. Presets are optional and never overwrite your values unless you click Apply.</p>
+    <p class="sub">
+      Single-file app (GitHub Pages + Home Screen). Presets are optional and never overwrite your values unless you click Apply.
+      Includes: <span class="pill">Save defaults</span> <span class="pill">Depreciation</span> <span class="pill">Job history</span>.
+    </p>
 
     <div class="grid">
-      <!-- INPUTS -->
+      <!-- LEFT: Calculator -->
       <div class="card">
         <div class="sec-title">
           <h2>Presets (optional)</h2>
@@ -113,11 +136,22 @@
           </div>
         </div>
 
-        <div class="row" style="margin-top:10px;">
+        <div class="row" style="margin-top:10px; justify-content:space-between;">
           <label class="toggle">
             <input id="applyEmptyOnly" type="checkbox" checked />
-            Apply presets to <b>empty fields only</b> (recommended)
+            Apply presets to <b>empty fields only</b>
           </label>
+
+          <label class="toggle">
+            <input id="autoLoadDefaults" type="checkbox" checked />
+            Auto-load saved defaults
+          </label>
+        </div>
+
+        <div class="btns">
+          <button id="saveDefaultsBtn" class="secondary" type="button">Save defaults</button>
+          <button id="loadDefaultsBtn" class="secondary" type="button">Load defaults</button>
+          <button id="clearDefaultsBtn" class="danger" type="button">Clear saved defaults</button>
         </div>
 
         <div class="divider"></div>
@@ -192,8 +226,34 @@
         <div class="divider"></div>
 
         <div class="sec-title">
+          <h2>Machine depreciation (recommended)</h2>
+          <span class="pill">Adds machine cost</span>
+        </div>
+
+        <div class="fields">
+          <div>
+            <label>Printer price ($)</label>
+            <input id="printerPrice" type="number" min="0" step="0.01" placeholder="e.g., 2200" />
+          </div>
+          <div>
+            <label>Printer lifetime (hours)</label>
+            <input id="printerLifeHours" type="number" min="0" step="1" placeholder="e.g., 7000" />
+          </div>
+          <div>
+            <label>Maintenance ($/hr) (optional)</label>
+            <input id="maintenancePerHr" type="number" min="0" step="0.01" placeholder="e.g., 0.10" />
+          </div>
+          <div>
+            <label>Calculated depreciation ($/hr)</label>
+            <input id="deprPerHrDisplay" type="text" class="mono" disabled placeholder="—" />
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="sec-title">
           <h2>Platform fees (optional)</h2>
-          <span class="pill">Editable</span>
+          <span class="pill">Gross-up supported</span>
         </div>
 
         <div class="row" style="margin-bottom:8px;">
@@ -213,13 +273,38 @@
             <input id="platformFixedFee" type="number" min="0" step="0.01" placeholder="e.g., 0.25" />
           </div>
           <div>
-            <label>Listing fee ($ per item/order)</label>
+            <label>Listing fee ($ per order)</label>
             <input id="platformListingFee" type="number" min="0" step="0.01" placeholder="e.g., 0.20" />
           </div>
           <div>
-            <label>Notes (optional)</label>
+            <label>Platform notes (optional)</label>
             <input id="platformNotes" type="text" placeholder="e.g., Etsy + payment processing" />
           </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="sec-title">
+          <h2>Job tools</h2>
+          <span class="pill">Save + export</span>
+        </div>
+
+        <div class="fields">
+          <div>
+            <label>Job name (optional)</label>
+            <input id="jobName" type="text" placeholder="e.g., Dragon keychain batch" />
+          </div>
+          <div>
+            <label>Customer / notes (optional)</label>
+            <input id="jobNotes" type="text" placeholder="e.g., Color: black, 2 copies" />
+          </div>
+        </div>
+
+        <div class="btns">
+          <button id="saveJobBtn" type="button">Save job to history</button>
+          <button id="exportJobsBtn" class="secondary" type="button">Export jobs JSON</button>
+          <button id="importJobsBtn" class="secondary" type="button">Import jobs JSON</button>
+          <button id="clearJobsBtn" class="danger" type="button">Clear job history</button>
         </div>
 
         <div class="btns">
@@ -228,13 +313,12 @@
         </div>
 
         <div class="note">
-          Platform fee math uses a “gross-up” so you still net your target price after fees:
-          <span style="color:#cbd5e1;">gross = (target + fixed + listing) / (1 - fee%)</span>.
-          All fee values are editable and optional.
+          Platform fee math uses a “gross-up” so you still net your target after percent fees:
+          <span style="color:#cbd5e1;" class="mono">gross = (target + fixed + listing) / (1 - fee%)</span>.
         </div>
       </div>
 
-      <!-- OUTPUTS -->
+      <!-- RIGHT: Output + Job History -->
       <div class="card">
         <div class="sec-title">
           <h2>Estimate</h2>
@@ -248,8 +332,19 @@
           <div class="v" id="finalPrice">$0.00</div>
         </div>
 
+        <div class="divider"></div>
+
+        <div class="sec-title">
+          <h2>Job history</h2>
+          <span class="pill" id="jobsCountPill">0 saved</span>
+        </div>
+
+        <div class="jobs" id="jobsList">
+          <div class="note">No saved jobs yet. Use “Save job to history”.</div>
+        </div>
+
         <div class="tiny">
-          Base = material + electricity + labor → add overhead → add profit → apply minimum fee → optionally gross-up for platform fees.
+          Everything is stored locally in your browser (localStorage). If you open this on a different device/browser, it won’t share history unless you export/import JSON.
         </div>
       </div>
     </div>
@@ -258,23 +353,17 @@
   <script>
     const $ = (id) => document.getElementById(id);
 
-    // ---- Preset libraries (starter set; editable in fields; never forces overwrite unless you Apply)
-    // Notes:
-    // - Values are optional and meant as convenience. You can leave them unused.
-    // - You can change any values after applying.
+    // ------------------ Presets (starter convenience; apply is optional) ------------------
     const PRINTER_PRESETS = {
       none: { name: "— Select a printer —", fields: {} },
-
       bambu_p1s: { name: "Bambu P1S", fields: { powerKW: 0.115 } },
       bambu_p1p: { name: "Bambu P1P", fields: { powerKW: 0.105 } },
-
       ender3: { name: "Creality Ender 3 (generic)", fields: { powerKW: 0.120 } },
       prusa_mk3s: { name: "Prusa MK3S (generic)", fields: { powerKW: 0.120 } }
     };
 
     const FILAMENT_PRESETS = {
       none: { name: "— Select a filament —", fields: {} },
-
       pla:  { name: "PLA",  fields: { wastePct: 5 } },
       petg: { name: "PETG", fields: { wastePct: 6 } },
       abs:  { name: "ABS",  fields: { wastePct: 7 } },
@@ -282,25 +371,30 @@
       nylon:{ name: "Nylon",fields: { wastePct: 10 } }
     };
 
-    // Platform fee presets (starter convenience only; always editable; apply is optional)
-    // If you want these to be completely blank by default, just don’t click Apply platform.
     const PLATFORM_PRESETS = {
       none: { name: "— Select a platform —", fields: {} },
-
-      // "feePct" here is a combined percent placeholder you can edit.
-      // "fixedFee" and "listingFee" are also placeholders you can edit.
       etsy:   { name: "Etsy (starter)",   fields: { platformFeePct: 6.5, platformFixedFee: 0.25, platformListingFee: 0.20, platformNotes: "Adjust if needed" } },
       amazon: { name: "Amazon (starter)", fields: { platformFeePct: 15.0, platformFixedFee: 0.00, platformListingFee: 0.00, platformNotes: "Varies by category" } },
       shopify:{ name: "Shopify (starter)",fields: { platformFeePct: 2.9, platformFixedFee: 0.30, platformListingFee: 0.00, platformNotes: "Typical card processing" } },
       ebay:   { name: "eBay (starter)",   fields: { platformFeePct: 13.0, platformFixedFee: 0.00, platformListingFee: 0.00, platformNotes: "Varies by category" } }
     };
 
-    // ---- Inputs managed by calculator
+    // ------------------ Storage keys ------------------
+    const LS_DEFAULTS_KEY = "calc_defaults_v2";
+    const LS_JOBS_KEY = "calc_jobs_v2";
+    const LS_SETTINGS_KEY = "calc_settings_v2"; // e.g., auto-load toggle
+
+    // ------------------ Inputs managed ------------------
     const inputIds = [
       "printHours","gramsUsed","spoolPrice","spoolWeight","wastePct",
       "powerKW","elecRate","laborRate","laborMin","overheadPct","profitPct","minFee",
-      "platformFeePct","platformFixedFee","platformListingFee","platformNotes"
+      "printerPrice","printerLifeHours","maintenancePerHr",
+      "platformFeePct","platformFixedFee","platformListingFee","platformNotes",
+      "jobName","jobNotes"
     ];
+
+    // Defaults to clear (your preference)
+    const clearState = Object.fromEntries(inputIds.map(id => [id, ""]));
 
     function money(n){
       const v = Number.isFinite(n) ? n : 0;
@@ -335,17 +429,61 @@
       const emptyOnly = $("applyEmptyOnly").checked;
       for (const [id, value] of Object.entries(fields)){
         if (!$(id)) continue;
-        if (emptyOnly && !isEmptyField(id)) continue; // do not overwrite
+        if (emptyOnly && !isEmptyField(id)) continue;
         $(id).value = value;
       }
       calc();
       $("status").textContent = emptyOnly ? "Preset applied (empty fields only)" : "Preset applied (overwrote fields)";
     }
 
+    function getState(){
+      const state = {};
+      inputIds.forEach(id => state[id] = ($(id) ? $(id).value : ""));
+      state.includePlatformFees = $("includePlatformFees").checked;
+      state.applyEmptyOnly = $("applyEmptyOnly").checked;
+      state.autoLoadDefaults = $("autoLoadDefaults").checked;
+      state.printerPreset = $("printerPreset").value;
+      state.filamentPreset = $("filamentPreset").value;
+      state.platformPreset = $("platformPreset").value;
+      return state;
+    }
+
+    function setState(state){
+      inputIds.forEach(id => {
+        if (!$(id)) return;
+        $(id).value = (state && Object.prototype.hasOwnProperty.call(state, id)) ? state[id] : "";
+      });
+
+      if (state && typeof state.includePlatformFees === "boolean") $("includePlatformFees").checked = state.includePlatformFees;
+      if (state && typeof state.applyEmptyOnly === "boolean") $("applyEmptyOnly").checked = state.applyEmptyOnly;
+      if (state && typeof state.autoLoadDefaults === "boolean") $("autoLoadDefaults").checked = state.autoLoadDefaults;
+
+      if (state && state.printerPreset) $("printerPreset").value = state.printerPreset;
+      if (state && state.filamentPreset) $("filamentPreset").value = state.filamentPreset;
+      if (state && state.platformPreset) $("platformPreset").value = state.platformPreset;
+
+      calc();
+    }
+
+    function saveJSON(key, obj){
+      localStorage.setItem(key, JSON.stringify(obj));
+    }
+
+    function loadJSON(key, fallback=null){
+      try{
+        const raw = localStorage.getItem(key);
+        if (!raw) return fallback;
+        return JSON.parse(raw);
+      }catch(e){
+        return fallback;
+      }
+    }
+
     function renderEmpty(){
       $("breakdown").innerHTML = `
         <div class="line-item"><div class="k">Material (incl. waste)</div><div class="v">$0.00</div></div>
         <div class="line-item"><div class="k">Electricity</div><div class="v">$0.00</div></div>
+        <div class="line-item"><div class="k">Machine (depr + maint)</div><div class="v">$0.00</div></div>
         <div class="line-item"><div class="k">Active labor</div><div class="v">$0.00</div></div>
         <div class="line-item"><div class="k">Base subtotal</div><div class="v">$0.00</div></div>
         <div class="line-item"><div class="k">Overhead</div><div class="v">$0.00</div></div>
@@ -356,32 +494,50 @@
       `;
       $("finalPrice").textContent = "$0.00";
       $("status").textContent = "Enter values to calculate";
+      $("deprPerHrDisplay").value = "—";
+    }
+
+    function calcDepreciationPerHr(){
+      const price = num("printerPrice");
+      const life = num("printerLifeHours");
+      if (price <= 0 || life <= 0) return 0;
+      return price / life;
     }
 
     function calc(){
-      // Detect if user entered anything at all
-      const anyInput = inputIds.some(id => ($(id) && $(id).value !== ""));
+      const anyInput = inputIds.some(id => ($(id) && $(id).value !== "")) || $("includePlatformFees").checked;
       if (!anyInput){
         renderEmpty();
         return null;
       }
 
+      // Job + materials
       const printHours = num("printHours");
       const gramsUsed = num("gramsUsed");
       const spoolPrice = num("spoolPrice");
       const spoolWeight = Math.max(1, num("spoolWeight"));
       const wastePct = num("wastePct") / 100;
 
+      // Energy
       const powerKW = num("powerKW");
       const elecRate = num("elecRate");
 
+      // Labor
       const laborRate = num("laborRate");
       const laborMin = num("laborMin");
 
+      // Margins
       const overheadPct = num("overheadPct") / 100;
       const profitPct = num("profitPct") / 100;
       const minFee = num("minFee");
 
+      // Machine
+      const deprPerHr = calcDepreciationPerHr();
+      const maintPerHr = num("maintenancePerHr");
+      const machineCost = printHours * (Math.max(0, deprPerHr) + Math.max(0, maintPerHr));
+      $("deprPerHrDisplay").value = deprPerHr > 0 ? money(deprPerHr) + " / hr" : "—";
+
+      // Platform fees
       const includePlatformFees = $("includePlatformFees").checked;
       const platformFeePct = num("platformFeePct") / 100;
       const platformFixedFee = num("platformFixedFee");
@@ -400,7 +556,7 @@
       const laborCost = laborHours * laborRate;
 
       // Base
-      const base = materialCost + electricityCost + laborCost;
+      const base = materialCost + electricityCost + machineCost + laborCost;
 
       // Overhead then profit
       const overheadCost = base * Math.max(0, overheadPct);
@@ -410,11 +566,11 @@
       // Target before platform fees & min fee
       const targetBeforeFees = subtotal + profit;
 
-      // Apply minimum fee before platform gross-up (so tiny jobs still respect your minimum)
+      // Minimum fee before gross-up
       const targetWithMin = Math.max(targetBeforeFees, Math.max(0, minFee));
       const minApplied = targetWithMin > targetBeforeFees;
 
-      // Optional platform gross-up so net after percent fees is still your target
+      // Gross-up (optional)
       let final = targetWithMin;
       let platformAdded = 0;
 
@@ -423,12 +579,10 @@
         const fixed = Math.max(0, platformFixedFee) + Math.max(0, platformListingFee);
 
         if (pct >= 0.999){
-          // Avoid division by zero / nonsense
           final = targetWithMin + fixed;
           platformAdded = fixed;
           $("status").textContent = "Platform fee % too high; used fixed fees only";
         } else {
-          // Gross-up: gross = (target + fixed) / (1 - pct)
           const gross = (targetWithMin + fixed) / (1 - pct);
           final = gross;
           platformAdded = gross - targetWithMin;
@@ -438,6 +592,7 @@
       const breakdown = [
         ["Material (incl. waste)", materialCost],
         ["Electricity", electricityCost],
+        ["Machine (depr + maint)", machineCost],
         ["Active labor", laborCost],
         ["Base subtotal", base],
         ["Overhead", overheadCost],
@@ -456,50 +611,196 @@
       $("status").textContent = "Updated";
 
       return {
+        // inputs
         printHours, gramsUsed, effectiveGrams,
-        materialCost, electricityCost, laborCost,
-        overheadCost, profit,
-        targetWithMin,
+        spoolPrice, spoolWeight, wastePct,
+        powerKW, elecRate,
+        laborRate, laborMin,
+        overheadPct, profitPct, minFee,
+        printerPrice: num("printerPrice"),
+        printerLifeHours: num("printerLifeHours"),
+        deprPerHr, maintPerHr,
         includePlatformFees, platformFeePct, platformFixedFee, platformListingFee,
-        platformAdded, final,
-        minApplied
+        platformNotes: $("platformNotes").value || "",
+        jobName: $("jobName").value || "",
+        jobNotes: $("jobNotes").value || "",
+        // costs
+        materialCost, electricityCost, machineCost, laborCost,
+        overheadCost, profit,
+        targetWithMin, platformAdded, final,
+        minApplied,
+        // metadata
+        ts: new Date().toISOString()
       };
     }
 
-    // ---- Wire up UI
-    setSelectOptions($("printerPreset"), PRINTER_PRESETS);
-    setSelectOptions($("filamentPreset"), FILAMENT_PRESETS);
-    setSelectOptions($("platformPreset"), PLATFORM_PRESETS);
+    // ------------------ Job history ------------------
+    function loadJobs(){
+      const jobs = loadJSON(LS_JOBS_KEY, []);
+      return Array.isArray(jobs) ? jobs : [];
+    }
 
-    $("applyPrinterBtn").addEventListener("click", () => {
-      const key = $("printerPreset").value;
-      applyFields(PRINTER_PRESETS[key]?.fields || {});
-    });
+    function saveJobs(jobs){
+      saveJSON(LS_JOBS_KEY, jobs);
+      renderJobs();
+    }
 
-    $("applyFilamentBtn").addEventListener("click", () => {
-      const key = $("filamentPreset").value;
-      applyFields(FILAMENT_PRESETS[key]?.fields || {});
-    });
+    function formatDate(iso){
+      try{
+        const d = new Date(iso);
+        return d.toLocaleString();
+      }catch(e){
+        return iso;
+      }
+    }
 
-    $("applyPlatformBtn").addEventListener("click", () => {
-      const key = $("platformPreset").value;
-      applyFields(PLATFORM_PRESETS[key]?.fields || {});
-    });
+    function renderJobs(){
+      const jobs = loadJobs();
+      $("jobsCountPill").textContent = `${jobs.length} saved`;
 
-    inputIds.forEach(id => { if ($(id)) $(id).addEventListener("input", calc); });
-    $("includePlatformFees").addEventListener("change", calc);
+      const list = $("jobsList");
+      if (!jobs.length){
+        list.innerHTML = `<div class="note">No saved jobs yet. Use “Save job to history”.</div>`;
+        return;
+      }
 
-    $("resetBtn").addEventListener("click", () => {
-      inputIds.forEach(id => { if ($(id)) $(id).value = ""; });
-      $("includePlatformFees").checked = false;
-      $("applyEmptyOnly").checked = true;
-      $("printerPreset").value = "none";
-      $("filamentPreset").value = "none";
-      $("platformPreset").value = "none";
-      renderEmpty();
-    });
+      list.innerHTML = jobs.slice().reverse().map((job, idxFromEnd) => {
+        const idx = jobs.length - 1 - idxFromEnd;
+        const title = (job.jobName && job.jobName.trim()) ? job.jobName.trim() : "Untitled job";
+        const notes = job.jobNotes ? job.jobNotes : "";
+        const meta = `${formatDate(job.ts)} • Final: ${money(job.final)} • Time: ${job.printHours || 0}h • Filament: ${job.gramsUsed || 0}g`;
+        return `
+          <div class="jobcard">
+            <div class="jobhead">
+              <div>
+                <div class="jobtitle">${escapeHTML(title)}</div>
+                <div class="jobmeta">${escapeHTML(meta)}${notes ? "<br/>" + escapeHTML(notes) : ""}</div>
+              </div>
+              <div class="jobactions">
+                <button class="secondary" type="button" onclick="window.__loadJob(${idx})">Load</button>
+                <button class="danger" type="button" onclick="window.__deleteJob(${idx})">Delete</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
 
-    $("copyBtn").addEventListener("click", async () => {
+    function escapeHTML(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    window.__loadJob = (idx) => {
+      const jobs = loadJobs();
+      const job = jobs[idx];
+      if (!job) return;
+
+      // Put saved job inputs back into the form
+      const state = getState();
+      // Only overwrite the calculator fields (not the preset selects/toggles unless they exist in saved job)
+      inputIds.forEach(id => {
+        if ($(id) && Object.prototype.hasOwnProperty.call(job, id)) $(id).value = job[id] ?? "";
+      });
+
+      // Restore platform checkbox if present
+      if (typeof job.includePlatformFees === "boolean") $("includePlatformFees").checked = job.includePlatformFees;
+
+      $("status").textContent = "Loaded job from history";
+      calc();
+    };
+
+    window.__deleteJob = (idx) => {
+      const jobs = loadJobs();
+      if (!jobs[idx]) return;
+      jobs.splice(idx, 1);
+      saveJobs(jobs);
+      $("status").textContent = "Deleted job";
+    };
+
+    // ------------------ Defaults (presets save/load) ------------------
+    function saveDefaults(){
+      const state = getState();
+      // For "defaults", we usually don't want to save job name/notes (personal preference); remove them:
+      state.jobName = "";
+      state.jobNotes = "";
+      saveJSON(LS_DEFAULTS_KEY, state);
+
+      // Save settings like auto-load
+      saveJSON(LS_SETTINGS_KEY, { autoLoadDefaults: $("autoLoadDefaults").checked });
+      $("status").textContent = "Defaults saved ✅";
+    }
+
+    function loadDefaults(){
+      const saved = loadJSON(LS_DEFAULTS_KEY, null);
+      if (!saved){
+        $("status").textContent = "No saved defaults found";
+        return;
+      }
+      setState(saved);
+      $("status").textContent = "Defaults loaded ✅";
+    }
+
+    function clearDefaults(){
+      localStorage.removeItem(LS_DEFAULTS_KEY);
+      $("status").textContent = "Saved defaults cleared";
+    }
+
+    // ------------------ Export/Import Jobs ------------------
+    function exportJobs(){
+      const jobs = loadJobs();
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        version: 2,
+        jobs
+      };
+      const text = JSON.stringify(payload, null, 2);
+
+      // Try copy to clipboard first
+      navigator.clipboard.writeText(text).then(() => {
+        $("status").textContent = "Jobs JSON copied to clipboard ✅ (paste into a note/file)";
+        alert("Jobs JSON copied to clipboard.\n\nTip: Paste it into a text file (jobs-backup.json) to keep a backup.");
+      }).catch(() => {
+        // Fallback: show prompt
+        $("status").textContent = "Copy blocked; showing export text";
+        prompt("Copy this JSON (Ctrl/Cmd+C):", text);
+      });
+    }
+
+    function importJobs(){
+      const pasted = prompt("Paste exported jobs JSON here:");
+      if (!pasted) return;
+
+      try{
+        const obj = JSON.parse(pasted);
+        const incoming = Array.isArray(obj.jobs) ? obj.jobs : (Array.isArray(obj) ? obj : null);
+        if (!incoming) throw new Error("Invalid format");
+
+        // Merge by appending; you can change to replace if you want
+        const jobs = loadJobs();
+        const merged = jobs.concat(incoming).filter(Boolean);
+        saveJobs(merged);
+
+        $("status").textContent = `Imported ${incoming.length} jobs ✅`;
+      }catch(e){
+        alert("Import failed: invalid JSON format.");
+        $("status").textContent = "Import failed";
+      }
+    }
+
+    function clearJobs(){
+      if (!confirm("Clear ALL job history? This cannot be undone.")) return;
+      localStorage.removeItem(LS_JOBS_KEY);
+      renderJobs();
+      $("status").textContent = "Job history cleared";
+    }
+
+    // ------------------ Copy quote ------------------
+    function copyQuote(){
       const r = calc();
       if (!r){
         alert("Enter some values first, then try copying the quote.");
@@ -510,12 +811,18 @@
         ? `ON (added ${money(r.platformAdded)})`
         : "OFF";
 
+      const deprLine = r.deprPerHr > 0 ? `${money(r.deprPerHr)}/hr` : "—";
+      const maintLine = r.maintPerHr > 0 ? `${money(r.maintPerHr)}/hr` : "—";
+
       const text =
 `3D Print Quote
+- Job: ${r.jobName || "Untitled"}
+- Notes: ${r.jobNotes || "-"}
 - Print time: ${r.printHours} hr
 - Filament: ${r.gramsUsed} g (+ waste = ${r.effectiveGrams.toFixed(1)} g)
 - Material cost: ${money(r.materialCost)}
 - Electricity cost: ${money(r.electricityCost)}
+- Machine cost: ${money(r.machineCost)} (depr ${deprLine}, maint ${maintLine})
 - Active labor cost: ${money(r.laborCost)}
 - Overhead: ${money(r.overheadCost)}
 - Profit: ${money(r.profit)}
@@ -523,17 +830,130 @@
 - Platform fees: ${feeMode}
 = Final: ${money(r.final)}`;
 
-      try{
-        await navigator.clipboard.writeText(text);
+      navigator.clipboard.writeText(text).then(() => {
         $("status").textContent = "Copied to clipboard ✅";
-      }catch(e){
-        $("status").textContent = "Copy failed (browser blocked clipboard)";
+      }).catch(() => {
+        $("status").textContent = "Copy blocked; showing text";
         alert(text);
-      }
-    });
+      });
+    }
 
-    // Init
-    renderEmpty();
+    // ------------------ Reset ------------------
+    function resetAll(){
+      setState(clearState);
+      $("includePlatformFees").checked = false;
+      $("applyEmptyOnly").checked = true;
+
+      $("printerPreset").value = "none";
+      $("filamentPreset").value = "none";
+      $("platformPreset").value = "none";
+
+      renderEmpty();
+    }
+
+    // ------------------ Wire up UI ------------------
+    function init(){
+      setSelectOptions($("printerPreset"), PRINTER_PRESETS);
+      setSelectOptions($("filamentPreset"), FILAMENT_PRESETS);
+      setSelectOptions($("platformPreset"), PLATFORM_PRESETS);
+
+      $("applyPrinterBtn").addEventListener("click", () => {
+        const key = $("printerPreset").value;
+        applyFields(PRINTER_PRESETS[key]?.fields || {});
+      });
+
+      $("applyFilamentBtn").addEventListener("click", () => {
+        const key = $("filamentPreset").value;
+        applyFields(FILAMENT_PRESETS[key]?.fields || {});
+      });
+
+      $("applyPlatformBtn").addEventListener("click", () => {
+        const key = $("platformPreset").value;
+        applyFields(PLATFORM_PRESETS[key]?.fields || {});
+      });
+
+      inputIds.forEach(id => { if ($(id)) $(id).addEventListener("input", calc); });
+      $("includePlatformFees").addEventListener("change", calc);
+
+      $("saveDefaultsBtn").addEventListener("click", saveDefaults);
+      $("loadDefaultsBtn").addEventListener("click", loadDefaults);
+      $("clearDefaultsBtn").addEventListener("click", clearDefaults);
+
+      $("saveJobBtn").addEventListener("click", () => {
+        const r = calc();
+        if (!r){
+          alert("Enter some values first, then save the job.");
+          return;
+        }
+        const jobs = loadJobs();
+        // Save only relevant inputs + computed outputs for history
+        const record = {
+          ts: r.ts,
+          jobName: r.jobName,
+          jobNotes: r.jobNotes,
+
+          // inputs
+          printHours: $("printHours").value,
+          gramsUsed: $("gramsUsed").value,
+          spoolPrice: $("spoolPrice").value,
+          spoolWeight: $("spoolWeight").value,
+          wastePct: $("wastePct").value,
+          powerKW: $("powerKW").value,
+          elecRate: $("elecRate").value,
+          laborRate: $("laborRate").value,
+          laborMin: $("laborMin").value,
+          overheadPct: $("overheadPct").value,
+          profitPct: $("profitPct").value,
+          minFee: $("minFee").value,
+          printerPrice: $("printerPrice").value,
+          printerLifeHours: $("printerLifeHours").value,
+          maintenancePerHr: $("maintenancePerHr").value,
+
+          includePlatformFees: $("includePlatformFees").checked,
+          platformFeePct: $("platformFeePct").value,
+          platformFixedFee: $("platformFixedFee").value,
+          platformListingFee: $("platformListingFee").value,
+          platformNotes: $("platformNotes").value,
+
+          // computed (store for quick display)
+          final: r.final
+        };
+
+        jobs.push(record);
+        saveJobs(jobs);
+        $("status").textContent = "Job saved ✅";
+      });
+
+      $("exportJobsBtn").addEventListener("click", exportJobs);
+      $("importJobsBtn").addEventListener("click", importJobs);
+      $("clearJobsBtn").addEventListener("click", clearJobs);
+
+      $("resetBtn").addEventListener("click", resetAll);
+      $("copyBtn").addEventListener("click", copyQuote);
+
+      // Persist setting: auto-load toggle
+      const settings = loadJSON(LS_SETTINGS_KEY, { autoLoadDefaults: true });
+      if (settings && typeof settings.autoLoadDefaults === "boolean") {
+        $("autoLoadDefaults").checked = settings.autoLoadDefaults;
+      }
+      $("autoLoadDefaults").addEventListener("change", () => {
+        saveJSON(LS_SETTINGS_KEY, { autoLoadDefaults: $("autoLoadDefaults").checked });
+      });
+
+      renderEmpty();
+      renderJobs();
+
+      // Auto-load defaults if user wants
+      if ($("autoLoadDefaults").checked){
+        const saved = loadJSON(LS_DEFAULTS_KEY, null);
+        if (saved){
+          setState(saved);
+          $("status").textContent = "Defaults auto-loaded ✅";
+        }
+      }
+    }
+
+    init();
   </script>
 </body>
 </html>
