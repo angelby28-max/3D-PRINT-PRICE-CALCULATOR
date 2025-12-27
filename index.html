@@ -95,6 +95,29 @@
 
     /* Beginner Mode hides advanced UI blocks */
     .beginner .advanced-only { display:none !important; }
+
+    /* Light Mode: flip the theme variables + slightly brighten the body gradient */
+    #appRoot.light{
+      --bg:#f3f4f6;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --accent:#22c55e;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+    }
+    #appRoot.light .card{
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 10px 30px rgba(0,0,0,.10);
+    }
+    #appRoot.light input, #appRoot.light select, #appRoot.light textarea{
+      background:#ffffff;
+      color:var(--text);
+    }
+    #appRoot.light button.secondary{
+      background:#ffffff;
+    }
   </style>
 </head>
 <body>
@@ -102,15 +125,20 @@
     <div class="row" style="justify-content:space-between; align-items:flex-end;">
       <div>
         <h1>3D Print Price Calculator</h1>
-        <p class="sub">
-          Beginner Mode keeps things simple. Toggle Advanced when you’re ready.
-        </p>
+        <p class="sub">Beginner Mode keeps it simple. Light Mode gives a brighter look. Both settings are remembered.</p>
       </div>
 
-      <label class="toggle" style="margin-bottom:6px;">
-        <input id="beginnerMode" type="checkbox" />
-        <b>Beginner Mode</b>
-      </label>
+      <div class="row" style="gap:14px; justify-content:flex-end; align-items:center; margin-bottom:6px;">
+        <label class="toggle" style="margin:0;">
+          <input id="lightMode" type="checkbox" />
+          <b>Light Mode</b>
+        </label>
+
+        <label class="toggle" style="margin:0;">
+          <input id="beginnerMode" type="checkbox" />
+          <b>Beginner Mode</b>
+        </label>
+      </div>
     </div>
 
     <div class="grid">
@@ -171,7 +199,7 @@
           <div class="divider"></div>
         </div>
 
-        <!-- Job inputs (Beginner sees a reduced set via JS helper text, but fields remain the same) -->
+        <!-- Job inputs -->
         <div class="sec-title">
           <h2>Job inputs</h2>
           <span class="pill">Updates as you type</span>
@@ -180,27 +208,27 @@
         <div class="fields">
           <div>
             <label>Print time (hours)</label>
-            <input id="printHours" type="number" min="0" step="0.01" placeholder="From your slicer (e.g., 6)" />
+            <input id="printHours" type="number" min="0" step="0.01" placeholder="From slicer (e.g., 6)" />
           </div>
 
           <div>
             <label>Filament used (grams)</label>
-            <input id="gramsUsed" type="number" min="0" step="1" placeholder="From slicer estimate (e.g., 100)" />
+            <input id="gramsUsed" type="number" min="0" step="1" placeholder="From slicer (e.g., 100)" />
           </div>
 
           <div>
             <label>Spool price ($)</label>
-            <input id="spoolPrice" type="number" min="0" step="0.01" placeholder="What you paid (e.g., 20)" />
+            <input id="spoolPrice" type="number" min="0" step="0.01" placeholder="e.g., 20" />
           </div>
 
           <div>
             <label>Spool weight (grams)</label>
-            <input id="spoolWeight" type="number" min="1" step="1" placeholder="Usually 1000g" />
+            <input id="spoolWeight" type="number" min="1" step="1" placeholder="Usually 1000" />
           </div>
 
           <div>
             <label>Waste factor (%)</label>
-            <input id="wastePct" type="number" min="0" step="0.1" placeholder="Supports/purge (e.g., 5)" />
+            <input id="wastePct" type="number" min="0" step="0.1" placeholder="e.g., 5" />
           </div>
 
           <div class="advanced-only">
@@ -215,12 +243,12 @@
 
           <div>
             <label>Labor rate ($/hr)</label>
-            <input id="laborRate" type="number" min="0" step="0.01" placeholder="Your hourly rate (e.g., 40)" />
+            <input id="laborRate" type="number" min="0" step="0.01" placeholder="e.g., 40" />
           </div>
 
           <div>
             <label>Active labor (minutes)</label>
-            <input id="laborMin" type="number" min="0" step="1" placeholder="Setup + cleanup (e.g., 35)" />
+            <input id="laborMin" type="number" min="0" step="1" placeholder="e.g., 35" />
           </div>
 
           <div class="advanced-only">
@@ -244,7 +272,7 @@
           <div class="divider"></div>
 
           <div class="sec-title">
-            <h2>Machine depreciation (recommended)</h2>
+            <h2>Machine depreciation</h2>
             <span class="pill">Adds machine cost</span>
           </div>
 
@@ -286,20 +314,20 @@
 
           <div class="fields">
             <div>
-              <label>Fee % (taken from sale)</label>
+              <label>Fee %</label>
               <input id="platformFeePct" type="number" min="0" step="0.01" placeholder="e.g., 6.5" />
             </div>
             <div>
-              <label>Fixed fee ($ per order)</label>
+              <label>Fixed fee ($)</label>
               <input id="platformFixedFee" type="number" min="0" step="0.01" placeholder="e.g., 0.25" />
             </div>
             <div>
-              <label>Listing fee ($ per order)</label>
+              <label>Listing fee ($)</label>
               <input id="platformListingFee" type="number" min="0" step="0.01" placeholder="e.g., 0.20" />
             </div>
             <div>
-              <label>Platform notes (optional)</label>
-              <input id="platformNotes" type="text" placeholder="e.g., Etsy + payment processing" />
+              <label>Platform notes</label>
+              <input id="platformNotes" type="text" placeholder="Optional" />
             </div>
           </div>
         </div>
@@ -319,8 +347,8 @@
               <input id="jobName" type="text" placeholder="e.g., Dragon keychain batch" />
             </div>
             <div>
-              <label>Customer / notes (optional)</label>
-              <input id="jobNotes" type="text" placeholder="e.g., Color: black, 2 copies" />
+              <label>Notes (optional)</label>
+              <input id="jobNotes" type="text" placeholder="e.g., Black, 2 copies" />
             </div>
           </div>
 
@@ -338,12 +366,11 @@
         </div>
 
         <div class="note advanced-only">
-          Platform fee math uses gross-up:
-          <span style="color:#cbd5e1;" class="mono">gross = (target + fixed + listing) / (1 - fee%)</span>.
+          Platform fee uses gross-up: <span class="mono" style="color:#cbd5e1;">gross = (target + fixed + listing) / (1 - fee%)</span>
         </div>
 
         <div class="note" id="beginnerHint">
-          Beginner tip: Use slicer values for <b>Print time</b> and <b>Filament grams</b>. If you want even more accuracy later, switch off Beginner Mode.
+          Beginner tip: Use slicer values for <b>Print time</b> and <b>Filament grams</b>. Toggle Advanced later for electricity, margins, fees, and depreciation.
         </div>
       </div>
 
@@ -373,9 +400,7 @@
             <div class="note">No saved jobs yet. Use “Save job to history”.</div>
           </div>
 
-          <div class="tiny">
-            Stored locally in your browser (localStorage).
-          </div>
+          <div class="tiny">Stored locally in your browser (localStorage).</div>
         </div>
       </div>
     </div>
@@ -413,7 +438,7 @@
     // Storage keys
     const LS_DEFAULTS_KEY = "calc_defaults_v2";
     const LS_JOBS_KEY = "calc_jobs_v2";
-    const LS_SETTINGS_KEY = "calc_settings_v3"; // includes beginner mode
+    const LS_SETTINGS_KEY = "calc_settings_v4"; // includes beginner + light mode
 
     // Inputs managed
     const inputIds = [
@@ -441,6 +466,7 @@
     }
 
     function setSelectOptions(selectEl, presets){
+      if (!selectEl) return;
       selectEl.innerHTML = "";
       for (const [key, obj] of Object.entries(presets)){
         const opt = document.createElement("option");
@@ -468,10 +494,7 @@
       $("status").textContent = emptyOnly ? "Preset applied (empty fields only)" : "Preset applied (overwrote fields)";
     }
 
-    function saveJSON(key, obj){
-      localStorage.setItem(key, JSON.stringify(obj));
-    }
-
+    function saveJSON(key, obj){ localStorage.setItem(key, JSON.stringify(obj)); }
     function loadJSON(key, fallback=null){
       try{
         const raw = localStorage.getItem(key);
@@ -689,10 +712,6 @@
       state.jobName = "";
       state.jobNotes = "";
       saveJSON(LS_DEFAULTS_KEY, state);
-      const settings = loadJSON(LS_SETTINGS_KEY, {});
-      settings.autoLoadDefaults = $("autoLoadDefaults")?.checked ?? true;
-      settings.beginnerMode = $("beginnerMode")?.checked ?? true;
-      saveJSON(LS_SETTINGS_KEY, settings);
       $("status").textContent = "Defaults saved ✅";
     }
     function loadDefaults(){
@@ -709,11 +728,11 @@
     // Export/Import jobs (advanced)
     function exportJobs(){
       const jobs = loadJobs();
-      const payload = { exportedAt: new Date().toISOString(), version: 3, jobs };
+      const payload = { exportedAt: new Date().toISOString(), version: 4, jobs };
       const text = JSON.stringify(payload, null, 2);
       navigator.clipboard.writeText(text).then(() => {
         $("status").textContent = "Jobs JSON copied ✅";
-        alert("Jobs JSON copied to clipboard. Paste into a text file for backup.");
+        alert("Jobs JSON copied. Paste into a text file for backup.");
       }).catch(() => {
         $("status").textContent = "Copy blocked; showing export text";
         prompt("Copy this JSON:", text);
@@ -730,7 +749,7 @@
         saveJobs(jobs.concat(incoming).filter(Boolean));
         $("status").textContent = `Imported ${incoming.length} jobs ✅`;
       }catch(e){
-        alert("Import failed: invalid JSON format.");
+        alert("Import failed: invalid JSON.");
         $("status").textContent = "Import failed";
       }
     }
@@ -766,28 +785,27 @@
       renderEmpty();
     }
 
-    // Beginner mode behavior
     function applyBeginnerModeUI(isBeginner){
       const root = $("appRoot");
       if (!root) return;
       root.classList.toggle("beginner", !!isBeginner);
-
-      // In beginner mode, keep hints visible; in advanced, hints can stay too (your preference)
       const hint = $("beginnerHint");
       if (hint) hint.style.display = isBeginner ? "block" : "none";
+      $("status").textContent = isBeginner ? "Beginner Mode ON" : "Beginner Mode OFF";
+    }
 
-      const settings = loadJSON(LS_SETTINGS_KEY, {});
-      settings.beginnerMode = !!isBeginner;
-      saveJSON(LS_SETTINGS_KEY, settings);
-
-      $("status").textContent = isBeginner ? "Beginner Mode ON" : "Advanced Mode ON";
+    function applyThemeUI(isLight){
+      const root = $("appRoot");
+      if (!root) return;
+      root.classList.toggle("light", !!isLight);
+      $("status").textContent = isLight ? "Light Mode ON" : "Dark Mode ON";
     }
 
     function init(){
       // Fill selects
-      if ($("printerPreset")) setSelectOptions($("printerPreset"), PRINTER_PRESETS);
-      if ($("filamentPreset")) setSelectOptions($("filamentPreset"), FILAMENT_PRESETS);
-      if ($("platformPreset")) setSelectOptions($("platformPreset"), PLATFORM_PRESETS);
+      setSelectOptions($("printerPreset"), PRINTER_PRESETS);
+      setSelectOptions($("filamentPreset"), FILAMENT_PRESETS);
+      setSelectOptions($("platformPreset"), PLATFORM_PRESETS);
 
       // Buttons
       $("applyPrinterBtn")?.addEventListener("click", () => applyFields(PRINTER_PRESETS[$("printerPreset").value]?.fields || {}));
@@ -844,22 +862,36 @@
       $("copyBtn")?.addEventListener("click", copyQuote);
 
       // Load settings
-      const settings = loadJSON(LS_SETTINGS_KEY, { autoLoadDefaults: true, beginnerMode: true });
+      const settings = loadJSON(LS_SETTINGS_KEY, { beginnerMode: true, lightMode: false, autoLoadDefaults: true });
+
       const beginnerDefault = (typeof settings.beginnerMode === "boolean") ? settings.beginnerMode : true;
       $("beginnerMode").checked = beginnerDefault;
       applyBeginnerModeUI(beginnerDefault);
-
       $("beginnerMode").addEventListener("change", (e) => {
-        applyBeginnerModeUI(e.target.checked);
+        const on = e.target.checked;
+        applyBeginnerModeUI(on);
+        const s = loadJSON(LS_SETTINGS_KEY, {});
+        s.beginnerMode = on;
+        saveJSON(LS_SETTINGS_KEY, s);
+      });
+
+      const lightDefault = (typeof settings.lightMode === "boolean") ? settings.lightMode : false;
+      $("lightMode").checked = lightDefault;
+      applyThemeUI(lightDefault);
+      $("lightMode").addEventListener("change", (e) => {
+        const on = e.target.checked;
+        applyThemeUI(on);
+        const s = loadJSON(LS_SETTINGS_KEY, {});
+        s.lightMode = on;
+        saveJSON(LS_SETTINGS_KEY, s);
       });
 
       renderEmpty();
       renderJobs();
 
-      // Auto-load defaults (only matters in advanced UI, but safe either way)
+      // Auto-load defaults (advanced feature)
       const autoLoad = (typeof settings.autoLoadDefaults === "boolean") ? settings.autoLoadDefaults : true;
       if ($("autoLoadDefaults")) $("autoLoadDefaults").checked = autoLoad;
-
       if (autoLoad){
         const saved = loadJSON(LS_DEFAULTS_KEY, null);
         if (saved) setState(saved);
