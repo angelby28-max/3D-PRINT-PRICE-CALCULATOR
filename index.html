@@ -74,9 +74,7 @@
       user-select:none;
     }
     .toggle input{ width:auto; }
-    .jobs{
-      display:flex; flex-direction:column; gap:10px;
-    }
+    .jobs{ display:flex; flex-direction:column; gap:10px; }
     .jobcard{
       border:1px solid rgba(31,41,55,.8);
       background:#0b1020;
@@ -96,7 +94,7 @@
     /* Beginner Mode hides advanced UI blocks */
     .beginner .advanced-only { display:none !important; }
 
-    /* Light Mode: flip the theme variables + slightly brighten the body gradient */
+    /* Light Mode: flip the theme variables + brighten surfaces */
     #appRoot.light{
       --bg:#f3f4f6;
       --card:#ffffff;
@@ -118,6 +116,38 @@
     #appRoot.light button.secondary{
       background:#ffffff;
     }
+    #appRoot.light .jobcard{
+      background:#ffffff;
+      border-color:#e5e7eb;
+    }
+
+    /* ✅ Light mode contrast fixes (buttons/labels/pills) */
+    #appRoot.light .pill{
+      background:#ffffff;
+      color:#111827;
+      border-color:#d1d5db;
+    }
+    #appRoot.light .toggle{ color:#374151; }
+    #appRoot.light label{ color:#374151; }
+    #appRoot.light .k{ color:#374151; }
+    #appRoot.light .note,
+    #appRoot.light .tiny,
+    #appRoot.light .sec-title span,
+    #appRoot.light .jobmeta{
+      color:#4b5563;
+    }
+
+    /* Buttons */
+    #appRoot.light button{ color:#08210f; } /* primary green stays readable */
+    #appRoot.light button.secondary{
+      color:#111827;
+      border-color:#d1d5db;
+    }
+    #appRoot.light button.warn{ color:#7c2d12; }
+    #appRoot.light button.danger{ color:#7f1d1d; }
+
+    /* Total box: keep readable in light mode too */
+    #appRoot.light .total .k{ color:#14532d; }
   </style>
 </head>
 <body>
