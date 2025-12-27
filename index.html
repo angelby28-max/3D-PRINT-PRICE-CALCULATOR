@@ -92,70 +92,86 @@
     .jobactions{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
     .jobactions button{ padding:8px 10px; border-radius:10px; font-weight:700; }
     .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+    /* Beginner Mode hides advanced UI blocks */
+    .beginner .advanced-only { display:none !important; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>3D Print Price Calculator</h1>
-    <p class="sub">
-      Single-file app (GitHub Pages + Home Screen). Presets are optional and never overwrite your values unless you click Apply.
-      Includes: <span class="pill">Save defaults</span> <span class="pill">Depreciation</span> <span class="pill">Job history</span>.
-    </p>
+  <div class="wrap" id="appRoot">
+    <div class="row" style="justify-content:space-between; align-items:flex-end;">
+      <div>
+        <h1>3D Print Price Calculator</h1>
+        <p class="sub">
+          Beginner Mode keeps things simple. Toggle Advanced when you’re ready.
+        </p>
+      </div>
+
+      <label class="toggle" style="margin-bottom:6px;">
+        <input id="beginnerMode" type="checkbox" />
+        <b>Beginner Mode</b>
+      </label>
+    </div>
 
     <div class="grid">
       <!-- LEFT: Calculator -->
       <div class="card">
-        <div class="sec-title">
-          <h2>Presets (optional)</h2>
-          <span class="pill">Non-forcing</span>
+
+        <!-- Advanced: Presets -->
+        <div class="advanced-only">
+          <div class="sec-title">
+            <h2>Presets (optional)</h2>
+            <span class="pill">Non-forcing</span>
+          </div>
+
+          <div class="fields">
+            <div>
+              <label>Printer preset</label>
+              <select id="printerPreset"></select>
+            </div>
+            <div class="row" style="align-self:end;">
+              <button id="applyPrinterBtn" class="secondary" type="button">Apply printer</button>
+            </div>
+
+            <div>
+              <label>Filament preset</label>
+              <select id="filamentPreset"></select>
+            </div>
+            <div class="row" style="align-self:end;">
+              <button id="applyFilamentBtn" class="secondary" type="button">Apply filament</button>
+            </div>
+
+            <div>
+              <label>Platform preset</label>
+              <select id="platformPreset"></select>
+            </div>
+            <div class="row" style="align-self:end;">
+              <button id="applyPlatformBtn" class="secondary" type="button">Apply platform</button>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:10px; justify-content:space-between;">
+            <label class="toggle">
+              <input id="applyEmptyOnly" type="checkbox" checked />
+              Apply presets to <b>empty fields only</b>
+            </label>
+
+            <label class="toggle">
+              <input id="autoLoadDefaults" type="checkbox" checked />
+              Auto-load saved defaults
+            </label>
+          </div>
+
+          <div class="btns">
+            <button id="saveDefaultsBtn" class="secondary" type="button">Save defaults</button>
+            <button id="loadDefaultsBtn" class="secondary" type="button">Load defaults</button>
+            <button id="clearDefaultsBtn" class="danger" type="button">Clear saved defaults</button>
+          </div>
+
+          <div class="divider"></div>
         </div>
 
-        <div class="fields">
-          <div>
-            <label>Printer preset</label>
-            <select id="printerPreset"></select>
-          </div>
-          <div class="row" style="align-self:end;">
-            <button id="applyPrinterBtn" class="secondary" type="button">Apply printer</button>
-          </div>
-
-          <div>
-            <label>Filament preset</label>
-            <select id="filamentPreset"></select>
-          </div>
-          <div class="row" style="align-self:end;">
-            <button id="applyFilamentBtn" class="secondary" type="button">Apply filament</button>
-          </div>
-
-          <div>
-            <label>Platform preset</label>
-            <select id="platformPreset"></select>
-          </div>
-          <div class="row" style="align-self:end;">
-            <button id="applyPlatformBtn" class="secondary" type="button">Apply platform</button>
-          </div>
-        </div>
-
-        <div class="row" style="margin-top:10px; justify-content:space-between;">
-          <label class="toggle">
-            <input id="applyEmptyOnly" type="checkbox" checked />
-            Apply presets to <b>empty fields only</b>
-          </label>
-
-          <label class="toggle">
-            <input id="autoLoadDefaults" type="checkbox" checked />
-            Auto-load saved defaults
-          </label>
-        </div>
-
-        <div class="btns">
-          <button id="saveDefaultsBtn" class="secondary" type="button">Save defaults</button>
-          <button id="loadDefaultsBtn" class="secondary" type="button">Load defaults</button>
-          <button id="clearDefaultsBtn" class="danger" type="button">Clear saved defaults</button>
-        </div>
-
-        <div class="divider"></div>
-
+        <!-- Job inputs (Beginner sees a reduced set via JS helper text, but fields remain the same) -->
         <div class="sec-title">
           <h2>Job inputs</h2>
           <span class="pill">Updates as you type</span>
@@ -164,147 +180,156 @@
         <div class="fields">
           <div>
             <label>Print time (hours)</label>
-            <input id="printHours" type="number" min="0" step="0.01" placeholder="e.g., 6" />
+            <input id="printHours" type="number" min="0" step="0.01" placeholder="From your slicer (e.g., 6)" />
           </div>
 
           <div>
             <label>Filament used (grams)</label>
-            <input id="gramsUsed" type="number" min="0" step="1" placeholder="e.g., 100" />
+            <input id="gramsUsed" type="number" min="0" step="1" placeholder="From slicer estimate (e.g., 100)" />
           </div>
 
           <div>
             <label>Spool price ($)</label>
-            <input id="spoolPrice" type="number" min="0" step="0.01" placeholder="e.g., 20" />
+            <input id="spoolPrice" type="number" min="0" step="0.01" placeholder="What you paid (e.g., 20)" />
           </div>
 
           <div>
             <label>Spool weight (grams)</label>
-            <input id="spoolWeight" type="number" min="1" step="1" placeholder="e.g., 1000" />
+            <input id="spoolWeight" type="number" min="1" step="1" placeholder="Usually 1000g" />
           </div>
 
           <div>
             <label>Waste factor (%)</label>
-            <input id="wastePct" type="number" min="0" step="0.1" placeholder="e.g., 5" />
+            <input id="wastePct" type="number" min="0" step="0.1" placeholder="Supports/purge (e.g., 5)" />
           </div>
 
-          <div>
+          <div class="advanced-only">
             <label>Power draw (kW)</label>
             <input id="powerKW" type="number" min="0" step="0.001" placeholder="e.g., 0.115" />
           </div>
 
-          <div>
+          <div class="advanced-only">
             <label>Electricity rate ($/kWh)</label>
             <input id="elecRate" type="number" min="0" step="0.001" placeholder="e.g., 0.146" />
           </div>
 
           <div>
             <label>Labor rate ($/hr)</label>
-            <input id="laborRate" type="number" min="0" step="0.01" placeholder="e.g., 40" />
+            <input id="laborRate" type="number" min="0" step="0.01" placeholder="Your hourly rate (e.g., 40)" />
           </div>
 
           <div>
             <label>Active labor (minutes)</label>
-            <input id="laborMin" type="number" min="0" step="1" placeholder="e.g., 35" />
+            <input id="laborMin" type="number" min="0" step="1" placeholder="Setup + cleanup (e.g., 35)" />
           </div>
 
-          <div>
+          <div class="advanced-only">
             <label>Overhead (%)</label>
             <input id="overheadPct" type="number" min="0" step="0.1" placeholder="e.g., 10" />
           </div>
 
-          <div>
+          <div class="advanced-only">
             <label>Profit margin (%)</label>
             <input id="profitPct" type="number" min="0" step="0.1" placeholder="e.g., 15" />
           </div>
 
-          <div>
+          <div class="advanced-only">
             <label>Minimum job fee ($)</label>
             <input id="minFee" type="number" min="0" step="0.01" placeholder="e.g., 25" />
           </div>
         </div>
 
-        <div class="divider"></div>
+        <!-- Advanced: Depreciation -->
+        <div class="advanced-only">
+          <div class="divider"></div>
 
-        <div class="sec-title">
-          <h2>Machine depreciation (recommended)</h2>
-          <span class="pill">Adds machine cost</span>
-        </div>
+          <div class="sec-title">
+            <h2>Machine depreciation (recommended)</h2>
+            <span class="pill">Adds machine cost</span>
+          </div>
 
-        <div class="fields">
-          <div>
-            <label>Printer price ($)</label>
-            <input id="printerPrice" type="number" min="0" step="0.01" placeholder="e.g., 2200" />
-          </div>
-          <div>
-            <label>Printer lifetime (hours)</label>
-            <input id="printerLifeHours" type="number" min="0" step="1" placeholder="e.g., 7000" />
-          </div>
-          <div>
-            <label>Maintenance ($/hr) (optional)</label>
-            <input id="maintenancePerHr" type="number" min="0" step="0.01" placeholder="e.g., 0.10" />
-          </div>
-          <div>
-            <label>Calculated depreciation ($/hr)</label>
-            <input id="deprPerHrDisplay" type="text" class="mono" disabled placeholder="—" />
-          </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="sec-title">
-          <h2>Platform fees (optional)</h2>
-          <span class="pill">Gross-up supported</span>
-        </div>
-
-        <div class="row" style="margin-bottom:8px;">
-          <label class="toggle">
-            <input id="includePlatformFees" type="checkbox" />
-            Include platform fees in final price
-          </label>
-        </div>
-
-        <div class="fields">
-          <div>
-            <label>Fee % (taken from sale)</label>
-            <input id="platformFeePct" type="number" min="0" step="0.01" placeholder="e.g., 6.5" />
-          </div>
-          <div>
-            <label>Fixed fee ($ per order)</label>
-            <input id="platformFixedFee" type="number" min="0" step="0.01" placeholder="e.g., 0.25" />
-          </div>
-          <div>
-            <label>Listing fee ($ per order)</label>
-            <input id="platformListingFee" type="number" min="0" step="0.01" placeholder="e.g., 0.20" />
-          </div>
-          <div>
-            <label>Platform notes (optional)</label>
-            <input id="platformNotes" type="text" placeholder="e.g., Etsy + payment processing" />
+          <div class="fields">
+            <div>
+              <label>Printer price ($)</label>
+              <input id="printerPrice" type="number" min="0" step="0.01" placeholder="e.g., 2200" />
+            </div>
+            <div>
+              <label>Printer lifetime (hours)</label>
+              <input id="printerLifeHours" type="number" min="0" step="1" placeholder="e.g., 7000" />
+            </div>
+            <div>
+              <label>Maintenance ($/hr) (optional)</label>
+              <input id="maintenancePerHr" type="number" min="0" step="0.01" placeholder="e.g., 0.10" />
+            </div>
+            <div>
+              <label>Calculated depreciation ($/hr)</label>
+              <input id="deprPerHrDisplay" type="text" class="mono" disabled placeholder="—" />
+            </div>
           </div>
         </div>
 
-        <div class="divider"></div>
+        <!-- Advanced: Platform fees -->
+        <div class="advanced-only">
+          <div class="divider"></div>
 
-        <div class="sec-title">
-          <h2>Job tools</h2>
-          <span class="pill">Save + export</span>
+          <div class="sec-title">
+            <h2>Platform fees (optional)</h2>
+            <span class="pill">Gross-up supported</span>
+          </div>
+
+          <div class="row" style="margin-bottom:8px;">
+            <label class="toggle">
+              <input id="includePlatformFees" type="checkbox" />
+              Include platform fees in final price
+            </label>
+          </div>
+
+          <div class="fields">
+            <div>
+              <label>Fee % (taken from sale)</label>
+              <input id="platformFeePct" type="number" min="0" step="0.01" placeholder="e.g., 6.5" />
+            </div>
+            <div>
+              <label>Fixed fee ($ per order)</label>
+              <input id="platformFixedFee" type="number" min="0" step="0.01" placeholder="e.g., 0.25" />
+            </div>
+            <div>
+              <label>Listing fee ($ per order)</label>
+              <input id="platformListingFee" type="number" min="0" step="0.01" placeholder="e.g., 0.20" />
+            </div>
+            <div>
+              <label>Platform notes (optional)</label>
+              <input id="platformNotes" type="text" placeholder="e.g., Etsy + payment processing" />
+            </div>
+          </div>
         </div>
 
-        <div class="fields">
-          <div>
-            <label>Job name (optional)</label>
-            <input id="jobName" type="text" placeholder="e.g., Dragon keychain batch" />
-          </div>
-          <div>
-            <label>Customer / notes (optional)</label>
-            <input id="jobNotes" type="text" placeholder="e.g., Color: black, 2 copies" />
-          </div>
-        </div>
+        <!-- Advanced: Job tools -->
+        <div class="advanced-only">
+          <div class="divider"></div>
 
-        <div class="btns">
-          <button id="saveJobBtn" type="button">Save job to history</button>
-          <button id="exportJobsBtn" class="secondary" type="button">Export jobs JSON</button>
-          <button id="importJobsBtn" class="secondary" type="button">Import jobs JSON</button>
-          <button id="clearJobsBtn" class="danger" type="button">Clear job history</button>
+          <div class="sec-title">
+            <h2>Job tools</h2>
+            <span class="pill">Save + export</span>
+          </div>
+
+          <div class="fields">
+            <div>
+              <label>Job name (optional)</label>
+              <input id="jobName" type="text" placeholder="e.g., Dragon keychain batch" />
+            </div>
+            <div>
+              <label>Customer / notes (optional)</label>
+              <input id="jobNotes" type="text" placeholder="e.g., Color: black, 2 copies" />
+            </div>
+          </div>
+
+          <div class="btns">
+            <button id="saveJobBtn" type="button">Save job to history</button>
+            <button id="exportJobsBtn" class="secondary" type="button">Export jobs JSON</button>
+            <button id="importJobsBtn" class="secondary" type="button">Import jobs JSON</button>
+            <button id="clearJobsBtn" class="danger" type="button">Clear job history</button>
+          </div>
         </div>
 
         <div class="btns">
@@ -312,9 +337,13 @@
           <button id="copyBtn" class="secondary" type="button">Copy quote</button>
         </div>
 
-        <div class="note">
-          Platform fee math uses a “gross-up” so you still net your target after percent fees:
+        <div class="note advanced-only">
+          Platform fee math uses gross-up:
           <span style="color:#cbd5e1;" class="mono">gross = (target + fixed + listing) / (1 - fee%)</span>.
+        </div>
+
+        <div class="note" id="beginnerHint">
+          Beginner tip: Use slicer values for <b>Print time</b> and <b>Filament grams</b>. If you want even more accuracy later, switch off Beginner Mode.
         </div>
       </div>
 
@@ -332,19 +361,21 @@
           <div class="v" id="finalPrice">$0.00</div>
         </div>
 
-        <div class="divider"></div>
+        <div class="divider advanced-only"></div>
 
-        <div class="sec-title">
-          <h2>Job history</h2>
-          <span class="pill" id="jobsCountPill">0 saved</span>
-        </div>
+        <div class="advanced-only">
+          <div class="sec-title">
+            <h2>Job history</h2>
+            <span class="pill" id="jobsCountPill">0 saved</span>
+          </div>
 
-        <div class="jobs" id="jobsList">
-          <div class="note">No saved jobs yet. Use “Save job to history”.</div>
-        </div>
+          <div class="jobs" id="jobsList">
+            <div class="note">No saved jobs yet. Use “Save job to history”.</div>
+          </div>
 
-        <div class="tiny">
-          Everything is stored locally in your browser (localStorage). If you open this on a different device/browser, it won’t share history unless you export/import JSON.
+          <div class="tiny">
+            Stored locally in your browser (localStorage).
+          </div>
         </div>
       </div>
     </div>
@@ -353,7 +384,7 @@
   <script>
     const $ = (id) => document.getElementById(id);
 
-    // ------------------ Presets (starter convenience; apply is optional) ------------------
+    // Presets (starter convenience)
     const PRINTER_PRESETS = {
       none: { name: "— Select a printer —", fields: {} },
       bambu_p1s: { name: "Bambu P1S", fields: { powerKW: 0.115 } },
@@ -379,12 +410,12 @@
       ebay:   { name: "eBay (starter)",   fields: { platformFeePct: 13.0, platformFixedFee: 0.00, platformListingFee: 0.00, platformNotes: "Varies by category" } }
     };
 
-    // ------------------ Storage keys ------------------
+    // Storage keys
     const LS_DEFAULTS_KEY = "calc_defaults_v2";
     const LS_JOBS_KEY = "calc_jobs_v2";
-    const LS_SETTINGS_KEY = "calc_settings_v2"; // e.g., auto-load toggle
+    const LS_SETTINGS_KEY = "calc_settings_v3"; // includes beginner mode
 
-    // ------------------ Inputs managed ------------------
+    // Inputs managed
     const inputIds = [
       "printHours","gramsUsed","spoolPrice","spoolWeight","wastePct",
       "powerKW","elecRate","laborRate","laborMin","overheadPct","profitPct","minFee",
@@ -393,7 +424,6 @@
       "jobName","jobNotes"
     ];
 
-    // Defaults to clear (your preference)
     const clearState = Object.fromEntries(inputIds.map(id => [id, ""]));
 
     function money(n){
@@ -402,7 +432,9 @@
     }
 
     function num(id){
-      const raw = $(id).value;
+      const el = $(id);
+      if (!el) return 0;
+      const raw = el.value;
       if (raw === "" || raw === null || raw === undefined) return 0;
       const v = parseFloat(raw);
       return Number.isFinite(v) ? v : 0;
@@ -426,7 +458,7 @@
     }
 
     function applyFields(fields){
-      const emptyOnly = $("applyEmptyOnly").checked;
+      const emptyOnly = $("applyEmptyOnly")?.checked ?? true;
       for (const [id, value] of Object.entries(fields)){
         if (!$(id)) continue;
         if (emptyOnly && !isEmptyField(id)) continue;
@@ -434,35 +466,6 @@
       }
       calc();
       $("status").textContent = emptyOnly ? "Preset applied (empty fields only)" : "Preset applied (overwrote fields)";
-    }
-
-    function getState(){
-      const state = {};
-      inputIds.forEach(id => state[id] = ($(id) ? $(id).value : ""));
-      state.includePlatformFees = $("includePlatformFees").checked;
-      state.applyEmptyOnly = $("applyEmptyOnly").checked;
-      state.autoLoadDefaults = $("autoLoadDefaults").checked;
-      state.printerPreset = $("printerPreset").value;
-      state.filamentPreset = $("filamentPreset").value;
-      state.platformPreset = $("platformPreset").value;
-      return state;
-    }
-
-    function setState(state){
-      inputIds.forEach(id => {
-        if (!$(id)) return;
-        $(id).value = (state && Object.prototype.hasOwnProperty.call(state, id)) ? state[id] : "";
-      });
-
-      if (state && typeof state.includePlatformFees === "boolean") $("includePlatformFees").checked = state.includePlatformFees;
-      if (state && typeof state.applyEmptyOnly === "boolean") $("applyEmptyOnly").checked = state.applyEmptyOnly;
-      if (state && typeof state.autoLoadDefaults === "boolean") $("autoLoadDefaults").checked = state.autoLoadDefaults;
-
-      if (state && state.printerPreset) $("printerPreset").value = state.printerPreset;
-      if (state && state.filamentPreset) $("filamentPreset").value = state.filamentPreset;
-      if (state && state.platformPreset) $("platformPreset").value = state.platformPreset;
-
-      calc();
     }
 
     function saveJSON(key, obj){
@@ -477,6 +480,29 @@
       }catch(e){
         return fallback;
       }
+    }
+
+    function getState(){
+      const state = {};
+      inputIds.forEach(id => state[id] = ($(id) ? $(id).value : ""));
+      state.includePlatformFees = $("includePlatformFees")?.checked ?? false;
+      state.applyEmptyOnly = $("applyEmptyOnly")?.checked ?? true;
+      state.autoLoadDefaults = $("autoLoadDefaults")?.checked ?? true;
+      state.printerPreset = $("printerPreset")?.value ?? "none";
+      state.filamentPreset = $("filamentPreset")?.value ?? "none";
+      state.platformPreset = $("platformPreset")?.value ?? "none";
+      return state;
+    }
+
+    function setState(state){
+      inputIds.forEach(id => { if ($(id)) $(id).value = (state && Object.prototype.hasOwnProperty.call(state,id)) ? state[id] : ""; });
+      if ($("includePlatformFees") && typeof state?.includePlatformFees === "boolean") $("includePlatformFees").checked = state.includePlatformFees;
+      if ($("applyEmptyOnly") && typeof state?.applyEmptyOnly === "boolean") $("applyEmptyOnly").checked = state.applyEmptyOnly;
+      if ($("autoLoadDefaults") && typeof state?.autoLoadDefaults === "boolean") $("autoLoadDefaults").checked = state.autoLoadDefaults;
+      if ($("printerPreset") && state?.printerPreset) $("printerPreset").value = state.printerPreset;
+      if ($("filamentPreset") && state?.filamentPreset) $("filamentPreset").value = state.filamentPreset;
+      if ($("platformPreset") && state?.platformPreset) $("platformPreset").value = state.platformPreset;
+      calc();
     }
 
     function renderEmpty(){
@@ -494,7 +520,7 @@
       `;
       $("finalPrice").textContent = "$0.00";
       $("status").textContent = "Enter values to calculate";
-      $("deprPerHrDisplay").value = "—";
+      if ($("deprPerHrDisplay")) $("deprPerHrDisplay").value = "—";
     }
 
     function calcDepreciationPerHr(){
@@ -505,72 +531,58 @@
     }
 
     function calc(){
-      const anyInput = inputIds.some(id => ($(id) && $(id).value !== "")) || $("includePlatformFees").checked;
+      const includePlatformFees = $("includePlatformFees")?.checked ?? false;
+      const anyInput = inputIds.some(id => ($(id) && $(id).value !== "")) || includePlatformFees;
       if (!anyInput){
         renderEmpty();
         return null;
       }
 
-      // Job + materials
       const printHours = num("printHours");
       const gramsUsed = num("gramsUsed");
       const spoolPrice = num("spoolPrice");
       const spoolWeight = Math.max(1, num("spoolWeight"));
       const wastePct = num("wastePct") / 100;
 
-      // Energy
       const powerKW = num("powerKW");
       const elecRate = num("elecRate");
 
-      // Labor
       const laborRate = num("laborRate");
       const laborMin = num("laborMin");
 
-      // Margins
       const overheadPct = num("overheadPct") / 100;
       const profitPct = num("profitPct") / 100;
       const minFee = num("minFee");
 
-      // Machine
       const deprPerHr = calcDepreciationPerHr();
       const maintPerHr = num("maintenancePerHr");
       const machineCost = printHours * (Math.max(0, deprPerHr) + Math.max(0, maintPerHr));
-      $("deprPerHrDisplay").value = deprPerHr > 0 ? money(deprPerHr) + " / hr" : "—";
+      if ($("deprPerHrDisplay")) $("deprPerHrDisplay").value = deprPerHr > 0 ? money(deprPerHr) + " / hr" : "—";
 
-      // Platform fees
-      const includePlatformFees = $("includePlatformFees").checked;
       const platformFeePct = num("platformFeePct") / 100;
       const platformFixedFee = num("platformFixedFee");
       const platformListingFee = num("platformListingFee");
 
-      // Material
       const costPerGram = spoolPrice / spoolWeight;
       const effectiveGrams = gramsUsed * (1 + Math.max(0, wastePct));
       const materialCost = effectiveGrams * costPerGram;
 
-      // Electricity
       const electricityCost = printHours * powerKW * elecRate;
 
-      // Labor
       const laborHours = laborMin / 60;
       const laborCost = laborHours * laborRate;
 
-      // Base
       const base = materialCost + electricityCost + machineCost + laborCost;
 
-      // Overhead then profit
       const overheadCost = base * Math.max(0, overheadPct);
       const subtotal = base + overheadCost;
       const profit = subtotal * Math.max(0, profitPct);
 
-      // Target before platform fees & min fee
       const targetBeforeFees = subtotal + profit;
 
-      // Minimum fee before gross-up
       const targetWithMin = Math.max(targetBeforeFees, Math.max(0, minFee));
       const minApplied = targetWithMin > targetBeforeFees;
 
-      // Gross-up (optional)
       let final = targetWithMin;
       let platformAdded = 0;
 
@@ -610,55 +622,24 @@
       $("finalPrice").textContent = money(final);
       $("status").textContent = "Updated";
 
-      return {
-        // inputs
-        printHours, gramsUsed, effectiveGrams,
-        spoolPrice, spoolWeight, wastePct,
-        powerKW, elecRate,
-        laborRate, laborMin,
-        overheadPct, profitPct, minFee,
-        printerPrice: num("printerPrice"),
-        printerLifeHours: num("printerLifeHours"),
-        deprPerHr, maintPerHr,
-        includePlatformFees, platformFeePct, platformFixedFee, platformListingFee,
-        platformNotes: $("platformNotes").value || "",
-        jobName: $("jobName").value || "",
-        jobNotes: $("jobNotes").value || "",
-        // costs
-        materialCost, electricityCost, machineCost, laborCost,
-        overheadCost, profit,
-        targetWithMin, platformAdded, final,
-        minApplied,
-        // metadata
-        ts: new Date().toISOString()
-      };
+      return { final, printHours, gramsUsed, effectiveGrams, materialCost, electricityCost, machineCost, laborCost, overheadCost, profit, targetWithMin, platformAdded, minApplied };
     }
 
-    // ------------------ Job history ------------------
-    function loadJobs(){
-      const jobs = loadJSON(LS_JOBS_KEY, []);
-      return Array.isArray(jobs) ? jobs : [];
+    // Jobs (advanced)
+    function loadJobs(){ const jobs = loadJSON(LS_JOBS_KEY, []); return Array.isArray(jobs) ? jobs : []; }
+    function saveJobs(jobs){ saveJSON(LS_JOBS_KEY, jobs); renderJobs(); }
+    function formatDate(iso){ try{ return new Date(iso).toLocaleString(); }catch(e){ return iso; } }
+    function escapeHTML(s){
+      return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
     }
-
-    function saveJobs(jobs){
-      saveJSON(LS_JOBS_KEY, jobs);
-      renderJobs();
-    }
-
-    function formatDate(iso){
-      try{
-        const d = new Date(iso);
-        return d.toLocaleString();
-      }catch(e){
-        return iso;
-      }
-    }
-
     function renderJobs(){
-      const jobs = loadJobs();
-      $("jobsCountPill").textContent = `${jobs.length} saved`;
-
+      const pill = $("jobsCountPill");
       const list = $("jobsList");
+      if (!pill || !list) return;
+
+      const jobs = loadJobs();
+      pill.textContent = `${jobs.length} saved`;
+
       if (!jobs.length){
         list.innerHTML = `<div class="note">No saved jobs yet. Use “Save job to history”.</div>`;
         return;
@@ -685,35 +666,15 @@
         `;
       }).join("");
     }
-
-    function escapeHTML(s){
-      return String(s)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
     window.__loadJob = (idx) => {
       const jobs = loadJobs();
       const job = jobs[idx];
       if (!job) return;
-
-      // Put saved job inputs back into the form
-      const state = getState();
-      // Only overwrite the calculator fields (not the preset selects/toggles unless they exist in saved job)
-      inputIds.forEach(id => {
-        if ($(id) && Object.prototype.hasOwnProperty.call(job, id)) $(id).value = job[id] ?? "";
-      });
-
-      // Restore platform checkbox if present
-      if (typeof job.includePlatformFees === "boolean") $("includePlatformFees").checked = job.includePlatformFees;
-
+      inputIds.forEach(id => { if ($(id) && Object.prototype.hasOwnProperty.call(job, id)) $(id).value = job[id] ?? ""; });
+      if ($("includePlatformFees") && typeof job.includePlatformFees === "boolean") $("includePlatformFees").checked = job.includePlatformFees;
       $("status").textContent = "Loaded job from history";
       calc();
     };
-
     window.__deleteJob = (idx) => {
       const jobs = loadJobs();
       if (!jobs[idx]) return;
@@ -722,76 +683,57 @@
       $("status").textContent = "Deleted job";
     };
 
-    // ------------------ Defaults (presets save/load) ------------------
+    // Defaults (advanced)
     function saveDefaults(){
       const state = getState();
-      // For "defaults", we usually don't want to save job name/notes (personal preference); remove them:
       state.jobName = "";
       state.jobNotes = "";
       saveJSON(LS_DEFAULTS_KEY, state);
-
-      // Save settings like auto-load
-      saveJSON(LS_SETTINGS_KEY, { autoLoadDefaults: $("autoLoadDefaults").checked });
+      const settings = loadJSON(LS_SETTINGS_KEY, {});
+      settings.autoLoadDefaults = $("autoLoadDefaults")?.checked ?? true;
+      settings.beginnerMode = $("beginnerMode")?.checked ?? true;
+      saveJSON(LS_SETTINGS_KEY, settings);
       $("status").textContent = "Defaults saved ✅";
     }
-
     function loadDefaults(){
       const saved = loadJSON(LS_DEFAULTS_KEY, null);
-      if (!saved){
-        $("status").textContent = "No saved defaults found";
-        return;
-      }
+      if (!saved){ $("status").textContent = "No saved defaults found"; return; }
       setState(saved);
       $("status").textContent = "Defaults loaded ✅";
     }
-
     function clearDefaults(){
       localStorage.removeItem(LS_DEFAULTS_KEY);
       $("status").textContent = "Saved defaults cleared";
     }
 
-    // ------------------ Export/Import Jobs ------------------
+    // Export/Import jobs (advanced)
     function exportJobs(){
       const jobs = loadJobs();
-      const payload = {
-        exportedAt: new Date().toISOString(),
-        version: 2,
-        jobs
-      };
+      const payload = { exportedAt: new Date().toISOString(), version: 3, jobs };
       const text = JSON.stringify(payload, null, 2);
-
-      // Try copy to clipboard first
       navigator.clipboard.writeText(text).then(() => {
-        $("status").textContent = "Jobs JSON copied to clipboard ✅ (paste into a note/file)";
-        alert("Jobs JSON copied to clipboard.\n\nTip: Paste it into a text file (jobs-backup.json) to keep a backup.");
+        $("status").textContent = "Jobs JSON copied ✅";
+        alert("Jobs JSON copied to clipboard. Paste into a text file for backup.");
       }).catch(() => {
-        // Fallback: show prompt
         $("status").textContent = "Copy blocked; showing export text";
-        prompt("Copy this JSON (Ctrl/Cmd+C):", text);
+        prompt("Copy this JSON:", text);
       });
     }
-
     function importJobs(){
       const pasted = prompt("Paste exported jobs JSON here:");
       if (!pasted) return;
-
       try{
         const obj = JSON.parse(pasted);
         const incoming = Array.isArray(obj.jobs) ? obj.jobs : (Array.isArray(obj) ? obj : null);
         if (!incoming) throw new Error("Invalid format");
-
-        // Merge by appending; you can change to replace if you want
         const jobs = loadJobs();
-        const merged = jobs.concat(incoming).filter(Boolean);
-        saveJobs(merged);
-
+        saveJobs(jobs.concat(incoming).filter(Boolean));
         $("status").textContent = `Imported ${incoming.length} jobs ✅`;
       }catch(e){
         alert("Import failed: invalid JSON format.");
         $("status").textContent = "Import failed";
       }
     }
-
     function clearJobs(){
       if (!confirm("Clear ALL job history? This cannot be undone.")) return;
       localStorage.removeItem(LS_JOBS_KEY);
@@ -799,157 +741,128 @@
       $("status").textContent = "Job history cleared";
     }
 
-    // ------------------ Copy quote ------------------
     function copyQuote(){
       const r = calc();
-      if (!r){
-        alert("Enter some values first, then try copying the quote.");
-        return;
-      }
-
-      const feeMode = r.includePlatformFees
-        ? `ON (added ${money(r.platformAdded)})`
-        : "OFF";
-
-      const deprLine = r.deprPerHr > 0 ? `${money(r.deprPerHr)}/hr` : "—";
-      const maintLine = r.maintPerHr > 0 ? `${money(r.maintPerHr)}/hr` : "—";
-
+      if (!r){ alert("Enter some values first, then copy the quote."); return; }
       const text =
 `3D Print Quote
-- Job: ${r.jobName || "Untitled"}
-- Notes: ${r.jobNotes || "-"}
 - Print time: ${r.printHours} hr
 - Filament: ${r.gramsUsed} g (+ waste = ${r.effectiveGrams.toFixed(1)} g)
-- Material cost: ${money(r.materialCost)}
-- Electricity cost: ${money(r.electricityCost)}
-- Machine cost: ${money(r.machineCost)} (depr ${deprLine}, maint ${maintLine})
-- Active labor cost: ${money(r.laborCost)}
-- Overhead: ${money(r.overheadCost)}
-- Profit: ${money(r.profit)}
-- Target (min applied if needed): ${money(r.targetWithMin)}
-- Platform fees: ${feeMode}
-= Final: ${money(r.final)}`;
-
-      navigator.clipboard.writeText(text).then(() => {
-        $("status").textContent = "Copied to clipboard ✅";
-      }).catch(() => {
-        $("status").textContent = "Copy blocked; showing text";
-        alert(text);
-      });
+- Material: ${money(r.materialCost)}
+- Electricity: ${money(r.electricityCost)}
+- Machine: ${money(r.machineCost)}
+- Labor: ${money(r.laborCost)}
+- Final: ${money(r.final)}`;
+      navigator.clipboard.writeText(text).then(() => $("status").textContent = "Copied ✅").catch(() => alert(text));
     }
 
-    // ------------------ Reset ------------------
     function resetAll(){
       setState(clearState);
-      $("includePlatformFees").checked = false;
-      $("applyEmptyOnly").checked = true;
-
-      $("printerPreset").value = "none";
-      $("filamentPreset").value = "none";
-      $("platformPreset").value = "none";
-
+      if ($("includePlatformFees")) $("includePlatformFees").checked = false;
+      if ($("applyEmptyOnly")) $("applyEmptyOnly").checked = true;
+      if ($("printerPreset")) $("printerPreset").value = "none";
+      if ($("filamentPreset")) $("filamentPreset").value = "none";
+      if ($("platformPreset")) $("platformPreset").value = "none";
       renderEmpty();
     }
 
-    // ------------------ Wire up UI ------------------
+    // Beginner mode behavior
+    function applyBeginnerModeUI(isBeginner){
+      const root = $("appRoot");
+      if (!root) return;
+      root.classList.toggle("beginner", !!isBeginner);
+
+      // In beginner mode, keep hints visible; in advanced, hints can stay too (your preference)
+      const hint = $("beginnerHint");
+      if (hint) hint.style.display = isBeginner ? "block" : "none";
+
+      const settings = loadJSON(LS_SETTINGS_KEY, {});
+      settings.beginnerMode = !!isBeginner;
+      saveJSON(LS_SETTINGS_KEY, settings);
+
+      $("status").textContent = isBeginner ? "Beginner Mode ON" : "Advanced Mode ON";
+    }
+
     function init(){
-      setSelectOptions($("printerPreset"), PRINTER_PRESETS);
-      setSelectOptions($("filamentPreset"), FILAMENT_PRESETS);
-      setSelectOptions($("platformPreset"), PLATFORM_PRESETS);
+      // Fill selects
+      if ($("printerPreset")) setSelectOptions($("printerPreset"), PRINTER_PRESETS);
+      if ($("filamentPreset")) setSelectOptions($("filamentPreset"), FILAMENT_PRESETS);
+      if ($("platformPreset")) setSelectOptions($("platformPreset"), PLATFORM_PRESETS);
 
-      $("applyPrinterBtn").addEventListener("click", () => {
-        const key = $("printerPreset").value;
-        applyFields(PRINTER_PRESETS[key]?.fields || {});
-      });
-
-      $("applyFilamentBtn").addEventListener("click", () => {
-        const key = $("filamentPreset").value;
-        applyFields(FILAMENT_PRESETS[key]?.fields || {});
-      });
-
-      $("applyPlatformBtn").addEventListener("click", () => {
-        const key = $("platformPreset").value;
-        applyFields(PLATFORM_PRESETS[key]?.fields || {});
-      });
+      // Buttons
+      $("applyPrinterBtn")?.addEventListener("click", () => applyFields(PRINTER_PRESETS[$("printerPreset").value]?.fields || {}));
+      $("applyFilamentBtn")?.addEventListener("click", () => applyFields(FILAMENT_PRESETS[$("filamentPreset").value]?.fields || {}));
+      $("applyPlatformBtn")?.addEventListener("click", () => applyFields(PLATFORM_PRESETS[$("platformPreset").value]?.fields || {}));
 
       inputIds.forEach(id => { if ($(id)) $(id).addEventListener("input", calc); });
-      $("includePlatformFees").addEventListener("change", calc);
+      $("includePlatformFees")?.addEventListener("change", calc);
 
-      $("saveDefaultsBtn").addEventListener("click", saveDefaults);
-      $("loadDefaultsBtn").addEventListener("click", loadDefaults);
-      $("clearDefaultsBtn").addEventListener("click", clearDefaults);
+      $("saveDefaultsBtn")?.addEventListener("click", saveDefaults);
+      $("loadDefaultsBtn")?.addEventListener("click", loadDefaults);
+      $("clearDefaultsBtn")?.addEventListener("click", clearDefaults);
 
-      $("saveJobBtn").addEventListener("click", () => {
+      $("saveJobBtn")?.addEventListener("click", () => {
         const r = calc();
-        if (!r){
-          alert("Enter some values first, then save the job.");
-          return;
-        }
+        if (!r){ alert("Enter values first, then save the job."); return; }
         const jobs = loadJobs();
-        // Save only relevant inputs + computed outputs for history
         const record = {
-          ts: r.ts,
-          jobName: r.jobName,
-          jobNotes: r.jobNotes,
-
-          // inputs
-          printHours: $("printHours").value,
-          gramsUsed: $("gramsUsed").value,
-          spoolPrice: $("spoolPrice").value,
-          spoolWeight: $("spoolWeight").value,
-          wastePct: $("wastePct").value,
-          powerKW: $("powerKW").value,
-          elecRate: $("elecRate").value,
-          laborRate: $("laborRate").value,
-          laborMin: $("laborMin").value,
-          overheadPct: $("overheadPct").value,
-          profitPct: $("profitPct").value,
-          minFee: $("minFee").value,
-          printerPrice: $("printerPrice").value,
-          printerLifeHours: $("printerLifeHours").value,
-          maintenancePerHr: $("maintenancePerHr").value,
-
-          includePlatformFees: $("includePlatformFees").checked,
-          platformFeePct: $("platformFeePct").value,
-          platformFixedFee: $("platformFixedFee").value,
-          platformListingFee: $("platformListingFee").value,
-          platformNotes: $("platformNotes").value,
-
-          // computed (store for quick display)
+          ts: new Date().toISOString(),
+          jobName: $("jobName")?.value || "",
+          jobNotes: $("jobNotes")?.value || "",
+          printHours: $("printHours")?.value || "",
+          gramsUsed: $("gramsUsed")?.value || "",
+          spoolPrice: $("spoolPrice")?.value || "",
+          spoolWeight: $("spoolWeight")?.value || "",
+          wastePct: $("wastePct")?.value || "",
+          powerKW: $("powerKW")?.value || "",
+          elecRate: $("elecRate")?.value || "",
+          laborRate: $("laborRate")?.value || "",
+          laborMin: $("laborMin")?.value || "",
+          overheadPct: $("overheadPct")?.value || "",
+          profitPct: $("profitPct")?.value || "",
+          minFee: $("minFee")?.value || "",
+          printerPrice: $("printerPrice")?.value || "",
+          printerLifeHours: $("printerLifeHours")?.value || "",
+          maintenancePerHr: $("maintenancePerHr")?.value || "",
+          includePlatformFees: $("includePlatformFees")?.checked || false,
+          platformFeePct: $("platformFeePct")?.value || "",
+          platformFixedFee: $("platformFixedFee")?.value || "",
+          platformListingFee: $("platformListingFee")?.value || "",
+          platformNotes: $("platformNotes")?.value || "",
           final: r.final
         };
-
         jobs.push(record);
         saveJobs(jobs);
         $("status").textContent = "Job saved ✅";
       });
 
-      $("exportJobsBtn").addEventListener("click", exportJobs);
-      $("importJobsBtn").addEventListener("click", importJobs);
-      $("clearJobsBtn").addEventListener("click", clearJobs);
+      $("exportJobsBtn")?.addEventListener("click", exportJobs);
+      $("importJobsBtn")?.addEventListener("click", importJobs);
+      $("clearJobsBtn")?.addEventListener("click", clearJobs);
 
-      $("resetBtn").addEventListener("click", resetAll);
-      $("copyBtn").addEventListener("click", copyQuote);
+      $("resetBtn")?.addEventListener("click", resetAll);
+      $("copyBtn")?.addEventListener("click", copyQuote);
 
-      // Persist setting: auto-load toggle
-      const settings = loadJSON(LS_SETTINGS_KEY, { autoLoadDefaults: true });
-      if (settings && typeof settings.autoLoadDefaults === "boolean") {
-        $("autoLoadDefaults").checked = settings.autoLoadDefaults;
-      }
-      $("autoLoadDefaults").addEventListener("change", () => {
-        saveJSON(LS_SETTINGS_KEY, { autoLoadDefaults: $("autoLoadDefaults").checked });
+      // Load settings
+      const settings = loadJSON(LS_SETTINGS_KEY, { autoLoadDefaults: true, beginnerMode: true });
+      const beginnerDefault = (typeof settings.beginnerMode === "boolean") ? settings.beginnerMode : true;
+      $("beginnerMode").checked = beginnerDefault;
+      applyBeginnerModeUI(beginnerDefault);
+
+      $("beginnerMode").addEventListener("change", (e) => {
+        applyBeginnerModeUI(e.target.checked);
       });
 
       renderEmpty();
       renderJobs();
 
-      // Auto-load defaults if user wants
-      if ($("autoLoadDefaults").checked){
+      // Auto-load defaults (only matters in advanced UI, but safe either way)
+      const autoLoad = (typeof settings.autoLoadDefaults === "boolean") ? settings.autoLoadDefaults : true;
+      if ($("autoLoadDefaults")) $("autoLoadDefaults").checked = autoLoad;
+
+      if (autoLoad){
         const saved = loadJSON(LS_DEFAULTS_KEY, null);
-        if (saved){
-          setState(saved);
-          $("status").textContent = "Defaults auto-loaded ✅";
-        }
+        if (saved) setState(saved);
       }
     }
 
