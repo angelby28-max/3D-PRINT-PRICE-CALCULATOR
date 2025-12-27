@@ -241,12 +241,24 @@
 
         <div class="fields">
           <div>
-            <label data-i18n="printHours">Print time (hours)</label>
+            <label data-i18n="quantity">Quantity</label>
+            <input id="quantity" type="number" min="1" step="1" data-i18n-placeholder="ph_quantity" placeholder="e.g., 10" />
+          </div>
+
+          <div class="row" style="align-self:end; justify-content:flex-start;">
+            <label class="toggle" style="margin:0;">
+              <input id="laborPerUnit" type="checkbox" />
+              <span data-i18n="laborPerUnit">Labor minutes are per unit</span>
+            </label>
+          </div>
+
+          <div>
+            <label data-i18n="printHours">Print time (hours) — per unit</label>
             <input id="printHours" type="number" min="0" step="0.01" data-i18n-placeholder="ph_printHours" placeholder="From slicer (e.g., 6)" />
           </div>
 
           <div>
-            <label data-i18n="gramsUsed">Filament used (grams)</label>
+            <label data-i18n="gramsUsed">Filament used (grams) — per unit</label>
             <input id="gramsUsed" type="number" min="0" step="1" data-i18n-placeholder="ph_gramsUsed" placeholder="From slicer (e.g., 100)" />
           </div>
 
@@ -266,12 +278,12 @@
           </div>
 
           <div>
-            <label data-i18n="packagingCost">Packaging cost ($)</label>
+            <label data-i18n="packagingCost">Packaging cost ($) — per unit</label>
             <input id="packagingCost" type="number" min="0" step="0.01" data-i18n-placeholder="ph_packagingCost" placeholder="e.g., 0.75" />
           </div>
 
           <div>
-            <label data-i18n="consumablesCost">Consumables cost ($)</label>
+            <label data-i18n="consumablesCost">Consumables cost ($) — per unit</label>
             <input id="consumablesCost" type="number" min="0" step="0.01" data-i18n-placeholder="ph_consumablesCost" placeholder="e.g., 0.50" />
           </div>
 
@@ -309,6 +321,10 @@
             <label data-i18n="minFee">Minimum job fee ($)</label>
             <input id="minFee" type="number" min="0" step="0.01" data-i18n-placeholder="ph_minFee" placeholder="e.g., 25" />
           </div>
+        </div>
+
+        <div class="note" data-i18n-html="batchNote">
+          Batch note: Quantity multiplies <b>print time, filament, packaging, consumables</b>. Labor can be total or per unit (checkbox).
         </div>
 
         <div class="advanced-only">
@@ -425,9 +441,23 @@
         <div class="breakdown" id="breakdown"></div>
 
         <div class="total">
-          <div class="k" data-i18n="finalPrice">Final Price</div>
+          <div class="k" data-i18n="finalPriceTotal">Final Price (total)</div>
           <div class="v" id="finalPrice">$0.00</div>
         </div>
+
+        <div class="total" style="margin-top:10px; background: rgba(59,130,246,.10); border:1px solid rgba(59,130,246,.35);">
+          <div class="k" data-i18n="finalPriceUnit">Final Price (per unit)</div>
+          <div class="v" id="finalPricePerUnit">$0.00</div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="sec-title">
+          <h2 data-i18n="profitView">Profit view</h2>
+          <span class="pill" data-i18n="simple">Simple</span>
+        </div>
+
+        <div class="breakdown" id="profitBox"></div>
 
         <div class="divider advanced-only"></div>
 
@@ -476,14 +506,19 @@
 
         jobInputs: "Job inputs",
         updatesAsYouType: "Updates as you type",
-        printHours: "Print time (hours)",
-        gramsUsed: "Filament used (grams)",
+
+        quantity: "Quantity",
+        laborPerUnit: "Labor minutes are per unit",
+        batchNote: "Batch note: Quantity multiplies <b>print time, filament, packaging, consumables</b>. Labor can be total or per unit (checkbox).",
+
+        printHours: "Print time (hours) — per unit",
+        gramsUsed: "Filament used (grams) — per unit",
         spoolPrice: "Spool price ($)",
         spoolWeight: "Spool weight (grams)",
         wastePct: "Waste factor (%)",
 
-        packagingCost: "Packaging cost ($)",
-        consumablesCost: "Consumables cost ($)",
+        packagingCost: "Packaging cost ($) — per unit",
+        consumablesCost: "Consumables cost ($) — per unit",
 
         powerKW: "Power draw (kW)",
         elecRate: "Electricity rate ($/kWh)",
@@ -523,12 +558,23 @@
         beginnerTip: "Beginner tip: Use slicer values for <b>Print time</b> and <b>Filament grams</b>. Toggle Advanced later for electricity, margins, fees, and depreciation.",
 
         estimateTitle: "Estimate",
-        finalPrice: "Final Price",
+        finalPriceTotal: "Final Price (total)",
+        finalPriceUnit: "Final Price (per unit)",
+
+        profitView: "Profit view",
+        simple: "Simple",
+        pv_totalCost: "Total cost (materials + labor + machine + overhead)",
+        pv_profitDollars: "Profit ($)",
+        pv_profitPct: "Profit (%)",
+        pv_costPerUnit: "Cost (per unit)",
+        pv_profitPerUnit: "Profit (per unit)",
+
         jobHistoryTitle: "Job history",
         noSavedJobs: "No saved jobs yet. Use “Save job to history”.",
         storedLocally: "Stored locally in your browser (localStorage).",
 
         // placeholders
+        ph_quantity: "e.g., 10",
         ph_printHours: "From slicer (e.g., 6)",
         ph_gramsUsed: "From slicer (e.g., 100)",
         ph_spoolPrice: "e.g., 20",
@@ -585,6 +631,8 @@
         confirm_clearJobs: "Clear ALL job history? This cannot be undone.",
 
         // breakdown
+        bd_qty: "Quantity",
+        bd_timeTotal: "Total print time",
         bd_material: "Material (incl. waste)",
         bd_packaging: "Packaging",
         bd_consumables: "Consumables",
@@ -593,14 +641,14 @@
         bd_labor: "Active labor",
         bd_base: "Base subtotal",
         bd_overhead: "Overhead",
-        bd_profit: "Profit",
+        bd_profit: "Profit (target)",
         bd_target: "Target before platform fees",
         bd_platform: "Platform fees added",
         bd_minApplied: "Minimum fee applied?",
 
         // jobs
         jobs_savedPill: (n) => `${n} saved`,
-        jobs_meta: (final, time, filament) => `Final: ${final} • Time: ${time}h • Filament: ${filament}g`,
+        jobs_meta: (final, qty, time, filament) => `Final: ${final} • Qty: ${qty} • Time: ${time}h • Filament: ${filament}g`,
         jobs_untitled: "Untitled job",
         btn_load: "Load",
         btn_delete: "Delete",
@@ -684,14 +732,19 @@
 
         jobInputs: "Datos del trabajo",
         updatesAsYouType: "Se actualiza al escribir",
-        printHours: "Tiempo de impresión (horas)",
-        gramsUsed: "Filamento usado (gramos)",
+
+        quantity: "Cantidad",
+        laborPerUnit: "Mano de obra (minutos) por unidad",
+        batchNote: "Nota: La cantidad multiplica <b>tiempo, filamento, empaque, consumibles</b>. La mano de obra puede ser total o por unidad (casilla).",
+
+        printHours: "Tiempo de impresión (horas) — por unidad",
+        gramsUsed: "Filamento usado (gramos) — por unidad",
         spoolPrice: "Precio del rollo ($)",
         spoolWeight: "Peso del rollo (gramos)",
         wastePct: "Desperdicio (%)",
 
-        packagingCost: "Empaque ($)",
-        consumablesCost: "Consumibles ($)",
+        packagingCost: "Empaque ($) — por unidad",
+        consumablesCost: "Consumibles ($) — por unidad",
 
         powerKW: "Consumo (kW)",
         elecRate: "Costo de electricidad ($/kWh)",
@@ -731,12 +784,23 @@
         beginnerTip: "Tip: Usa los valores del slicer para <b>Tiempo de impresión</b> y <b>Gramos de filamento</b>. Activa Avanzado después para electricidad, márgenes, comisiones y depreciación.",
 
         estimateTitle: "Estimación",
-        finalPrice: "Precio Final",
+        finalPriceTotal: "Precio Final (total)",
+        finalPriceUnit: "Precio Final (por unidad)",
+
+        profitView: "Vista de ganancia",
+        simple: "Simple",
+        pv_totalCost: "Costo total (materiales + mano de obra + máquina + gastos)",
+        pv_profitDollars: "Ganancia ($)",
+        pv_profitPct: "Ganancia (%)",
+        pv_costPerUnit: "Costo (por unidad)",
+        pv_profitPerUnit: "Ganancia (por unidad)",
+
         jobHistoryTitle: "Historial",
         noSavedJobs: "Aún no hay trabajos guardados. Usa “Guardar en historial”.",
         storedLocally: "Guardado localmente en tu navegador (localStorage).",
 
         // placeholders
+        ph_quantity: "ej., 10",
         ph_printHours: "Del slicer (ej., 6)",
         ph_gramsUsed: "Del slicer (ej., 100)",
         ph_spoolPrice: "ej., 20",
@@ -793,6 +857,8 @@
         confirm_clearJobs: "¿Borrar TODO el historial? Esto no se puede deshacer.",
 
         // breakdown
+        bd_qty: "Cantidad",
+        bd_timeTotal: "Tiempo total de impresión",
         bd_material: "Material (incl. desperdicio)",
         bd_packaging: "Empaque",
         bd_consumables: "Consumibles",
@@ -801,14 +867,14 @@
         bd_labor: "Mano de obra activa",
         bd_base: "Subtotal base",
         bd_overhead: "Gastos generales",
-        bd_profit: "Ganancia",
+        bd_profit: "Ganancia (objetivo)",
         bd_target: "Objetivo antes de comisiones",
         bd_platform: "Comisiones agregadas",
         bd_minApplied: "¿Aplicó mínimo?",
 
         // jobs
         jobs_savedPill: (n) => `${n} guardados`,
-        jobs_meta: (final, time, filament) => `Final: ${final} • Tiempo: ${time}h • Filamento: ${filament}g`,
+        jobs_meta: (final, qty, time, filament) => `Final: ${final} • Cant: ${qty} • Tiempo: ${time}h • Filamento: ${filament}g`,
         jobs_untitled: "Trabajo sin nombre",
         btn_load: "Cargar",
         btn_delete: "Eliminar",
@@ -870,15 +936,15 @@
       }
     };
 
+    function currentLang(){
+      const settings = loadJSON(LS_SETTINGS_KEY, { lang:"en" });
+      return (settings && (settings.lang === "es" || settings.lang === "en")) ? settings.lang : "en";
+    }
+
     function t(key){
       const lang = currentLang();
       const pack = I18N[lang] || I18N.en;
       return pack[key] ?? (I18N.en[key] ?? key);
-    }
-
-    function currentLang(){
-      const settings = loadJSON(LS_SETTINGS_KEY, { lang:"en" });
-      return (settings && (settings.lang === "es" || settings.lang === "en")) ? settings.lang : "en";
     }
 
     function setLang(lang){
@@ -887,46 +953,38 @@
       saveJSON(LS_SETTINGS_KEY, s);
     }
 
-    // ---------------- Printer profiles (multi-printer) ----------------
-    // These are "starter defaults". Edit them to match your real machine if needed.
+    // ---------------- Printer profiles ----------------
     const PRINTER_PRESETS = {
       none: { nameKey: "preset_selectPrinter", fields: {} },
 
-      // Bambu
       bambu_a1mini: { nameKey: "p_bambu_a1mini", fields: { powerKW: 0.085, printerPrice: 299, printerLifeHours: 7000, maintenancePerHr: 0.05 } },
       bambu_a1:     { nameKey: "p_bambu_a1",     fields: { powerKW: 0.110, printerPrice: 399, printerLifeHours: 7000, maintenancePerHr: 0.06 } },
       bambu_p1p:    { nameKey: "p_bambu_p1p",    fields: { powerKW: 0.120, printerPrice: 599, printerLifeHours: 8000, maintenancePerHr: 0.07 } },
       bambu_p1s:    { nameKey: "p_bambu_p1s",    fields: { powerKW: 0.115, printerPrice: 699, printerLifeHours: 8000, maintenancePerHr: 0.07 } },
       bambu_x1c:    { nameKey: "p_bambu_x1c",    fields: { powerKW: 0.150, printerPrice: 1199, printerLifeHours: 9000, maintenancePerHr: 0.09 } },
 
-      // Prusa
       prusa_mini:   { nameKey: "p_prusa_mini",   fields: { powerKW: 0.090, printerPrice: 459, printerLifeHours: 9000, maintenancePerHr: 0.06 } },
       prusa_mk3s:   { nameKey: "p_prusa_mk3s",   fields: { powerKW: 0.120, printerPrice: 749, printerLifeHours: 10000, maintenancePerHr: 0.07 } },
       prusa_mk4:    { nameKey: "p_prusa_mk4",    fields: { powerKW: 0.130, printerPrice: 1099, printerLifeHours: 11000, maintenancePerHr: 0.08 } },
       prusa_xl:     { nameKey: "p_prusa_xl",     fields: { powerKW: 0.220, printerPrice: 2499, printerLifeHours: 12000, maintenancePerHr: 0.12 } },
 
-      // Creality
       ender3v2:     { nameKey: "p_creality_ender3v2", fields: { powerKW: 0.120, printerPrice: 279, printerLifeHours: 6000, maintenancePerHr: 0.06 } },
       ender3s1:     { nameKey: "p_creality_ender3s1", fields: { powerKW: 0.140, printerPrice: 399, printerLifeHours: 6500, maintenancePerHr: 0.07 } },
       ender5:       { nameKey: "p_creality_ender5",   fields: { powerKW: 0.160, printerPrice: 499, printerLifeHours: 7000, maintenancePerHr: 0.08 } },
       creality_k1:  { nameKey: "p_creality_k1",       fields: { powerKW: 0.250, printerPrice: 599, printerLifeHours: 8000, maintenancePerHr: 0.09 } },
       creality_k1max:{nameKey: "p_creality_k1max",    fields: { powerKW: 0.300, printerPrice: 899, printerLifeHours: 8500, maintenancePerHr: 0.10 } },
 
-      // Elegoo
       neptune3pro:  { nameKey: "p_elegoo_n3p",   fields: { powerKW: 0.120, printerPrice: 299, printerLifeHours: 6500, maintenancePerHr: 0.06 } },
       neptune4pro:  { nameKey: "p_elegoo_n4p",   fields: { powerKW: 0.150, printerPrice: 329, printerLifeHours: 7000, maintenancePerHr: 0.07 } },
       neptune4max:  { nameKey: "p_elegoo_n4max", fields: { powerKW: 0.200, printerPrice: 479, printerLifeHours: 7500, maintenancePerHr: 0.08 } },
 
-      // Anycubic
       kobra2:       { nameKey: "p_anycubic_kobra2",    fields: { powerKW: 0.140, printerPrice: 269, printerLifeHours: 6500, maintenancePerHr: 0.06 } },
       kobra2pro:    { nameKey: "p_anycubic_kobra2pro", fields: { powerKW: 0.160, printerPrice: 329, printerLifeHours: 7000, maintenancePerHr: 0.07 } },
       kobra2max:    { nameKey: "p_anycubic_kobra2max", fields: { powerKW: 0.220, printerPrice: 469, printerLifeHours: 7500, maintenancePerHr: 0.08 } },
 
-      // QIDI
       qidi_xplus3:  { nameKey: "p_qidi_xplus3",  fields: { powerKW: 0.250, printerPrice: 699, printerLifeHours: 8500, maintenancePerHr: 0.10 } },
       qidi_xmax3:   { nameKey: "p_qidi_xmax3",   fields: { powerKW: 0.320, printerPrice: 999, printerLifeHours: 9000, maintenancePerHr: 0.12 } },
 
-      // Generic profiles
       generic_budget:{ nameKey: "p_generic_budget", fields: { powerKW: 0.120, printerPrice: 250, printerLifeHours: 6000, maintenancePerHr: 0.06 } },
       generic_enclosed:{nameKey: "p_generic_enclosed", fields: { powerKW: 0.180, printerPrice: 600, printerLifeHours: 8000, maintenancePerHr: 0.08 } },
       generic_corexy:{ nameKey: "p_generic_corexy", fields: { powerKW: 0.260, printerPrice: 1000, printerLifeHours: 9000, maintenancePerHr: 0.10 } },
@@ -958,14 +1016,14 @@
       return "";
     }
 
-    // Storage keys (kept same to preserve your saved data from previous version)
+    // Storage keys (kept same to preserve your saved data)
     const LS_DEFAULTS_KEY = "calc_defaults_v3";
     const LS_JOBS_KEY = "calc_jobs_v3";
     const LS_SETTINGS_KEY = "calc_settings_v6";
 
     // Inputs managed
     const inputIds = [
-      "printHours","gramsUsed","spoolPrice","spoolWeight","wastePct",
+      "quantity","printHours","gramsUsed","spoolPrice","spoolWeight","wastePct",
       "packagingCost","consumablesCost",
       "powerKW","elecRate","laborRate","laborMin","overheadPct","profitPct","minFee",
       "printerPrice","printerLifeHours","maintenancePerHr",
@@ -986,6 +1044,15 @@
       if (raw === "" || raw === null || raw === undefined) return 0;
       const v = parseFloat(raw);
       return Number.isFinite(v) ? v : 0;
+    }
+
+    function intOr1(id){
+      const el = $(id);
+      if (!el) return 1;
+      const raw = el.value;
+      if (raw === "" || raw === null || raw === undefined) return 1;
+      const v = parseInt(raw, 10);
+      return Number.isFinite(v) && v > 0 ? v : 1;
     }
 
     function saveJSON(key, obj){ localStorage.setItem(key, JSON.stringify(obj)); }
@@ -1045,6 +1112,7 @@
       state.printerPreset = $("printerPreset")?.value ?? "none";
       state.filamentPreset = $("filamentPreset")?.value ?? "none";
       state.platformPreset = $("platformPreset")?.value ?? "none";
+      state.laborPerUnit = $("laborPerUnit")?.checked ?? false;
       return state;
     }
 
@@ -1053,6 +1121,7 @@
       if ($("includePlatformFees") && typeof state?.includePlatformFees === "boolean") $("includePlatformFees").checked = state.includePlatformFees;
       if ($("applyEmptyOnly") && typeof state?.applyEmptyOnly === "boolean") $("applyEmptyOnly").checked = state.applyEmptyOnly;
       if ($("autoLoadDefaults") && typeof state?.autoLoadDefaults === "boolean") $("autoLoadDefaults").checked = state.autoLoadDefaults;
+      if ($("laborPerUnit") && typeof state?.laborPerUnit === "boolean") $("laborPerUnit").checked = state.laborPerUnit;
       if ($("printerPreset") && state?.printerPreset) $("printerPreset").value = state.printerPreset;
       if ($("filamentPreset") && state?.filamentPreset) $("filamentPreset").value = state.filamentPreset;
       if ($("platformPreset") && state?.platformPreset) $("platformPreset").value = state.platformPreset;
@@ -1068,6 +1137,8 @@
 
     function renderEmpty(){
       $("breakdown").innerHTML = `
+        <div class="line-item"><div class="k">${t("bd_qty")}</div><div class="v">1</div></div>
+        <div class="line-item"><div class="k">${t("bd_timeTotal")}</div><div class="v">0.00 h</div></div>
         <div class="line-item"><div class="k">${t("bd_material")}</div><div class="v">$0.00</div></div>
         <div class="line-item"><div class="k">${t("bd_packaging")}</div><div class="v">$0.00</div></div>
         <div class="line-item"><div class="k">${t("bd_consumables")}</div><div class="v">$0.00</div></div>
@@ -1081,7 +1152,15 @@
         <div class="line-item"><div class="k">${t("bd_platform")}</div><div class="v">$0.00</div></div>
         <div class="line-item"><div class="k">${t("bd_minApplied")}</div><div class="v">No</div></div>
       `;
+      $("profitBox").innerHTML = `
+        <div class="line-item"><div class="k">${t("pv_totalCost")}</div><div class="v">$0.00</div></div>
+        <div class="line-item"><div class="k">${t("pv_profitDollars")}</div><div class="v">$0.00</div></div>
+        <div class="line-item"><div class="k">${t("pv_profitPct")}</div><div class="v">0.0%</div></div>
+        <div class="line-item"><div class="k">${t("pv_costPerUnit")}</div><div class="v">$0.00</div></div>
+        <div class="line-item"><div class="k">${t("pv_profitPerUnit")}</div><div class="v">$0.00</div></div>
+      `;
       $("finalPrice").textContent = "$0.00";
+      $("finalPricePerUnit").textContent = "$0.00";
       setStatusKey("status_enterValues");
       if ($("deprPerHrDisplay")) $("deprPerHrDisplay").value = "—";
     }
@@ -1101,24 +1180,35 @@
         return null;
       }
 
-      const printHours = num("printHours");
-      const gramsUsed = num("gramsUsed");
+      const qty = Math.max(1, intOr1("quantity"));
+
+      // Per-unit inputs
+      const printHoursUnit = num("printHours");
+      const gramsUsedUnit = num("gramsUsed");
+
       const spoolPrice = num("spoolPrice");
       const spoolWeight = Math.max(1, num("spoolWeight"));
       const wastePct = num("wastePct") / 100;
 
-      const packaging = Math.max(0, num("packagingCost"));
-      const consumables = Math.max(0, num("consumablesCost"));
+      const packagingUnit = Math.max(0, num("packagingCost"));
+      const consumablesUnit = Math.max(0, num("consumablesCost"));
 
       const powerKW = num("powerKW");
       const elecRate = num("elecRate");
 
       const laborRate = num("laborRate");
-      const laborMin = num("laborMin");
+      const laborMinInput = num("laborMin");
+      const laborPerUnit = $("laborPerUnit")?.checked ?? false;
 
       const overheadPct = num("overheadPct") / 100;
       const profitPct = num("profitPct") / 100;
       const minFee = num("minFee");
+
+      // Totals (batch)
+      const printHours = printHoursUnit * qty;
+      const gramsUsed = gramsUsedUnit * qty;
+      const packaging = packagingUnit * qty;
+      const consumables = consumablesUnit * qty;
 
       const deprPerHr = calcDepreciationPerHr();
       const maintPerHr = num("maintenancePerHr");
@@ -1135,16 +1225,17 @@
 
       const electricityCost = printHours * powerKW * elecRate;
 
-      const laborHours = laborMin / 60;
+      const laborMinTotal = laborPerUnit ? (laborMinInput * qty) : laborMinInput;
+      const laborHours = laborMinTotal / 60;
       const laborCost = laborHours * laborRate;
 
-      const base = materialCost + packaging + consumables + electricityCost + machineCost + laborCost;
+      const directCost = materialCost + packaging + consumables + electricityCost + machineCost + laborCost;
 
-      const overheadCost = base * Math.max(0, overheadPct);
-      const subtotal = base + overheadCost;
-      const profit = subtotal * Math.max(0, profitPct);
+      const overheadCost = directCost * Math.max(0, overheadPct);
+      const costWithOverhead = directCost + overheadCost;
 
-      const targetBeforeFees = subtotal + profit;
+      const profitTarget = costWithOverhead * Math.max(0, profitPct);
+      const targetBeforeFees = costWithOverhead + profitTarget;
 
       const targetWithMin = Math.max(targetBeforeFees, Math.max(0, minFee));
       const minApplied = targetWithMin > targetBeforeFees;
@@ -1167,34 +1258,66 @@
         }
       }
 
+      const totalCost = costWithOverhead + platformAdded;
+      const profitDollars = final - totalCost;
+      const profitPctActual = (final > 0) ? (profitDollars / final) : 0;
+
+      const finalPerUnit = final / qty;
+      const costPerUnit = totalCost / qty;
+      const profitPerUnit = profitDollars / qty;
+
       const breakdown = [
-        ["bd_material", materialCost],
-        ["bd_packaging", packaging],
-        ["bd_consumables", consumables],
-        ["bd_electricity", electricityCost],
-        ["bd_machine", machineCost],
-        ["bd_labor", laborCost],
-        ["bd_base", base],
-        ["bd_overhead", overheadCost],
-        ["bd_profit", profit],
-        ["bd_target", targetWithMin],
-        ["bd_platform", platformAdded],
-        ["bd_minApplied", minApplied ? 1 : 0]
+        ["bd_qty", qty, "qty"],
+        ["bd_timeTotal", printHours, "hours"],
+        ["bd_material", materialCost, "money"],
+        ["bd_packaging", packaging, "money"],
+        ["bd_consumables", consumables, "money"],
+        ["bd_electricity", electricityCost, "money"],
+        ["bd_machine", machineCost, "money"],
+        ["bd_labor", laborCost, "money"],
+        ["bd_base", directCost, "money"],
+        ["bd_overhead", overheadCost, "money"],
+        ["bd_profit", (targetWithMin - costWithOverhead), "money"],
+        ["bd_target", targetWithMin, "money"],
+        ["bd_platform", platformAdded, "money"],
+        ["bd_minApplied", minApplied ? 1 : 0, "bool"]
       ];
 
-      $("breakdown").innerHTML = breakdown.map(([key,v]) => {
+      $("breakdown").innerHTML = breakdown.map(([key,v,type]) => {
         const label = t(key);
         const lang = currentLang();
         const yes = (lang === "es") ? "Sí" : "Yes";
         const no  = (lang === "es") ? "No" : "No";
-        const val = (key === "bd_minApplied") ? (v ? yes : no) : money(v);
+        let val = "";
+        if (type === "bool") val = v ? yes : no;
+        else if (type === "hours") val = `${(Number(v)||0).toFixed(2)} h`;
+        else if (type === "qty") val = `${v}`;
+        else val = money(v);
         return `<div class="line-item"><div class="k">${label}</div><div class="v">${val}</div></div>`;
       }).join("");
 
       $("finalPrice").textContent = money(final);
+      $("finalPricePerUnit").textContent = money(finalPerUnit);
+
+      $("profitBox").innerHTML = `
+        <div class="line-item"><div class="k">${t("pv_totalCost")}</div><div class="v">${money(totalCost)}</div></div>
+        <div class="line-item"><div class="k">${t("pv_profitDollars")}</div><div class="v">${money(profitDollars)}</div></div>
+        <div class="line-item"><div class="k">${t("pv_profitPct")}</div><div class="v">${(profitPctActual*100).toFixed(1)}%</div></div>
+        <div class="line-item"><div class="k">${t("pv_costPerUnit")}</div><div class="v">${money(costPerUnit)}</div></div>
+        <div class="line-item"><div class="k">${t("pv_profitPerUnit")}</div><div class="v">${money(profitPerUnit)}</div></div>
+      `;
+
       setStatusKey("status_updated");
 
-      return { final, printHours, gramsUsed, effectiveGrams, materialCost, packaging, consumables, electricityCost, machineCost, laborCost, overheadCost, profit, targetWithMin, platformAdded, minApplied };
+      return {
+        final, qty, finalPerUnit,
+        totalCost, profitDollars, profitPctActual,
+        printHours, gramsUsed, effectiveGrams,
+        materialCost, packaging, consumables,
+        electricityCost, machineCost, laborCost,
+        overheadCost, targetWithMin, platformAdded, minApplied,
+        laborMinTotal
+      };
     }
 
     // Jobs
@@ -1226,7 +1349,7 @@
         const idx = jobs.length - 1 - idxFromEnd;
         const title = (job.jobName && job.jobName.trim()) ? job.jobName.trim() : t("jobs_untitled");
         const notes = job.jobNotes ? job.jobNotes : "";
-        const metaLine = t("jobs_meta")(money(job.final), (job.printHours || 0), (job.gramsUsed || 0));
+        const metaLine = t("jobs_meta")(money(job.final), (job.qty || 1), (job.printHoursTotal || 0).toFixed(2), (job.gramsUsedTotal || 0));
         const meta = `${formatDate(job.ts)} • ${metaLine}`;
         return `
           <div class="jobcard">
@@ -1251,6 +1374,7 @@
       if (!job) return;
       inputIds.forEach(id => { if ($(id) && Object.prototype.hasOwnProperty.call(job, id)) $(id).value = job[id] ?? ""; });
       if ($("includePlatformFees") && typeof job.includePlatformFees === "boolean") $("includePlatformFees").checked = job.includePlatformFees;
+      if ($("laborPerUnit") && typeof job.laborPerUnit === "boolean") $("laborPerUnit").checked = job.laborPerUnit;
       setStatusKey("status_jobLoaded");
       calc();
     };
@@ -1285,7 +1409,7 @@
     // Export/Import jobs
     function exportJobs(){
       const jobs = loadJobs();
-      const payload = { exportedAt: new Date().toISOString(), version: 7, jobs };
+      const payload = { exportedAt: new Date().toISOString(), version: 8, jobs };
       const text = JSON.stringify(payload, null, 2);
       navigator.clipboard.writeText(text).then(() => {
         setStatusKey("status_exportOk");
@@ -1325,27 +1449,23 @@
       if (!r){ alert(t("alert_enterValuesFirst")); return; }
       const lang = currentLang();
       const header = (lang === "es") ? "Cotización de Impresión 3D" : "3D Print Quote";
-      const timeLbl = (lang === "es") ? "Tiempo de impresión" : "Print time";
-      const filLbl = (lang === "es") ? "Filamento" : "Filament";
-      const packLbl = (lang === "es") ? "Empaque" : "Packaging";
-      const consLbl = (lang === "es") ? "Consumibles" : "Consumables";
-      const matLbl = (lang === "es") ? "Material" : "Material";
-      const elecLbl = (lang === "es") ? "Electricidad" : "Electricity";
-      const machLbl = (lang === "es") ? "Máquina" : "Machine";
-      const labLbl = (lang === "es") ? "Mano de obra" : "Labor";
-      const finalLbl = (lang === "es") ? "Final" : "Final";
+      const qtyLbl = (lang === "es") ? "Cantidad" : "Quantity";
+      const timeLbl = (lang === "es") ? "Tiempo total" : "Total time";
+      const filLbl = (lang === "es") ? "Filamento total" : "Total filament";
+      const costLbl = (lang === "es") ? "Costo total" : "Total cost";
+      const profLbl = (lang === "es") ? "Ganancia" : "Profit";
+      const finalLbl = (lang === "es") ? "Final (total)" : "Final (total)";
+      const unitLbl = (lang === "es") ? "Final (por unidad)" : "Final (per unit)";
 
       const text =
 `${header}
-- ${timeLbl}: ${r.printHours} hr
-- ${filLbl}: ${r.gramsUsed} g (+ waste = ${r.effectiveGrams.toFixed(1)} g)
-- ${matLbl}: ${money(r.materialCost)}
-- ${packLbl}: ${money(r.packaging)}
-- ${consLbl}: ${money(r.consumables)}
-- ${elecLbl}: ${money(r.electricityCost)}
-- ${machLbl}: ${money(r.machineCost)}
-- ${labLbl}: ${money(r.laborCost)}
-- ${finalLbl}: ${money(r.final)}`;
+- ${qtyLbl}: ${r.qty}
+- ${timeLbl}: ${r.printHours.toFixed(2)} hr
+- ${filLbl}: ${r.gramsUsed} g
+- ${costLbl}: ${money(r.totalCost)}
+- ${profLbl}: ${money(r.profitDollars)} (${(r.profitPctActual*100).toFixed(1)}%)
+- ${finalLbl}: ${money(r.final)}
+- ${unitLbl}: ${money(r.finalPerUnit)}`;
 
       navigator.clipboard.writeText(text)
         .then(() => setStatusKey("status_copyOk"))
@@ -1359,6 +1479,7 @@
       if ($("printerPreset")) $("printerPreset").value = "none";
       if ($("filamentPreset")) $("filamentPreset").value = "none";
       if ($("platformPreset")) $("platformPreset").value = "none";
+      if ($("laborPerUnit")) $("laborPerUnit").checked = false;
       renderEmpty();
     }
 
@@ -1431,6 +1552,7 @@
       // Recalc on input
       inputIds.forEach(id => { if ($(id)) $(id).addEventListener("input", calc); });
       $("includePlatformFees")?.addEventListener("change", calc);
+      $("laborPerUnit")?.addEventListener("change", calc);
 
       // Defaults buttons
       $("saveDefaultsBtn")?.addEventListener("click", saveDefaults);
@@ -1446,6 +1568,11 @@
           ts: new Date().toISOString(),
           jobName: $("jobName")?.value || "",
           jobNotes: $("jobNotes")?.value || "",
+
+          // state
+          quantity: $("quantity")?.value || "",
+          laborPerUnit: $("laborPerUnit")?.checked || false,
+
           printHours: $("printHours")?.value || "",
           gramsUsed: $("gramsUsed")?.value || "",
           spoolPrice: $("spoolPrice")?.value || "",
@@ -1468,6 +1595,11 @@
           platformFixedFee: $("platformFixedFee")?.value || "",
           platformListingFee: $("platformListingFee")?.value || "",
           platformNotes: $("platformNotes")?.value || "",
+
+          // computed summary
+          qty: r.qty,
+          printHoursTotal: r.printHours,
+          gramsUsedTotal: r.gramsUsed,
           final: r.final
         };
         jobs.push(record);
