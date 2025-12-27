@@ -221,6 +221,10 @@
             </label>
           </div>
 
+          <div class="note" data-i18n-html="printerPresetNote">
+            Printer preset can fill <b>power</b>, <b>price</b>, <b>lifetime hours</b>, and <b>maintenance</b>. You can always edit them.
+          </div>
+
           <div class="btns">
             <button id="saveDefaultsBtn" class="secondary" type="button" data-i18n="saveDefaults">Save defaults</button>
             <button id="loadDefaultsBtn" class="secondary" type="button" data-i18n="loadDefaults">Load defaults</button>
@@ -261,7 +265,6 @@
             <input id="wastePct" type="number" min="0" step="0.1" data-i18n-placeholder="ph_wastePct" placeholder="e.g., 5" />
           </div>
 
-          <!-- ✅ NEW: Packaging + Consumables (visible in beginner mode) -->
           <div>
             <label data-i18n="packagingCost">Packaging cost ($)</label>
             <input id="packagingCost" type="number" min="0" step="0.01" data-i18n-placeholder="ph_packagingCost" placeholder="e.g., 0.75" />
@@ -466,6 +469,7 @@
         applyPlatform: "Apply platform",
         applyEmptyOnly: "Apply presets to <b>empty fields only</b>",
         autoLoadDefaults: "Auto-load saved defaults",
+        printerPresetNote: "Printer preset can fill <b>power</b>, <b>price</b>, <b>lifetime hours</b>, and <b>maintenance</b>. You can always edit them.",
         saveDefaults: "Save defaults",
         loadDefaults: "Load defaults",
         clearDefaults: "Clear saved defaults",
@@ -601,19 +605,53 @@
         btn_load: "Load",
         btn_delete: "Delete",
 
-        // presets
+        // presets labels
         preset_selectPrinter: "— Select a printer —",
         preset_selectFilament: "— Select a filament —",
         preset_selectPlatform: "— Select a platform —",
-        preset_bambuP1s: "Bambu P1S",
-        preset_bambuP1p: "Bambu P1P",
-        preset_ender3: "Creality Ender 3 (generic)",
-        preset_prusa: "Prusa MK3S (generic)",
+
+        // Printer names (EN)
+        p_bambu_a1mini: "Bambu Lab A1 mini",
+        p_bambu_a1: "Bambu Lab A1",
+        p_bambu_p1p: "Bambu Lab P1P",
+        p_bambu_p1s: "Bambu Lab P1S",
+        p_bambu_x1c: "Bambu Lab X1 Carbon",
+
+        p_prusa_mini: "Prusa MINI+",
+        p_prusa_mk3s: "Prusa MK3S+",
+        p_prusa_mk4: "Prusa MK4 / MK4S",
+        p_prusa_xl: "Prusa XL",
+
+        p_creality_ender3v2: "Creality Ender 3 V2",
+        p_creality_ender3s1: "Creality Ender 3 S1 / S1 Pro",
+        p_creality_ender5: "Creality Ender 5 / Ender 5 S1",
+        p_creality_k1: "Creality K1",
+        p_creality_k1max: "Creality K1 Max",
+
+        p_elegoo_n3p: "Elegoo Neptune 3 Pro",
+        p_elegoo_n4p: "Elegoo Neptune 4 Pro",
+        p_elegoo_n4max: "Elegoo Neptune 4 Max",
+
+        p_anycubic_kobra2: "Anycubic Kobra 2",
+        p_anycubic_kobra2pro: "Anycubic Kobra 2 Pro",
+        p_anycubic_kobra2max: "Anycubic Kobra 2 Max",
+
+        p_qidi_xplus3: "QIDI X-Plus 3",
+        p_qidi_xmax3: "QIDI X-Max 3",
+
+        p_generic_budget: "Generic: Budget open-frame FDM",
+        p_generic_enclosed: "Generic: Enclosed FDM",
+        p_generic_corexy: "Generic: CoreXY fast printer",
+        p_generic_voron24: "Voron 2.4 (generic profile)",
+
+        // Filament
         preset_pla: "PLA",
         preset_petg: "PETG",
         preset_abs: "ABS",
         preset_tpu: "TPU",
         preset_nylon: "Nylon",
+
+        // Platforms
         preset_etsy: "Etsy (starter)",
         preset_amazon: "Amazon (starter)",
         preset_shopify: "Shopify (starter)",
@@ -639,6 +677,7 @@
         applyPlatform: "Aplicar plataforma",
         applyEmptyOnly: "Aplicar preajustes solo a <b>campos vacíos</b>",
         autoLoadDefaults: "Cargar valores guardados automáticamente",
+        printerPresetNote: "El preajuste puede llenar <b>consumo</b>, <b>precio</b>, <b>vida útil</b> y <b>mantenimiento</b>. Puedes editar todo.",
         saveDefaults: "Guardar valores",
         loadDefaults: "Cargar valores",
         clearDefaults: "Borrar valores guardados",
@@ -774,19 +813,53 @@
         btn_load: "Cargar",
         btn_delete: "Eliminar",
 
-        // presets
+        // presets labels
         preset_selectPrinter: "— Selecciona una impresora —",
         preset_selectFilament: "— Selecciona un filamento —",
         preset_selectPlatform: "— Selecciona una plataforma —",
-        preset_bambuP1s: "Bambu P1S",
-        preset_bambuP1p: "Bambu P1P",
-        preset_ender3: "Creality Ender 3 (genérica)",
-        preset_prusa: "Prusa MK3S (genérica)",
+
+        // Printer names (ES)
+        p_bambu_a1mini: "Bambu Lab A1 mini",
+        p_bambu_a1: "Bambu Lab A1",
+        p_bambu_p1p: "Bambu Lab P1P",
+        p_bambu_p1s: "Bambu Lab P1S",
+        p_bambu_x1c: "Bambu Lab X1 Carbon",
+
+        p_prusa_mini: "Prusa MINI+",
+        p_prusa_mk3s: "Prusa MK3S+",
+        p_prusa_mk4: "Prusa MK4 / MK4S",
+        p_prusa_xl: "Prusa XL",
+
+        p_creality_ender3v2: "Creality Ender 3 V2",
+        p_creality_ender3s1: "Creality Ender 3 S1 / S1 Pro",
+        p_creality_ender5: "Creality Ender 5 / Ender 5 S1",
+        p_creality_k1: "Creality K1",
+        p_creality_k1max: "Creality K1 Max",
+
+        p_elegoo_n3p: "Elegoo Neptune 3 Pro",
+        p_elegoo_n4p: "Elegoo Neptune 4 Pro",
+        p_elegoo_n4max: "Elegoo Neptune 4 Max",
+
+        p_anycubic_kobra2: "Anycubic Kobra 2",
+        p_anycubic_kobra2pro: "Anycubic Kobra 2 Pro",
+        p_anycubic_kobra2max: "Anycubic Kobra 2 Max",
+
+        p_qidi_xplus3: "QIDI X-Plus 3",
+        p_qidi_xmax3: "QIDI X-Max 3",
+
+        p_generic_budget: "Genérico: FDM económico abierto",
+        p_generic_enclosed: "Genérico: FDM cerrado",
+        p_generic_corexy: "Genérico: CoreXY rápido",
+        p_generic_voron24: "Voron 2.4 (perfil genérico)",
+
+        // Filament
         preset_pla: "PLA",
         preset_petg: "PETG",
         preset_abs: "ABS",
         preset_tpu: "TPU",
         preset_nylon: "Nylon",
+
+        // Platforms
         preset_etsy: "Etsy (base)",
         preset_amazon: "Amazon (base)",
         preset_shopify: "Shopify (base)",
@@ -814,13 +887,50 @@
       saveJSON(LS_SETTINGS_KEY, s);
     }
 
-    // ---------- Presets ----------
+    // ---------------- Printer profiles (multi-printer) ----------------
+    // These are "starter defaults". Edit them to match your real machine if needed.
     const PRINTER_PRESETS = {
       none: { nameKey: "preset_selectPrinter", fields: {} },
-      bambu_p1s: { nameKey: "preset_bambuP1s", fields: { powerKW: 0.115 } },
-      bambu_p1p: { nameKey: "preset_bambuP1p", fields: { powerKW: 0.105 } },
-      ender3: { nameKey: "preset_ender3", fields: { powerKW: 0.120 } },
-      prusa_mk3s: { nameKey: "preset_prusa", fields: { powerKW: 0.120 } }
+
+      // Bambu
+      bambu_a1mini: { nameKey: "p_bambu_a1mini", fields: { powerKW: 0.085, printerPrice: 299, printerLifeHours: 7000, maintenancePerHr: 0.05 } },
+      bambu_a1:     { nameKey: "p_bambu_a1",     fields: { powerKW: 0.110, printerPrice: 399, printerLifeHours: 7000, maintenancePerHr: 0.06 } },
+      bambu_p1p:    { nameKey: "p_bambu_p1p",    fields: { powerKW: 0.120, printerPrice: 599, printerLifeHours: 8000, maintenancePerHr: 0.07 } },
+      bambu_p1s:    { nameKey: "p_bambu_p1s",    fields: { powerKW: 0.115, printerPrice: 699, printerLifeHours: 8000, maintenancePerHr: 0.07 } },
+      bambu_x1c:    { nameKey: "p_bambu_x1c",    fields: { powerKW: 0.150, printerPrice: 1199, printerLifeHours: 9000, maintenancePerHr: 0.09 } },
+
+      // Prusa
+      prusa_mini:   { nameKey: "p_prusa_mini",   fields: { powerKW: 0.090, printerPrice: 459, printerLifeHours: 9000, maintenancePerHr: 0.06 } },
+      prusa_mk3s:   { nameKey: "p_prusa_mk3s",   fields: { powerKW: 0.120, printerPrice: 749, printerLifeHours: 10000, maintenancePerHr: 0.07 } },
+      prusa_mk4:    { nameKey: "p_prusa_mk4",    fields: { powerKW: 0.130, printerPrice: 1099, printerLifeHours: 11000, maintenancePerHr: 0.08 } },
+      prusa_xl:     { nameKey: "p_prusa_xl",     fields: { powerKW: 0.220, printerPrice: 2499, printerLifeHours: 12000, maintenancePerHr: 0.12 } },
+
+      // Creality
+      ender3v2:     { nameKey: "p_creality_ender3v2", fields: { powerKW: 0.120, printerPrice: 279, printerLifeHours: 6000, maintenancePerHr: 0.06 } },
+      ender3s1:     { nameKey: "p_creality_ender3s1", fields: { powerKW: 0.140, printerPrice: 399, printerLifeHours: 6500, maintenancePerHr: 0.07 } },
+      ender5:       { nameKey: "p_creality_ender5",   fields: { powerKW: 0.160, printerPrice: 499, printerLifeHours: 7000, maintenancePerHr: 0.08 } },
+      creality_k1:  { nameKey: "p_creality_k1",       fields: { powerKW: 0.250, printerPrice: 599, printerLifeHours: 8000, maintenancePerHr: 0.09 } },
+      creality_k1max:{nameKey: "p_creality_k1max",    fields: { powerKW: 0.300, printerPrice: 899, printerLifeHours: 8500, maintenancePerHr: 0.10 } },
+
+      // Elegoo
+      neptune3pro:  { nameKey: "p_elegoo_n3p",   fields: { powerKW: 0.120, printerPrice: 299, printerLifeHours: 6500, maintenancePerHr: 0.06 } },
+      neptune4pro:  { nameKey: "p_elegoo_n4p",   fields: { powerKW: 0.150, printerPrice: 329, printerLifeHours: 7000, maintenancePerHr: 0.07 } },
+      neptune4max:  { nameKey: "p_elegoo_n4max", fields: { powerKW: 0.200, printerPrice: 479, printerLifeHours: 7500, maintenancePerHr: 0.08 } },
+
+      // Anycubic
+      kobra2:       { nameKey: "p_anycubic_kobra2",    fields: { powerKW: 0.140, printerPrice: 269, printerLifeHours: 6500, maintenancePerHr: 0.06 } },
+      kobra2pro:    { nameKey: "p_anycubic_kobra2pro", fields: { powerKW: 0.160, printerPrice: 329, printerLifeHours: 7000, maintenancePerHr: 0.07 } },
+      kobra2max:    { nameKey: "p_anycubic_kobra2max", fields: { powerKW: 0.220, printerPrice: 469, printerLifeHours: 7500, maintenancePerHr: 0.08 } },
+
+      // QIDI
+      qidi_xplus3:  { nameKey: "p_qidi_xplus3",  fields: { powerKW: 0.250, printerPrice: 699, printerLifeHours: 8500, maintenancePerHr: 0.10 } },
+      qidi_xmax3:   { nameKey: "p_qidi_xmax3",   fields: { powerKW: 0.320, printerPrice: 999, printerLifeHours: 9000, maintenancePerHr: 0.12 } },
+
+      // Generic profiles
+      generic_budget:{ nameKey: "p_generic_budget", fields: { powerKW: 0.120, printerPrice: 250, printerLifeHours: 6000, maintenancePerHr: 0.06 } },
+      generic_enclosed:{nameKey: "p_generic_enclosed", fields: { powerKW: 0.180, printerPrice: 600, printerLifeHours: 8000, maintenancePerHr: 0.08 } },
+      generic_corexy:{ nameKey: "p_generic_corexy", fields: { powerKW: 0.260, printerPrice: 1000, printerLifeHours: 9000, maintenancePerHr: 0.10 } },
+      voron24:      { nameKey: "p_generic_voron24", fields: { powerKW: 0.300, printerPrice: 1500, printerLifeHours: 10000, maintenancePerHr: 0.12 } }
     };
 
     const FILAMENT_PRESETS = {
@@ -848,10 +958,10 @@
       return "";
     }
 
-    // Storage keys
+    // Storage keys (kept same to preserve your saved data from previous version)
     const LS_DEFAULTS_KEY = "calc_defaults_v3";
     const LS_JOBS_KEY = "calc_jobs_v3";
-    const LS_SETTINGS_KEY = "calc_settings_v6"; // includes beginner + light + lang
+    const LS_SETTINGS_KEY = "calc_settings_v6";
 
     // Inputs managed
     const inputIds = [
@@ -923,7 +1033,7 @@
       }
       calc();
       $("status").textContent = emptyOnly ? t("status_presetEmptyOnly") : t("status_presetOverwrite");
-      $("status").dataset.i18nStatusKey = ""; // dynamic
+      $("status").dataset.i18nStatusKey = "";
     }
 
     function getState(){
@@ -1028,7 +1138,6 @@
       const laborHours = laborMin / 60;
       const laborCost = laborHours * laborRate;
 
-      // ✅ Base now includes packaging + consumables
       const base = materialCost + packaging + consumables + electricityCost + machineCost + laborCost;
 
       const overheadCost = base * Math.max(0, overheadPct);
@@ -1088,7 +1197,7 @@
       return { final, printHours, gramsUsed, effectiveGrams, materialCost, packaging, consumables, electricityCost, machineCost, laborCost, overheadCost, profit, targetWithMin, platformAdded, minApplied };
     }
 
-    // Jobs (advanced)
+    // Jobs
     function loadJobs(){ const jobs = loadJSON(LS_JOBS_KEY, []); return Array.isArray(jobs) ? jobs : []; }
     function saveJobs(jobs){ saveJSON(LS_JOBS_KEY, jobs); renderJobs(); }
 
@@ -1176,7 +1285,7 @@
     // Export/Import jobs
     function exportJobs(){
       const jobs = loadJobs();
-      const payload = { exportedAt: new Date().toISOString(), version: 6, jobs };
+      const payload = { exportedAt: new Date().toISOString(), version: 7, jobs };
       const text = JSON.stringify(payload, null, 2);
       navigator.clipboard.writeText(text).then(() => {
         setStatusKey("status_exportOk");
@@ -1302,8 +1411,15 @@
     function init(){
       refreshAllPresetSelects();
 
-      $("applyPrinterBtn")?.addEventListener("click", () => applyFields(PRINTER_PRESETS[$("printerPreset").value]?.fields || {}));
+      // Apply buttons
+      $("applyPrinterBtn")?.addEventListener("click", () => {
+        const key = $("printerPreset").value;
+        const fields = PRINTER_PRESETS[key]?.fields || {};
+        applyFields(fields);
+      });
+
       $("applyFilamentBtn")?.addEventListener("click", () => applyFields(FILAMENT_PRESETS[$("filamentPreset").value]?.fields || {}));
+
       $("applyPlatformBtn")?.addEventListener("click", () => {
         const key = $("platformPreset").value;
         const baseFields = PLATFORM_PRESETS[key]?.fields || {};
@@ -1312,13 +1428,16 @@
         applyFields(fields);
       });
 
+      // Recalc on input
       inputIds.forEach(id => { if ($(id)) $(id).addEventListener("input", calc); });
       $("includePlatformFees")?.addEventListener("change", calc);
 
+      // Defaults buttons
       $("saveDefaultsBtn")?.addEventListener("click", saveDefaults);
       $("loadDefaultsBtn")?.addEventListener("click", loadDefaults);
       $("clearDefaultsBtn")?.addEventListener("click", clearDefaults);
 
+      // Job actions
       $("saveJobBtn")?.addEventListener("click", () => {
         const r = calc();
         if (!r){ alert(t("alert_enterValuesFirst")); return; }
@@ -1363,6 +1482,7 @@
       $("resetBtn")?.addEventListener("click", resetAll);
       $("copyBtn")?.addEventListener("click", copyQuote);
 
+      // Settings
       const settings = loadJSON(LS_SETTINGS_KEY, { beginnerMode: true, lightMode: false, autoLoadDefaults: true, lang:"en" });
 
       const langDefault = (settings.lang === "es") ? "es" : "en";
