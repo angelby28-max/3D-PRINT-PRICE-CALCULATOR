@@ -6,18 +6,18 @@
   <title>3D Print Price Calculator</title>
   <meta name="theme-color" content="#111827" />
   <style>
-    :root { --bg:#0b1220; --card:#111827; --text:#e5e7eb; --muted:#9ca3af; --line:#1f2937; --accent:#22c55e; }
+    :root { --bg:#0b1220; --card:#111827; --text:#e5e7eb; --muted:#9ca3af; --line:#1f2937; --accent:#22c55e; --warn:#f59e0b; }
     *{ box-sizing:border-box; }
     body{
       margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
       background: radial-gradient(1200px 800px at 10% 10%, #0f1a33 0%, var(--bg) 55%);
       color:var(--text);
     }
-    .wrap{ max-width:980px; margin:0 auto; padding:18px; }
+    .wrap{ max-width:1100px; margin:0 auto; padding:18px; }
     h1{ font-size:20px; margin:6px 0 2px; }
     p.sub{ margin:0 0 16px; color:var(--muted); font-size:13px; }
-    .grid{ display:grid; grid-template-columns: 1.05fr .95fr; gap:14px; }
-    @media (max-width: 860px){ .grid{ grid-template-columns:1fr; } }
+    .grid{ display:grid; grid-template-columns: 1.1fr .9fr; gap:14px; }
+    @media (max-width: 980px){ .grid{ grid-template-columns:1fr; } }
     .card{
       background: rgba(17,24,39,.9);
       border:1px solid var(--line);
@@ -25,56 +25,105 @@
       box-shadow: 0 10px 30px rgba(0,0,0,.25);
       padding:14px;
     }
-    .sec-title{ display:flex; justify-content:space-between; align-items:baseline; margin:0 0 8px; }
+    .sec-title{ display:flex; justify-content:space-between; align-items:baseline; margin:0 0 8px; gap:10px; }
     .sec-title h2{ font-size:14px; margin:0; }
     .sec-title span{ color:var(--muted); font-size:12px; }
     .fields{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    @media (max-width: 520px){ .fields{ grid-template-columns:1fr; } }
+    @media (max-width: 560px){ .fields{ grid-template-columns:1fr; } }
     label{ display:block; font-size:12px; color:var(--muted); margin:0 0 6px; }
-    input{
+    input, select{
       width:100%; padding:10px 10px;
       border-radius:10px; border:1px solid var(--line);
       background:#0b1020; color:var(--text);
       outline:none;
     }
-    input:focus{ border-color:#334155; box-shadow: 0 0 0 3px rgba(34,197,94,.12); }
+    input:focus, select:focus{ border-color:#334155; box-shadow: 0 0 0 3px rgba(34,197,94,.12); }
     input::placeholder{ color: rgba(156,163,175,.7); }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
     .btns{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
     button{
-      border:0; border-radius:12px; padding:10px 12px; cursor:pointer; font-weight:600;
+      border:0; border-radius:12px; padding:10px 12px; cursor:pointer; font-weight:700;
       background:var(--accent); color:#08210f;
     }
-    button.secondary{ background:#0b1020; color:var(--text); border:1px solid var(--line); }
+    button.secondary{ background:#0b1020; color:var(--text); border:1px solid var(--line); font-weight:600; }
+    button.warn{ background: rgba(245,158,11,.15); border:1px solid rgba(245,158,11,.4); color:#ffedd5; }
     .note{ color:var(--muted); font-size:12px; margin-top:8px; line-height:1.35; }
     .breakdown{ margin-top:8px; border-top:1px dashed var(--line); padding-top:10px; }
-    .line-item{ display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(31,41,55,.5); }
+    .line-item{ display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(31,41,55,.5); gap:10px; }
     .line-item:last-child{ border-bottom:0; }
     .k{ color:var(--muted); font-size:13px; }
-    .v{ font-variant-numeric: tabular-nums; }
+    .v{ font-variant-numeric: tabular-nums; text-align:right; }
     .total{
       display:flex; justify-content:space-between; align-items:center;
       margin-top:10px; padding:10px 12px; border-radius:12px;
       background: rgba(34,197,94,.10); border:1px solid rgba(34,197,94,.35);
+      gap:10px;
     }
     .total .k{ color:#bbf7d0; }
-    .total .v{ font-size:18px; font-weight:800; }
+    .total .v{ font-size:18px; font-weight:900; }
     .tiny{ font-size:11px; color:var(--muted); margin-top:8px; }
     .pill{
       display:inline-flex; gap:6px; align-items:center; padding:6px 10px; border-radius:999px;
       background:#0b1020; border:1px solid var(--line); color:var(--muted); font-size:12px;
     }
+    .divider{ margin:12px 0; border-top:1px solid rgba(31,41,55,.7); }
+    .toggle{
+      display:flex; gap:8px; align-items:center; color:var(--muted); font-size:12px;
+      user-select:none;
+    }
+    .toggle input{ width:auto; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1>3D Print Price Calculator</h1>
-    <p class="sub">Single-file version. No preset numbers — you type your values.</p>
+    <p class="sub">Single-file version. Presets are optional and never overwrite your values unless you click Apply.</p>
 
     <div class="grid">
       <!-- INPUTS -->
       <div class="card">
         <div class="sec-title">
-          <h2>Inputs</h2>
+          <h2>Presets (optional)</h2>
+          <span class="pill">Non-forcing</span>
+        </div>
+
+        <div class="fields">
+          <div>
+            <label>Printer preset</label>
+            <select id="printerPreset"></select>
+          </div>
+          <div class="row" style="align-self:end;">
+            <button id="applyPrinterBtn" class="secondary" type="button">Apply printer</button>
+          </div>
+
+          <div>
+            <label>Filament preset</label>
+            <select id="filamentPreset"></select>
+          </div>
+          <div class="row" style="align-self:end;">
+            <button id="applyFilamentBtn" class="secondary" type="button">Apply filament</button>
+          </div>
+
+          <div>
+            <label>Platform preset</label>
+            <select id="platformPreset"></select>
+          </div>
+          <div class="row" style="align-self:end;">
+            <button id="applyPlatformBtn" class="secondary" type="button">Apply platform</button>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <label class="toggle">
+            <input id="applyEmptyOnly" type="checkbox" checked />
+            Apply presets to <b>empty fields only</b> (recommended)
+          </label>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="sec-title">
+          <h2>Job inputs</h2>
           <span class="pill">Updates as you type</span>
         </div>
 
@@ -140,13 +189,48 @@
           </div>
         </div>
 
+        <div class="divider"></div>
+
+        <div class="sec-title">
+          <h2>Platform fees (optional)</h2>
+          <span class="pill">Editable</span>
+        </div>
+
+        <div class="row" style="margin-bottom:8px;">
+          <label class="toggle">
+            <input id="includePlatformFees" type="checkbox" />
+            Include platform fees in final price
+          </label>
+        </div>
+
+        <div class="fields">
+          <div>
+            <label>Fee % (taken from sale)</label>
+            <input id="platformFeePct" type="number" min="0" step="0.01" placeholder="e.g., 6.5" />
+          </div>
+          <div>
+            <label>Fixed fee ($ per order)</label>
+            <input id="platformFixedFee" type="number" min="0" step="0.01" placeholder="e.g., 0.25" />
+          </div>
+          <div>
+            <label>Listing fee ($ per item/order)</label>
+            <input id="platformListingFee" type="number" min="0" step="0.01" placeholder="e.g., 0.20" />
+          </div>
+          <div>
+            <label>Notes (optional)</label>
+            <input id="platformNotes" type="text" placeholder="e.g., Etsy + payment processing" />
+          </div>
+        </div>
+
         <div class="btns">
-          <button id="resetBtn" class="secondary" type="button">Reset (clear all)</button>
+          <button id="resetBtn" class="warn" type="button">Reset (clear all)</button>
           <button id="copyBtn" class="secondary" type="button">Copy quote</button>
         </div>
 
         <div class="note">
-          Next upgrades: printer/filament presets (with NO forced numbers), depreciation, saved profiles.
+          Platform fee math uses a “gross-up” so you still net your target price after fees:
+          <span style="color:#cbd5e1;">gross = (target + fixed + listing) / (1 - fee%)</span>.
+          All fee values are editable and optional.
         </div>
       </div>
 
@@ -165,7 +249,7 @@
         </div>
 
         <div class="tiny">
-          Formula: base = material + electricity + labor. Then add overhead and profit. Final is max(final, minimum fee).
+          Base = material + electricity + labor → add overhead → add profit → apply minimum fee → optionally gross-up for platform fees.
         </div>
       </div>
     </div>
@@ -174,9 +258,48 @@
   <script>
     const $ = (id) => document.getElementById(id);
 
+    // ---- Preset libraries (starter set; editable in fields; never forces overwrite unless you Apply)
+    // Notes:
+    // - Values are optional and meant as convenience. You can leave them unused.
+    // - You can change any values after applying.
+    const PRINTER_PRESETS = {
+      none: { name: "— Select a printer —", fields: {} },
+
+      bambu_p1s: { name: "Bambu P1S", fields: { powerKW: 0.115 } },
+      bambu_p1p: { name: "Bambu P1P", fields: { powerKW: 0.105 } },
+
+      ender3: { name: "Creality Ender 3 (generic)", fields: { powerKW: 0.120 } },
+      prusa_mk3s: { name: "Prusa MK3S (generic)", fields: { powerKW: 0.120 } }
+    };
+
+    const FILAMENT_PRESETS = {
+      none: { name: "— Select a filament —", fields: {} },
+
+      pla:  { name: "PLA",  fields: { wastePct: 5 } },
+      petg: { name: "PETG", fields: { wastePct: 6 } },
+      abs:  { name: "ABS",  fields: { wastePct: 7 } },
+      tpu:  { name: "TPU",  fields: { wastePct: 8 } },
+      nylon:{ name: "Nylon",fields: { wastePct: 10 } }
+    };
+
+    // Platform fee presets (starter convenience only; always editable; apply is optional)
+    // If you want these to be completely blank by default, just don’t click Apply platform.
+    const PLATFORM_PRESETS = {
+      none: { name: "— Select a platform —", fields: {} },
+
+      // "feePct" here is a combined percent placeholder you can edit.
+      // "fixedFee" and "listingFee" are also placeholders you can edit.
+      etsy:   { name: "Etsy (starter)",   fields: { platformFeePct: 6.5, platformFixedFee: 0.25, platformListingFee: 0.20, platformNotes: "Adjust if needed" } },
+      amazon: { name: "Amazon (starter)", fields: { platformFeePct: 15.0, platformFixedFee: 0.00, platformListingFee: 0.00, platformNotes: "Varies by category" } },
+      shopify:{ name: "Shopify (starter)",fields: { platformFeePct: 2.9, platformFixedFee: 0.30, platformListingFee: 0.00, platformNotes: "Typical card processing" } },
+      ebay:   { name: "eBay (starter)",   fields: { platformFeePct: 13.0, platformFixedFee: 0.00, platformListingFee: 0.00, platformNotes: "Varies by category" } }
+    };
+
+    // ---- Inputs managed by calculator
     const inputIds = [
       "printHours","gramsUsed","spoolPrice","spoolWeight","wastePct",
-      "powerKW","elecRate","laborRate","laborMin","overheadPct","profitPct","minFee"
+      "powerKW","elecRate","laborRate","laborMin","overheadPct","profitPct","minFee",
+      "platformFeePct","platformFixedFee","platformListingFee","platformNotes"
     ];
 
     function money(n){
@@ -184,12 +307,39 @@
       return v.toLocaleString(undefined, { style:"currency", currency:"USD" });
     }
 
-    // Empty input should count as 0 (instead of NaN)
     function num(id){
       const raw = $(id).value;
       if (raw === "" || raw === null || raw === undefined) return 0;
       const v = parseFloat(raw);
       return Number.isFinite(v) ? v : 0;
+    }
+
+    function setSelectOptions(selectEl, presets){
+      selectEl.innerHTML = "";
+      for (const [key, obj] of Object.entries(presets)){
+        const opt = document.createElement("option");
+        opt.value = key;
+        opt.textContent = obj.name;
+        selectEl.appendChild(opt);
+      }
+      selectEl.value = "none";
+    }
+
+    function isEmptyField(id){
+      const el = $(id);
+      if (!el) return true;
+      return el.value === "" || el.value === null || el.value === undefined;
+    }
+
+    function applyFields(fields){
+      const emptyOnly = $("applyEmptyOnly").checked;
+      for (const [id, value] of Object.entries(fields)){
+        if (!$(id)) continue;
+        if (emptyOnly && !isEmptyField(id)) continue; // do not overwrite
+        $(id).value = value;
+      }
+      calc();
+      $("status").textContent = emptyOnly ? "Preset applied (empty fields only)" : "Preset applied (overwrote fields)";
     }
 
     function renderEmpty(){
@@ -200,6 +350,8 @@
         <div class="line-item"><div class="k">Base subtotal</div><div class="v">$0.00</div></div>
         <div class="line-item"><div class="k">Overhead</div><div class="v">$0.00</div></div>
         <div class="line-item"><div class="k">Profit</div><div class="v">$0.00</div></div>
+        <div class="line-item"><div class="k">Target before platform fees</div><div class="v">$0.00</div></div>
+        <div class="line-item"><div class="k">Platform fees added</div><div class="v">$0.00</div></div>
         <div class="line-item"><div class="k">Minimum fee applied?</div><div class="v">No</div></div>
       `;
       $("finalPrice").textContent = "$0.00";
@@ -207,10 +359,17 @@
     }
 
     function calc(){
+      // Detect if user entered anything at all
+      const anyInput = inputIds.some(id => ($(id) && $(id).value !== ""));
+      if (!anyInput){
+        renderEmpty();
+        return null;
+      }
+
       const printHours = num("printHours");
       const gramsUsed = num("gramsUsed");
       const spoolPrice = num("spoolPrice");
-      const spoolWeight = Math.max(1, num("spoolWeight")); // avoid divide by 0
+      const spoolWeight = Math.max(1, num("spoolWeight"));
       const wastePct = num("wastePct") / 100;
 
       const powerKW = num("powerKW");
@@ -223,12 +382,10 @@
       const profitPct = num("profitPct") / 100;
       const minFee = num("minFee");
 
-      // Detect if user entered anything at all
-      const anyInput = inputIds.some(id => $(id).value !== "");
-      if (!anyInput){
-        renderEmpty();
-        return null;
-      }
+      const includePlatformFees = $("includePlatformFees").checked;
+      const platformFeePct = num("platformFeePct") / 100;
+      const platformFixedFee = num("platformFixedFee");
+      const platformListingFee = num("platformListingFee");
 
       // Material
       const costPerGram = spoolPrice / spoolWeight;
@@ -238,23 +395,45 @@
       // Electricity
       const electricityCost = printHours * powerKW * elecRate;
 
-      // Labor (active time only)
+      // Labor
       const laborHours = laborMin / 60;
       const laborCost = laborHours * laborRate;
 
       // Base
       const base = materialCost + electricityCost + laborCost;
 
-      // Overhead added on base
+      // Overhead then profit
       const overheadCost = base * Math.max(0, overheadPct);
-
-      // Profit added on (base + overhead)
       const subtotal = base + overheadCost;
       const profit = subtotal * Math.max(0, profitPct);
 
-      // Final
-      const rawFinal = subtotal + profit;
-      const final = Math.max(rawFinal, Math.max(0, minFee));
+      // Target before platform fees & min fee
+      const targetBeforeFees = subtotal + profit;
+
+      // Apply minimum fee before platform gross-up (so tiny jobs still respect your minimum)
+      const targetWithMin = Math.max(targetBeforeFees, Math.max(0, minFee));
+      const minApplied = targetWithMin > targetBeforeFees;
+
+      // Optional platform gross-up so net after percent fees is still your target
+      let final = targetWithMin;
+      let platformAdded = 0;
+
+      if (includePlatformFees){
+        const pct = Math.max(0, platformFeePct);
+        const fixed = Math.max(0, platformFixedFee) + Math.max(0, platformListingFee);
+
+        if (pct >= 0.999){
+          // Avoid division by zero / nonsense
+          final = targetWithMin + fixed;
+          platformAdded = fixed;
+          $("status").textContent = "Platform fee % too high; used fixed fees only";
+        } else {
+          // Gross-up: gross = (target + fixed) / (1 - pct)
+          const gross = (targetWithMin + fixed) / (1 - pct);
+          final = gross;
+          platformAdded = gross - targetWithMin;
+        }
+      }
 
       const breakdown = [
         ["Material (incl. waste)", materialCost],
@@ -263,7 +442,9 @@
         ["Base subtotal", base],
         ["Overhead", overheadCost],
         ["Profit", profit],
-        ["Minimum fee applied?", final > rawFinal ? 1 : 0]
+        ["Target before platform fees", targetWithMin],
+        ["Platform fees added", platformAdded],
+        ["Minimum fee applied?", minApplied ? 1 : 0]
       ];
 
       $("breakdown").innerHTML = breakdown.map(([k,v]) => {
@@ -273,20 +454,48 @@
 
       $("finalPrice").textContent = money(final);
       $("status").textContent = "Updated";
+
       return {
-        printHours, gramsUsed, effectiveGrams, spoolPrice, spoolWeight, wastePct,
-        powerKW, elecRate, laborRate, laborMin,
-        overheadPct, profitPct, minFee,
-        materialCost, electricityCost, laborCost, overheadCost, profit, final
+        printHours, gramsUsed, effectiveGrams,
+        materialCost, electricityCost, laborCost,
+        overheadCost, profit,
+        targetWithMin,
+        includePlatformFees, platformFeePct, platformFixedFee, platformListingFee,
+        platformAdded, final,
+        minApplied
       };
     }
 
-    // Auto-calc on input changes
-    inputIds.forEach(id => $(id).addEventListener("input", calc));
+    // ---- Wire up UI
+    setSelectOptions($("printerPreset"), PRINTER_PRESETS);
+    setSelectOptions($("filamentPreset"), FILAMENT_PRESETS);
+    setSelectOptions($("platformPreset"), PLATFORM_PRESETS);
 
-    // Reset (clear all inputs)
+    $("applyPrinterBtn").addEventListener("click", () => {
+      const key = $("printerPreset").value;
+      applyFields(PRINTER_PRESETS[key]?.fields || {});
+    });
+
+    $("applyFilamentBtn").addEventListener("click", () => {
+      const key = $("filamentPreset").value;
+      applyFields(FILAMENT_PRESETS[key]?.fields || {});
+    });
+
+    $("applyPlatformBtn").addEventListener("click", () => {
+      const key = $("platformPreset").value;
+      applyFields(PLATFORM_PRESETS[key]?.fields || {});
+    });
+
+    inputIds.forEach(id => { if ($(id)) $(id).addEventListener("input", calc); });
+    $("includePlatformFees").addEventListener("change", calc);
+
     $("resetBtn").addEventListener("click", () => {
-      inputIds.forEach(id => $(id).value = "");
+      inputIds.forEach(id => { if ($(id)) $(id).value = ""; });
+      $("includePlatformFees").checked = false;
+      $("applyEmptyOnly").checked = true;
+      $("printerPreset").value = "none";
+      $("filamentPreset").value = "none";
+      $("platformPreset").value = "none";
       renderEmpty();
     });
 
@@ -296,17 +505,24 @@
         alert("Enter some values first, then try copying the quote.");
         return;
       }
+
+      const feeMode = r.includePlatformFees
+        ? `ON (added ${money(r.platformAdded)})`
+        : "OFF";
+
       const text =
 `3D Print Quote
 - Print time: ${r.printHours} hr
 - Filament: ${r.gramsUsed} g (+ waste = ${r.effectiveGrams.toFixed(1)} g)
 - Material cost: ${money(r.materialCost)}
 - Electricity cost: ${money(r.electricityCost)}
-- Active labor: ${r.laborMin} min @ ${money(r.laborRate)}/hr = ${money(r.laborCost)}
-- Overhead: ${Math.round(r.overheadPct*1000)/10}% = ${money(r.overheadCost)}
-- Profit: ${Math.round(r.profitPct*1000)/10}% = ${money(r.profit)}
-- Minimum fee: ${money(r.minFee)}
+- Active labor cost: ${money(r.laborCost)}
+- Overhead: ${money(r.overheadCost)}
+- Profit: ${money(r.profit)}
+- Target (min applied if needed): ${money(r.targetWithMin)}
+- Platform fees: ${feeMode}
 = Final: ${money(r.final)}`;
+
       try{
         await navigator.clipboard.writeText(text);
         $("status").textContent = "Copied to clipboard ✅";
