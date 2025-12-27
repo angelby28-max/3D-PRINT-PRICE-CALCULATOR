@@ -91,10 +91,8 @@
     .jobactions button{ padding:8px 10px; border-radius:10px; font-weight:700; }
     .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
 
-    /* Beginner Mode hides advanced UI blocks */
     .beginner .advanced-only { display:none !important; }
 
-    /* Light Mode: flip variables + brighten surfaces */
     #appRoot.light{
       --bg:#f3f4f6;
       --card:#ffffff;
@@ -113,39 +111,23 @@
       background:#ffffff;
       color:var(--text);
     }
-    #appRoot.light button.secondary{
-      background:#ffffff;
-    }
-    #appRoot.light .jobcard{
-      background:#ffffff;
-      border-color:#e5e7eb;
-    }
+    #appRoot.light button.secondary{ background:#ffffff; }
+    #appRoot.light .jobcard{ background:#ffffff; border-color:#e5e7eb; }
 
-    /* ✅ Light mode contrast fixes (buttons/labels/pills) */
-    #appRoot.light .pill{
-      background:#ffffff;
-      color:#111827;
-      border-color:#d1d5db;
-    }
+    #appRoot.light .pill{ background:#ffffff; color:#111827; border-color:#d1d5db; }
     #appRoot.light .toggle{ color:#374151; }
     #appRoot.light label{ color:#374151; }
     #appRoot.light .k{ color:#374151; }
     #appRoot.light .note,
     #appRoot.light .tiny,
     #appRoot.light .sec-title span,
-    #appRoot.light .jobmeta{
-      color:#4b5563;
-    }
-    #appRoot.light button{ color:#08210f; } /* primary green stays readable */
-    #appRoot.light button.secondary{
-      color:#111827;
-      border-color:#d1d5db;
-    }
+    #appRoot.light .jobmeta{ color:#4b5563; }
+    #appRoot.light button{ color:#08210f; }
+    #appRoot.light button.secondary{ color:#111827; border-color:#d1d5db; }
     #appRoot.light button.warn{ color:#7c2d12; }
     #appRoot.light button.danger{ color:#7f1d1d; }
     #appRoot.light .total .k{ color:#14532d; }
 
-    /* Small select for language */
     .langSelect{
       padding:8px 10px;
       border-radius:12px;
@@ -193,10 +175,8 @@
     </div>
 
     <div class="grid">
-      <!-- LEFT: Calculator -->
       <div class="card">
 
-        <!-- Advanced: Presets -->
         <div class="advanced-only">
           <div class="sec-title">
             <h2 data-i18n="presetsTitle">Presets (optional)</h2>
@@ -250,7 +230,6 @@
           <div class="divider"></div>
         </div>
 
-        <!-- Job inputs -->
         <div class="sec-title">
           <h2 data-i18n="jobInputs">Job inputs</h2>
           <span class="pill" data-i18n="updatesAsYouType">Updates as you type</span>
@@ -280,6 +259,17 @@
           <div>
             <label data-i18n="wastePct">Waste factor (%)</label>
             <input id="wastePct" type="number" min="0" step="0.1" data-i18n-placeholder="ph_wastePct" placeholder="e.g., 5" />
+          </div>
+
+          <!-- ✅ NEW: Packaging + Consumables (visible in beginner mode) -->
+          <div>
+            <label data-i18n="packagingCost">Packaging cost ($)</label>
+            <input id="packagingCost" type="number" min="0" step="0.01" data-i18n-placeholder="ph_packagingCost" placeholder="e.g., 0.75" />
+          </div>
+
+          <div>
+            <label data-i18n="consumablesCost">Consumables cost ($)</label>
+            <input id="consumablesCost" type="number" min="0" step="0.01" data-i18n-placeholder="ph_consumablesCost" placeholder="e.g., 0.50" />
           </div>
 
           <div class="advanced-only">
@@ -318,7 +308,6 @@
           </div>
         </div>
 
-        <!-- Advanced: Depreciation -->
         <div class="advanced-only">
           <div class="divider"></div>
 
@@ -347,7 +336,6 @@
           </div>
         </div>
 
-        <!-- Advanced: Platform fees -->
         <div class="advanced-only">
           <div class="divider"></div>
 
@@ -383,7 +371,6 @@
           </div>
         </div>
 
-        <!-- Advanced: Job tools -->
         <div class="advanced-only">
           <div class="divider"></div>
 
@@ -417,9 +404,7 @@
         </div>
 
         <div class="note advanced-only">
-          <span data-i18n="grossUpNote">
-            Platform fee uses gross-up:
-          </span>
+          <span data-i18n="grossUpNote">Platform fee uses gross-up:</span>
           <span class="mono" style="color:#cbd5e1;">gross = (target + fixed + listing) / (1 - fee%)</span>
         </div>
 
@@ -428,7 +413,6 @@
         </div>
       </div>
 
-      <!-- RIGHT: Output + Job History -->
       <div class="card">
         <div class="sec-title">
           <h2 data-i18n="estimateTitle">Estimate</h2>
@@ -493,6 +477,10 @@
         spoolPrice: "Spool price ($)",
         spoolWeight: "Spool weight (grams)",
         wastePct: "Waste factor (%)",
+
+        packagingCost: "Packaging cost ($)",
+        consumablesCost: "Consumables cost ($)",
+
         powerKW: "Power draw (kW)",
         elecRate: "Electricity rate ($/kWh)",
         laborRate: "Labor rate ($/hr)",
@@ -542,6 +530,8 @@
         ph_spoolPrice: "e.g., 20",
         ph_spoolWeight: "Usually 1000",
         ph_wastePct: "e.g., 5",
+        ph_packagingCost: "e.g., 0.75",
+        ph_consumablesCost: "e.g., 0.50",
         ph_powerKW: "e.g., 0.115",
         ph_elecRate: "e.g., 0.146",
         ph_laborRate: "e.g., 40",
@@ -590,8 +580,10 @@
         alert_importFailed: "Import failed: invalid JSON.",
         confirm_clearJobs: "Clear ALL job history? This cannot be undone.",
 
-        // breakdown keys
+        // breakdown
         bd_material: "Material (incl. waste)",
+        bd_packaging: "Packaging",
+        bd_consumables: "Consumables",
         bd_electricity: "Electricity",
         bd_machine: "Machine (depr + maint)",
         bd_labor: "Active labor",
@@ -658,6 +650,10 @@
         spoolPrice: "Precio del rollo ($)",
         spoolWeight: "Peso del rollo (gramos)",
         wastePct: "Desperdicio (%)",
+
+        packagingCost: "Empaque ($)",
+        consumablesCost: "Consumibles ($)",
+
         powerKW: "Consumo (kW)",
         elecRate: "Costo de electricidad ($/kWh)",
         laborRate: "Mano de obra ($/hr)",
@@ -707,6 +703,8 @@
         ph_spoolPrice: "ej., 20",
         ph_spoolWeight: "Normalmente 1000",
         ph_wastePct: "ej., 5",
+        ph_packagingCost: "ej., 0.75",
+        ph_consumablesCost: "ej., 0.50",
         ph_powerKW: "ej., 0.115",
         ph_elecRate: "ej., 0.146",
         ph_laborRate: "ej., 40",
@@ -755,8 +753,10 @@
         alert_importFailed: "Falló la importación: JSON inválido.",
         confirm_clearJobs: "¿Borrar TODO el historial? Esto no se puede deshacer.",
 
-        // breakdown keys
+        // breakdown
         bd_material: "Material (incl. desperdicio)",
+        bd_packaging: "Empaque",
+        bd_consumables: "Consumibles",
         bd_electricity: "Electricidad",
         bd_machine: "Máquina (depr + mant)",
         bd_labor: "Mano de obra activa",
@@ -802,17 +802,19 @@
       const pack = I18N[lang] || I18N.en;
       return pack[key] ?? (I18N.en[key] ?? key);
     }
+
     function currentLang(){
       const settings = loadJSON(LS_SETTINGS_KEY, { lang:"en" });
       return (settings && (settings.lang === "es" || settings.lang === "en")) ? settings.lang : "en";
     }
+
     function setLang(lang){
       const s = loadJSON(LS_SETTINGS_KEY, {});
       s.lang = (lang === "es") ? "es" : "en";
       saveJSON(LS_SETTINGS_KEY, s);
     }
 
-    // ---------- Presets (with i18n names) ----------
+    // ---------- Presets ----------
     const PRINTER_PRESETS = {
       none: { nameKey: "preset_selectPrinter", fields: {} },
       bambu_p1s: { nameKey: "preset_bambuP1s", fields: { powerKW: 0.115 } },
@@ -847,13 +849,14 @@
     }
 
     // Storage keys
-    const LS_DEFAULTS_KEY = "calc_defaults_v2";
-    const LS_JOBS_KEY = "calc_jobs_v2";
-    const LS_SETTINGS_KEY = "calc_settings_v5"; // now includes beginner + light + lang
+    const LS_DEFAULTS_KEY = "calc_defaults_v3";
+    const LS_JOBS_KEY = "calc_jobs_v3";
+    const LS_SETTINGS_KEY = "calc_settings_v6"; // includes beginner + light + lang
 
     // Inputs managed
     const inputIds = [
       "printHours","gramsUsed","spoolPrice","spoolWeight","wastePct",
+      "packagingCost","consumablesCost",
       "powerKW","elecRate","laborRate","laborMin","overheadPct","profitPct","minFee",
       "printerPrice","printerLifeHours","maintenancePerHr",
       "platformFeePct","platformFixedFee","platformListingFee","platformNotes",
@@ -888,6 +891,7 @@
 
     function setSelectOptions(selectEl, presets){
       if (!selectEl) return;
+      const current = selectEl.value;
       selectEl.innerHTML = "";
       for (const [key, obj] of Object.entries(presets)){
         const opt = document.createElement("option");
@@ -895,8 +899,7 @@
         opt.textContent = t(obj.nameKey);
         selectEl.appendChild(opt);
       }
-      // keep current selection if possible
-      if (!selectEl.value || !presets[selectEl.value]) selectEl.value = Object.keys(presets)[0];
+      selectEl.value = (current && presets[current]) ? current : "none";
     }
 
     function refreshAllPresetSelects(){
@@ -920,6 +923,7 @@
       }
       calc();
       $("status").textContent = emptyOnly ? t("status_presetEmptyOnly") : t("status_presetOverwrite");
+      $("status").dataset.i18nStatusKey = ""; // dynamic
     }
 
     function getState(){
@@ -949,12 +953,14 @@
       const el = $("status");
       if (!el) return;
       el.textContent = t(key);
-      el.dataset.i18nStatusKey = key; // helps when language changes
+      el.dataset.i18nStatusKey = key;
     }
 
     function renderEmpty(){
       $("breakdown").innerHTML = `
         <div class="line-item"><div class="k">${t("bd_material")}</div><div class="v">$0.00</div></div>
+        <div class="line-item"><div class="k">${t("bd_packaging")}</div><div class="v">$0.00</div></div>
+        <div class="line-item"><div class="k">${t("bd_consumables")}</div><div class="v">$0.00</div></div>
         <div class="line-item"><div class="k">${t("bd_electricity")}</div><div class="v">$0.00</div></div>
         <div class="line-item"><div class="k">${t("bd_machine")}</div><div class="v">$0.00</div></div>
         <div class="line-item"><div class="k">${t("bd_labor")}</div><div class="v">$0.00</div></div>
@@ -991,6 +997,9 @@
       const spoolWeight = Math.max(1, num("spoolWeight"));
       const wastePct = num("wastePct") / 100;
 
+      const packaging = Math.max(0, num("packagingCost"));
+      const consumables = Math.max(0, num("consumablesCost"));
+
       const powerKW = num("powerKW");
       const elecRate = num("elecRate");
 
@@ -1019,7 +1028,8 @@
       const laborHours = laborMin / 60;
       const laborCost = laborHours * laborRate;
 
-      const base = materialCost + electricityCost + machineCost + laborCost;
+      // ✅ Base now includes packaging + consumables
+      const base = materialCost + packaging + consumables + electricityCost + machineCost + laborCost;
 
       const overheadCost = base * Math.max(0, overheadPct);
       const subtotal = base + overheadCost;
@@ -1050,6 +1060,8 @@
 
       const breakdown = [
         ["bd_material", materialCost],
+        ["bd_packaging", packaging],
+        ["bd_consumables", consumables],
         ["bd_electricity", electricityCost],
         ["bd_machine", machineCost],
         ["bd_labor", laborCost],
@@ -1063,14 +1075,17 @@
 
       $("breakdown").innerHTML = breakdown.map(([key,v]) => {
         const label = t(key);
-        const val = (key === "bd_minApplied") ? (v ? "Yes" : "No") : money(v);
+        const lang = currentLang();
+        const yes = (lang === "es") ? "Sí" : "Yes";
+        const no  = (lang === "es") ? "No" : "No";
+        const val = (key === "bd_minApplied") ? (v ? yes : no) : money(v);
         return `<div class="line-item"><div class="k">${label}</div><div class="v">${val}</div></div>`;
       }).join("");
 
       $("finalPrice").textContent = money(final);
       setStatusKey("status_updated");
 
-      return { final, printHours, gramsUsed, effectiveGrams, materialCost, electricityCost, machineCost, laborCost, overheadCost, profit, targetWithMin, platformAdded, minApplied };
+      return { final, printHours, gramsUsed, effectiveGrams, materialCost, packaging, consumables, electricityCost, machineCost, laborCost, overheadCost, profit, targetWithMin, platformAdded, minApplied };
     }
 
     // Jobs (advanced)
@@ -1139,7 +1154,7 @@
       setStatusKey("status_jobDeleted");
     };
 
-    // Defaults (advanced)
+    // Defaults
     function saveDefaults(){
       const state = getState();
       state.jobName = "";
@@ -1158,10 +1173,10 @@
       setStatusKey("status_defaultsCleared");
     }
 
-    // Export/Import jobs (advanced)
+    // Export/Import jobs
     function exportJobs(){
       const jobs = loadJobs();
-      const payload = { exportedAt: new Date().toISOString(), version: 5, jobs };
+      const payload = { exportedAt: new Date().toISOString(), version: 6, jobs };
       const text = JSON.stringify(payload, null, 2);
       navigator.clipboard.writeText(text).then(() => {
         setStatusKey("status_exportOk");
@@ -1182,7 +1197,7 @@
         const jobs = loadJobs();
         saveJobs(jobs.concat(incoming).filter(Boolean));
         $("status").textContent = t("status_importOk")(incoming.length);
-        $("status").dataset.i18nStatusKey = ""; // dynamic string
+        $("status").dataset.i18nStatusKey = "";
       }catch(e){
         alert(t("alert_importFailed"));
         setStatusKey("status_importFailed");
@@ -1203,6 +1218,8 @@
       const header = (lang === "es") ? "Cotización de Impresión 3D" : "3D Print Quote";
       const timeLbl = (lang === "es") ? "Tiempo de impresión" : "Print time";
       const filLbl = (lang === "es") ? "Filamento" : "Filament";
+      const packLbl = (lang === "es") ? "Empaque" : "Packaging";
+      const consLbl = (lang === "es") ? "Consumibles" : "Consumables";
       const matLbl = (lang === "es") ? "Material" : "Material";
       const elecLbl = (lang === "es") ? "Electricidad" : "Electricity";
       const machLbl = (lang === "es") ? "Máquina" : "Machine";
@@ -1214,6 +1231,8 @@
 - ${timeLbl}: ${r.printHours} hr
 - ${filLbl}: ${r.gramsUsed} g (+ waste = ${r.effectiveGrams.toFixed(1)} g)
 - ${matLbl}: ${money(r.materialCost)}
+- ${packLbl}: ${money(r.packaging)}
+- ${consLbl}: ${money(r.consumables)}
 - ${elecLbl}: ${money(r.electricityCost)}
 - ${machLbl}: ${money(r.machineCost)}
 - ${labLbl}: ${money(r.laborCost)}
@@ -1254,52 +1273,41 @@
       const lang = currentLang();
       document.documentElement.lang = lang;
 
-      // text nodes
       document.querySelectorAll("[data-i18n]").forEach(el => {
         const key = el.getAttribute("data-i18n");
-        // keys that include HTML are handled separately
         el.innerHTML = t(key);
       });
 
-      // HTML keys
       document.querySelectorAll("[data-i18n-html]").forEach(el => {
         const key = el.getAttribute("data-i18n-html");
         el.innerHTML = t(key);
       });
 
-      // placeholders
       document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
         const key = el.getAttribute("data-i18n-placeholder");
         el.setAttribute("placeholder", t(key));
       });
 
-      // status re-translate if it was a key-based status
       const statusEl = $("status");
       if (statusEl){
         const k = statusEl.dataset.i18nStatusKey;
         if (k) statusEl.textContent = t(k);
       }
 
-      // update preset selects display names
       refreshAllPresetSelects();
-
-      // ensure platform notes for preset options are localized when applied later
       renderJobs();
-      calc(); // rerender breakdown labels
+      calc();
     }
 
     function init(){
-      // Fill selects
       refreshAllPresetSelects();
 
-      // Apply buttons
       $("applyPrinterBtn")?.addEventListener("click", () => applyFields(PRINTER_PRESETS[$("printerPreset").value]?.fields || {}));
       $("applyFilamentBtn")?.addEventListener("click", () => applyFields(FILAMENT_PRESETS[$("filamentPreset").value]?.fields || {}));
       $("applyPlatformBtn")?.addEventListener("click", () => {
         const key = $("platformPreset").value;
         const baseFields = PLATFORM_PRESETS[key]?.fields || {};
         const fields = { ...baseFields };
-        // localize platform notes on apply
         if (key && key !== "none") fields.platformNotes = localizedPlatformNotes(key);
         applyFields(fields);
       });
@@ -1324,6 +1332,8 @@
           spoolPrice: $("spoolPrice")?.value || "",
           spoolWeight: $("spoolWeight")?.value || "",
           wastePct: $("wastePct")?.value || "",
+          packagingCost: $("packagingCost")?.value || "",
+          consumablesCost: $("consumablesCost")?.value || "",
           powerKW: $("powerKW")?.value || "",
           elecRate: $("elecRate")?.value || "",
           laborRate: $("laborRate")?.value || "",
@@ -1353,19 +1363,16 @@
       $("resetBtn")?.addEventListener("click", resetAll);
       $("copyBtn")?.addEventListener("click", copyQuote);
 
-      // Load settings (beginner/light/lang/autoload)
       const settings = loadJSON(LS_SETTINGS_KEY, { beginnerMode: true, lightMode: false, autoLoadDefaults: true, lang:"en" });
 
-      // Language
       const langDefault = (settings.lang === "es") ? "es" : "en";
       if ($("langSelect")) $("langSelect").value = langDefault;
-      setLang(langDefault); // ensure stored
+      setLang(langDefault);
       $("langSelect")?.addEventListener("change", (e) => {
         setLang(e.target.value);
         applyI18nToDOM();
       });
 
-      // Beginner mode
       const beginnerDefault = (typeof settings.beginnerMode === "boolean") ? settings.beginnerMode : true;
       $("beginnerMode").checked = beginnerDefault;
       applyBeginnerModeUI(beginnerDefault);
@@ -1377,7 +1384,6 @@
         saveJSON(LS_SETTINGS_KEY, s);
       });
 
-      // Light mode
       const lightDefault = (typeof settings.lightMode === "boolean") ? settings.lightMode : false;
       $("lightMode").checked = lightDefault;
       applyThemeUI(lightDefault);
@@ -1389,17 +1395,14 @@
         saveJSON(LS_SETTINGS_KEY, s);
       });
 
-      // initial i18n
       applyI18nToDOM();
 
       renderEmpty();
       renderJobs();
 
-      // Auto-load defaults
       const autoLoad = (typeof settings.autoLoadDefaults === "boolean") ? settings.autoLoadDefaults : true;
       if ($("autoLoadDefaults")) $("autoLoadDefaults").checked = autoLoad;
 
-      // keep setting in sync (checkbox)
       $("autoLoadDefaults")?.addEventListener("change", (e) => {
         const s = loadJSON(LS_SETTINGS_KEY, {});
         s.autoLoadDefaults = !!e.target.checked;
