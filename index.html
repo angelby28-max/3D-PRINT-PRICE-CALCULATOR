@@ -2,58 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>3D Print Price Calculator</title>
-
-  <!-- Mobile / PWA -->
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#111827" />
-  <meta name="description" content="3D Printing price calculator – installable PWA." />
-
-  <!-- iOS support -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="3D Print Calc" />
-
-  <!-- TEMP ICON (placeholder – we replace later) -->
-  <link rel="icon" type="image/png"
-    href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAFUlEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAH4D9AEAAQfH6GQAAAAASUVORK5CYII=" />
-  <link rel="apple-touch-icon"
-    href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAFUlEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAH4D9AEAAQfH6GQAAAAASUVORK5CYII=" />
-
-  <!-- EMBEDDED MANIFEST (single-file PWA) -->
-  <script>
-    (function () {
-      const ICON =
-        "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAFUlEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAH4D9AEAAQfH6GQAAAAASUVORK5CYII=";
-
-      const manifest = {
-        name: "3D Print Price Calculator",
-        short_name: "3D Calc",
-        start_url: ".",
-        scope: ".",
-        display: "standalone",
-        background_color: "#111827",
-        theme_color: "#111827",
-        icons: [
-          { src: "data:image/png;base64," + ICON, sizes: "192x192", type: "image/png" },
-          { src: "data:image/png;base64," + ICON, sizes: "512x512", type: "image/png" }
-        ]
-      };
-
-      const blob = new Blob([JSON.stringify(manifest)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("link");
-      link.rel = "manifest";
-      link.href = url;
-      document.head.appendChild(link);
-    })();
-  </script>
-
-  <!-- YOUR ORIGINAL STYLES (UNCHANGED) -->
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>3D Print Price Calculator</title>
   <meta name="theme-color" content="#111827" />
