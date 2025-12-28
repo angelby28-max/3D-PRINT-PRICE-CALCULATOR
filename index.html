@@ -31,30 +31,15 @@
     .fields{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     @media (max-width: 640px){ .fields{ grid-template-columns:1fr; } }
     label{ display:block; font-size:12px; color:var(--muted); margin:0 0 6px; }
-
-    /* ===== Contrast + readability upgrades (fixes light-mode faint text) ===== */
     input, select, textarea{
       width:100%; padding:10px 10px;
       border-radius:10px; border:1px solid var(--line);
       background:#0b1020; color:var(--text);
       outline:none;
-      /* make digits and small text easier to read */
-      font-weight:600;
-      letter-spacing:0.1px;
-      -webkit-text-size-adjust:100%;
-      font-variant-numeric: tabular-nums;
     }
-    input[type="number"]{ font-variant-numeric: tabular-nums; }
     textarea{ min-height:76px; resize:vertical; }
     input:focus, select:focus, textarea:focus{ border-color:#334155; box-shadow: 0 0 0 3px rgba(34,197,94,.12); }
-    input::placeholder, textarea::placeholder{ color: rgba(156,163,175,.75); }
-
-    /* Ensure any disabled/readonly values stay readable */
-    input:disabled, textarea:disabled, select:disabled{
-      opacity:1; /* prevent “faded” disabled text */
-      color:var(--text);
-    }
-
+    input::placeholder, textarea::placeholder{ color: rgba(156,163,175,.7); }
     .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
     .btns{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
     button{
@@ -69,7 +54,7 @@
     .line-item{ display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(31,41,55,.5); gap:10px; }
     .line-item:last-child{ border-bottom:0; }
     .k{ color:var(--muted); font-size:13px; }
-    .v{ font-variant-numeric: tabular-nums; text-align:right; font-weight:700; }
+    .v{ font-variant-numeric: tabular-nums; text-align:right; }
     .total{
       display:flex; justify-content:space-between; align-items:center;
       margin-top:10px; padding:10px 12px; border-radius:12px;
@@ -108,63 +93,6 @@
 
     .beginner .advanced-only { display:none !important; }
 
-    #appRoot.light{
-      --bg:#f3f4f6;
-      --card:#ffffff;
-      --text:#111827;
-      --muted:#374151;   /* darker than before */
-      --line:#e5e7eb;
-      --accent:#22c55e;
-      --warn:#f59e0b;
-      --danger:#ef4444;
-    }
-    #appRoot.light .card{
-      background: rgba(255,255,255,.95);
-      box-shadow: 0 10px 30px rgba(0,0,0,.10);
-    }
-
-    /* Light mode: force dark, high-contrast input text */
-    #appRoot.light input, #appRoot.light select, #appRoot.light textarea{
-      background:#ffffff;
-      color:#111827 !important;
-      border-color:#d1d5db;
-      font-weight:700; /* makes numbers + labels inside inputs pop */
-    }
-    #appRoot.light input::placeholder, #appRoot.light textarea::placeholder{
-      color:#6b7280;
-    }
-    #appRoot.light input:disabled, #appRoot.light select:disabled, #appRoot.light textarea:disabled{
-      opacity:1;
-      color:#111827 !important;
-      background:#f9fafb;
-      border-color:#d1d5db;
-    }
-    #appRoot.light input:focus, #appRoot.light select:focus, #appRoot.light textarea:focus{
-      border-color:#94a3b8;
-      box-shadow: 0 0 0 3px rgba(59,130,246,.12);
-    }
-
-    #appRoot.light button.secondary{ background:#ffffff; }
-    #appRoot.light .jobcard{ background:#ffffff; border-color:#e5e7eb; }
-
-    #appRoot.light .pill{ background:#ffffff; color:#111827; border-color:#d1d5db; }
-    #appRoot.light .toggle{ color:#111827; }
-    #appRoot.light label{ color:#111827; font-weight:700; }
-    #appRoot.light .k{ color:#111827; }
-    #appRoot.light .note,
-    #appRoot.light .tiny,
-    #appRoot.light .sec-title span,
-    #appRoot.light .jobmeta{ color:#374151; }
-    #appRoot.light button{ color:#08210f; }
-    #appRoot.light button.secondary{ color:#111827; border-color:#d1d5db; }
-    #appRoot.light button.warn{ color:#7c2d12; }
-    #appRoot.light button.danger{ color:#7f1d1d; }
-    #appRoot.light .total .k{ color:#14532d; }
-
-    /* Light mode: make the value column darker/bolder too */
-    #appRoot.light .v{ color:#111827; font-weight:800; }
-    #appRoot.light .line-item{ border-bottom:1px solid rgba(209,213,219,.9); }
-
     .langSelect{
       padding:8px 10px;
       border-radius:12px;
@@ -172,12 +100,6 @@
       background:#0b1020;
       color:var(--text);
       font-weight:700;
-    }
-    #appRoot.light .langSelect{
-      background:#ffffff;
-      color:#111827 !important;
-      border-color:#d1d5db;
-      font-weight:800;
     }
   </style>
 </head>
@@ -187,7 +109,7 @@
       <div>
         <h1 data-i18n="appTitle">3D Print Price Calculator</h1>
         <p class="sub" data-i18n="subTitle">
-          Beginner Mode keeps it simple. Light Mode gives a brighter look. Both settings are remembered.
+          Beginner Mode keeps it simple. Your settings are remembered.
         </p>
       </div>
 
@@ -200,10 +122,7 @@
           </select>
         </label>
 
-        <label class="toggle" style="margin:0;">
-          <input id="lightMode" type="checkbox" />
-          <b data-i18n="lightMode">Light Mode</b>
-        </label>
+        <!-- Light mode toggle removed -->
 
         <label class="toggle" style="margin:0;">
           <input id="beginnerMode" type="checkbox" />
@@ -531,9 +450,8 @@
     const I18N = {
       en: {
         appTitle: "3D Print Price Calculator",
-        subTitle: "Beginner Mode keeps it simple. Light Mode gives a brighter look. Both settings are remembered.",
+        subTitle: "Beginner Mode keeps it simple. Your settings are remembered.",
         languageLabel: "Language",
-        lightMode: "Light Mode",
         beginnerMode: "Beginner Mode",
 
         presetsTitle: "Presets (optional)",
@@ -669,8 +587,6 @@
         status_platformPctTooHigh: "Platform fee % too high; used fixed fees only",
         status_beginnerOn: "Beginner Mode ON",
         status_beginnerOff: "Beginner Mode OFF",
-        status_lightOn: "Light Mode ON",
-        status_darkOn: "Dark Mode ON",
 
         // prompts/alerts
         alert_enterValuesFirst: "Enter some values first, then copy the quote.",
@@ -762,9 +678,8 @@
       },
       es: {
         appTitle: "Calculadora de Precio para Impresión 3D",
-        subTitle: "Modo Principiante lo mantiene simple. Modo Claro da una apariencia más brillante. Se recuerdan tus ajustes.",
+        subTitle: "Modo Principiante lo mantiene simple. Se recuerdan tus ajustes.",
         languageLabel: "Idioma",
-        lightMode: "Modo Claro",
         beginnerMode: "Modo Principiante",
 
         presetsTitle: "Preajustes (opcional)",
@@ -900,8 +815,6 @@
         status_platformPctTooHigh: "Comisión % demasiado alta; se usó solo tarifa fija",
         status_beginnerOn: "Modo Principiante ACTIVADO",
         status_beginnerOff: "Modo Principiante DESACTIVADO",
-        status_lightOn: "Modo Claro ACTIVADO",
-        status_darkOn: "Modo Oscuro ACTIVADO",
 
         // prompts/alerts
         alert_enterValuesFirst: "Primero ingresa valores y luego copia la cotización.",
@@ -1576,13 +1489,6 @@
       setStatusKey(isBeginner ? "status_beginnerOn" : "status_beginnerOff");
     }
 
-    function applyThemeUI(isLight){
-      const root = $("appRoot");
-      if (!root) return;
-      root.classList.toggle("light", !!isLight);
-      setStatusKey(isLight ? "status_lightOn" : "status_darkOn");
-    }
-
     function applyI18nToDOM(){
       const lang = currentLang();
       document.documentElement.lang = lang;
@@ -1699,8 +1605,12 @@
       $("resetBtn")?.addEventListener("click", resetAll);
       $("copyBtn")?.addEventListener("click", copyQuote);
 
-      // Settings
-      const settings = loadJSON(LS_SETTINGS_KEY, { beginnerMode: true, lightMode: false, autoLoadDefaults: true, lang:"en" });
+      // Settings (keep same key; force lightMode off and strip it from saved settings)
+      const settings = loadJSON(LS_SETTINGS_KEY, { beginnerMode: true, autoLoadDefaults: true, lang:"en" });
+      if (settings && "lightMode" in settings){
+        delete settings.lightMode;
+        saveJSON(LS_SETTINGS_KEY, settings);
+      }
 
       const langDefault = (settings.lang === "es") ? "es" : "en";
       if ($("langSelect")) $("langSelect").value = langDefault;
@@ -1718,17 +1628,6 @@
         applyBeginnerModeUI(on);
         const s = loadJSON(LS_SETTINGS_KEY, {});
         s.beginnerMode = on;
-        saveJSON(LS_SETTINGS_KEY, s);
-      });
-
-      const lightDefault = (typeof settings.lightMode === "boolean") ? settings.lightMode : false;
-      $("lightMode").checked = lightDefault;
-      applyThemeUI(lightDefault);
-      $("lightMode").addEventListener("change", (e) => {
-        const on = e.target.checked;
-        applyThemeUI(on);
-        const s = loadJSON(LS_SETTINGS_KEY, {});
-        s.lightMode = on;
         saveJSON(LS_SETTINGS_KEY, s);
       });
 
