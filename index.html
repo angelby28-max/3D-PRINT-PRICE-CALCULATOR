@@ -3,1657 +3,1655 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>3D Print Price Calculator</title>
   <meta name="theme-color" content="#111827" />
+  <meta name="color-scheme" content="dark light" />
+  <title>Anchored Landscaping Invoice</title>
+
   <style>
-    :root { --bg:#0b1220; --card:#111827; --text:#e5e7eb; --muted:#9ca3af; --line:#1f2937; --accent:#22c55e; --warn:#f59e0b; --danger:#ef4444; }
+    :root{
+      --bg:#0b1220; --card:#111827; --card2:#0f172a; --text:#e5e7eb; --muted:#9ca3af;
+      --line:#1f2937; --accent:#22c55e; --warn:#f59e0b; --danger:#ef4444; --info:#60a5fa;
+    }
     *{ box-sizing:border-box; }
-    body{
-      margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      background: radial-gradient(1200px 800px at 10% 10%, #0f1a33 0%, var(--bg) 55%);
-      color:var(--text);
+    body{ margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif; background:var(--bg); color:var(--text); }
+    a{ color:inherit; }
+    .wrap{ max-width:1100px; margin:0 auto; padding:18px; }
+    .topbar{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+    .brand{ display:flex; gap:12px; align-items:center; }
+    .logoMark{
+      width:44px;height:44px;border-radius:14px;border:1px solid var(--line);
+      background: linear-gradient(135deg, rgba(34,197,94,.9), rgba(17,24,39,.9));
+      display:grid; place-items:center; font-weight:900;
     }
-    .wrap{ max-width:1200px; margin:0 auto; padding:18px; }
-    h1{ font-size:20px; margin:6px 0 2px; }
-    p.sub{ margin:0 0 16px; color:var(--muted); font-size:13px; line-height:1.35; }
-    .grid{ display:grid; grid-template-columns: 1.25fr .75fr; gap:14px; }
-    @media (max-width: 1100px){ .grid{ grid-template-columns:1fr; } }
+    h1{ margin:0; font-size:20px; letter-spacing:.2px; }
+    .sub{ color:var(--muted); font-size:13px; margin-top:4px; line-height:1.35; }
+
+    .grid{ display:grid; gap:12px; margin-top:14px; }
+    @media (min-width: 980px){ .grid{ grid-template-columns: 1.25fr .75fr; } }
+
     .card{
-      background: rgba(17,24,39,.9);
+      background:var(--card);
       border:1px solid var(--line);
-      border-radius:14px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      border-radius:18px;
       padding:14px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.25);
     }
-    .sec-title{ display:flex; justify-content:space-between; align-items:baseline; margin:0 0 8px; gap:10px; }
-    .sec-title h2{ font-size:14px; margin:0; }
-    .sec-title span{ color:var(--muted); font-size:12px; }
-    .fields{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    @media (max-width: 640px){ .fields{ grid-template-columns:1fr; } }
-    label{ display:block; font-size:12px; color:var(--muted); margin:0 0 6px; }
+    .card h2{ margin:0 0 10px; font-size:15px; color:#f3f4f6; }
+    .row{ display:grid; gap:10px; }
+    .row2{ display:grid; gap:10px; }
+    @media (min-width: 720px){ .row2{ grid-template-columns: 1fr 1fr; } }
+    .row3{ display:grid; gap:10px; }
+    @media (min-width: 900px){ .row3{ grid-template-columns: 1fr 1fr 1fr; } }
+
+    label{ font-size:12px; color:var(--muted); }
     input, select, textarea{
-      width:100%; padding:10px 10px;
-      border-radius:10px; border:1px solid var(--line);
-      background:#0b1020; color:var(--text);
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
       outline:none;
     }
-    textarea{ min-height:76px; resize:vertical; }
-    input:focus, select:focus, textarea:focus{ border-color:#334155; box-shadow: 0 0 0 3px rgba(34,197,94,.12); }
-    input::placeholder, textarea::placeholder{ color: rgba(156,163,175,.7); }
-    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    .btns{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
-    button{
-      border:0; border-radius:12px; padding:10px 12px; cursor:pointer; font-weight:700;
-      background:var(--accent); color:#08210f;
-    }
-    button.secondary{ background:#0b1020; color:var(--text); border:1px solid var(--line); font-weight:600; }
-    button.warn{ background: rgba(245,158,11,.15); border:1px solid rgba(245,158,11,.4); color:#ffedd5; }
-    button.danger{ background: rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.35); color:#fee2e2; }
-    .note{ color:var(--muted); font-size:12px; margin-top:8px; line-height:1.35; }
-    .breakdown{ margin-top:8px; border-top:1px dashed var(--line); padding-top:10px; }
-    .line-item{ display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(31,41,55,.5); gap:10px; }
-    .line-item:last-child{ border-bottom:0; }
-    .k{ color:var(--muted); font-size:13px; }
-    .v{ font-variant-numeric: tabular-nums; text-align:right; }
-    .total{
-      display:flex; justify-content:space-between; align-items:center;
-      margin-top:10px; padding:10px 12px; border-radius:12px;
-      background: rgba(34,197,94,.10); border:1px solid rgba(34,197,94,.35);
-      gap:10px;
-    }
-    .total .k{ color:#bbf7d0; }
-    .total .v{ font-size:18px; font-weight:900; }
-    .tiny{ font-size:11px; color:var(--muted); margin-top:8px; line-height:1.35; }
-    .pill{
-      display:inline-flex; gap:6px; align-items:center; padding:6px 10px; border-radius:999px;
-      background:#0b1020; border:1px solid var(--line); color:var(--muted); font-size:12px;
-    }
-    .divider{ margin:12px 0; border-top:1px solid rgba(31,41,55,.7); }
-    .toggle{
-      display:flex; gap:8px; align-items:center; color:var(--muted); font-size:12px;
+    textarea{ min-height:84px; resize:vertical; }
+
+    .btn{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      justify-content:center;
       user-select:none;
     }
-    .toggle input{ width:auto; }
-    .jobs{ display:flex; flex-direction:column; gap:10px; }
-    .jobcard{
-      border:1px solid rgba(31,41,55,.8);
-      background:#0b1020;
-      border-radius:12px;
+    .btn:hover{ filter:brightness(1.05); }
+    .btn.primary{ background: rgba(34,197,94,.14); border-color: rgba(34,197,94,.35); }
+    .btn.info{ background: rgba(96,165,250,.12); border-color: rgba(96,165,250,.35); }
+    .btn.warn{ background: rgba(245,158,11,.12); border-color: rgba(245,158,11,.35); }
+    .btn.danger{ background: rgba(239,68,68,.12); border-color: rgba(239,68,68,.35); }
+    .btn.small{ padding:8px 10px; font-size:12px; border-radius:10px; }
+
+    .actions{ display:flex; gap:10px; flex-wrap:wrap; }
+    .muted{ color:var(--muted); font-size:12px; line-height:1.35; }
+
+    .tableWrap{ overflow:auto; border-radius:14px; border:1px solid var(--line); background: rgba(255,255,255,.02); }
+    table{ width:100%; border-collapse:collapse; min-width:980px; }
+    th, td{ padding:10px; border-bottom:1px solid var(--line); vertical-align:top; }
+    th{ position:sticky; top:0; background: var(--card2); text-align:left; font-size:12px; color:#cbd5e1; }
+    td{ font-size:13px; }
+    tr:last-child td{ border-bottom:none; }
+    .cellMini{ font-size:12px; color:var(--muted); margin-top:6px; line-height:1.25; }
+    .pill{
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:11px; padding:4px 8px; border-radius:999px;
+      border:1px solid var(--line); color:#d1d5db;
+      background: rgba(255,255,255,.03);
+      white-space:nowrap;
+    }
+    .pill.good{ border-color: rgba(34,197,94,.35); background: rgba(34,197,94,.10); }
+    .pill.warn{ border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.10); }
+    .pill.bad{ border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.10); }
+
+    .rightCol .card{ position:sticky; top:14px; }
+    .totals{ display:grid; gap:8px; margin-top:10px; }
+    .totRow{ display:flex; justify-content:space-between; gap:12px; font-size:13px; color:#e5e7eb; }
+    .totRow .k{ color:var(--muted); }
+    .totRow.big{ font-size:16px; font-weight:900; padding-top:10px; border-top:1px solid var(--line); }
+    .hr{ height:1px; background: var(--line); margin:12px 0; }
+
+    .details{
+      border:1px dashed var(--line);
+      background: rgba(255,255,255,.02);
+      border-radius:14px;
       padding:10px;
+      margin-top:8px;
     }
-    .jobhead{
-      display:flex; justify-content:space-between; gap:10px; align-items:flex-start;
-      margin-bottom:8px;
+
+    /* PWA floating buttons */
+    .pwa-fab{
+      position:fixed; right:14px; bottom:14px; z-index:9999;
+      display:flex; gap:8px; align-items:center;
     }
-    .jobtitle{ font-weight:800; font-size:13px; }
-    .jobmeta{ color:var(--muted); font-size:11px; line-height:1.3; }
-    .jobactions{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
-    .jobactions button{ padding:8px 10px; border-radius:10px; font-weight:700; }
-    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
 
-    .beginner .advanced-only { display:none !important; }
-
-    .langSelect{
-      padding:8px 10px;
-      border-radius:12px;
+    .modal-backdrop{
+      position:fixed; inset:0; background:rgba(0,0,0,.55);
+      display:none; align-items:center; justify-content:center; z-index:10000;
+      padding:18px;
+    }
+    .modal{
+      width:min(720px, 100%);
+      background:var(--card);
       border:1px solid var(--line);
-      background:#0b1020;
-      color:var(--text);
-      font-weight:700;
+      border-radius:18px;
+      padding:16px;
+      box-shadow: 0 30px 80px rgba(0,0,0,.45);
+    }
+    .modal h3{ margin:0 0 10px; font-size:16px; }
+    .preview{
+      display:flex; gap:10px; align-items:center; margin-top:10px;
+      padding:10px; border:1px dashed var(--line); border-radius:14px;
+      background:rgba(255,255,255,.03);
+    }
+    .preview img{ width:44px; height:44px; border-radius:12px; border:1px solid var(--line); object-fit:cover; background:#0b1220; }
+
+    .kbd{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace; font-size:11px; padding:2px 6px; border-radius:8px; border:1px solid var(--line); background: rgba(255,255,255,.03); color:#d1d5db;}
+
+    /* Print */
+    @media print{
+      body{ background:#fff; color:#000; }
+      .card{ box-shadow:none; }
+      .pwa-fab, .noPrint{ display:none !important; }
+      .wrap{ max-width:none; padding:0; }
+      .grid{ grid-template-columns: 1.2fr .8fr; gap:10px; }
+      .card{ border:1px solid #ddd; background:#fff; }
+      input, select, textarea{ border:1px solid #ddd; color:#000; background:#fff; }
+      th{ background:#f3f4f6; color:#111827; }
+      .tableWrap{ border:1px solid #ddd; }
+      .pill{ border:1px solid #ddd; background:#fff; color:#111827; }
+      .muted, label, .sub, .cellMini{ color:#374151; }
+      .totRow .k{ color:#374151; }
     }
   </style>
 </head>
+
 <body>
-  <div class="wrap" id="appRoot">
-    <div class="row" style="justify-content:space-between; align-items:flex-end;">
-      <div>
-        <h1 data-i18n="appTitle">3D Print Price Calculator</h1>
-        <p class="sub" data-i18n="subTitle">
-          Beginner Mode keeps it simple. Your settings are remembered.
-        </p>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logoMark">A</div>
+        <div>
+          <h1 id="appTitle">Anchored Landscaping LLC — Invoice</h1>
+          <div class="sub" id="appSub">
+            217-597-8466 • 303 James St, Saint Joseph, IL 61873
+          </div>
+          <div class="sub">
+            Pricing Assistant is built-in: enter real measurements (sq ft / cu yd / linear ft) to get suggestions you can apply with one click.
+          </div>
+        </div>
       </div>
 
-      <div class="row" style="gap:14px; justify-content:flex-end; align-items:center; margin-bottom:6px;">
-        <label class="toggle" style="margin:0;">
-          <span class="pill" data-i18n="languageLabel">Language</span>
-          <select id="langSelect" class="langSelect" aria-label="Language">
-            <option value="en">English</option>
-            <option value="es">Español</option>
-          </select>
-        </label>
-
-        <!-- Light mode toggle removed -->
-
-        <label class="toggle" style="margin:0;">
-          <input id="beginnerMode" type="checkbox" />
-          <b data-i18n="beginnerMode">Beginner Mode</b>
-        </label>
+      <div class="actions noPrint">
+        <button class="btn info" id="btnNewInvoice" type="button">🧾 New Invoice</button>
+        <button class="btn" id="btnSave" type="button">💾 Save</button>
+        <button class="btn warn" id="btnExport" type="button">🖨️ Print / PDF</button>
+        <button class="btn danger" id="btnResetAll" type="button">♻️ Reset All</button>
       </div>
     </div>
 
     <div class="grid">
-      <div class="card">
-
-        <div class="advanced-only">
-          <div class="sec-title">
-            <h2 data-i18n="presetsTitle">Presets (optional)</h2>
-            <span class="pill" data-i18n="nonForcing">Non-forcing</span>
-          </div>
-
-          <div class="fields">
+      <div>
+        <div class="card">
+          <h2>Invoice Details</h2>
+          <div class="row3">
             <div>
-              <label data-i18n="printerPreset">Printer preset</label>
-              <select id="printerPreset"></select>
-            </div>
-            <div class="row" style="align-self:end;">
-              <button id="applyPrinterBtn" class="secondary" type="button" data-i18n="applyPrinter">Apply printer</button>
-            </div>
-
-            <div>
-              <label data-i18n="filamentPreset">Filament preset</label>
-              <select id="filamentPreset"></select>
-            </div>
-            <div class="row" style="align-self:end;">
-              <button id="applyFilamentBtn" class="secondary" type="button" data-i18n="applyFilament">Apply filament</button>
-            </div>
-
-            <div>
-              <label data-i18n="platformPreset">Platform preset</label>
-              <select id="platformPreset"></select>
-            </div>
-            <div class="row" style="align-self:end;">
-              <button id="applyPlatformBtn" class="secondary" type="button" data-i18n="applyPlatform">Apply platform</button>
-            </div>
-          </div>
-
-          <div class="row" style="margin-top:10px; justify-content:space-between;">
-            <label class="toggle">
-              <input id="applyEmptyOnly" type="checkbox" checked />
-              <span data-i18n="applyEmptyOnly">Apply presets to <b>empty fields only</b></span>
-            </label>
-
-            <label class="toggle">
-              <input id="autoLoadDefaults" type="checkbox" checked />
-              <span data-i18n="autoLoadDefaults">Auto-load saved defaults</span>
-            </label>
-          </div>
-
-          <div class="note" data-i18n-html="printerPresetNote">
-            Printer preset can fill <b>power</b>, <b>price</b>, <b>lifetime hours</b>, and <b>maintenance</b>. You can always edit them.
-          </div>
-
-          <div class="btns">
-            <button id="saveDefaultsBtn" class="secondary" type="button" data-i18n="saveDefaults">Save defaults</button>
-            <button id="loadDefaultsBtn" class="secondary" type="button" data-i18n="loadDefaults">Load defaults</button>
-            <button id="clearDefaultsBtn" class="danger" type="button" data-i18n="clearDefaults">Clear saved defaults</button>
-          </div>
-
-          <div class="divider"></div>
-        </div>
-
-        <div class="sec-title">
-          <h2 data-i18n="jobInputs">Job inputs</h2>
-          <span class="pill" data-i18n="updatesAsYouType">Updates as you type</span>
-        </div>
-
-        <div class="fields">
-          <div>
-            <label data-i18n="quantity">Quantity</label>
-            <input id="quantity" type="number" min="1" step="1" data-i18n-placeholder="ph_quantity" placeholder="e.g., 10" />
-          </div>
-
-          <div class="row" style="align-self:end; justify-content:flex-start;">
-            <label class="toggle" style="margin:0;">
-              <input id="laborPerUnit" type="checkbox" />
-              <span data-i18n="laborPerUnit">Labor minutes are per unit</span>
-            </label>
-          </div>
-
-          <div>
-            <label data-i18n="bulkDiscountPct">Bulk discount (%) — applies to batch total</label>
-            <input id="bulkDiscountPct" type="number" min="0" step="0.1" data-i18n-placeholder="ph_bulkDiscountPct" placeholder="e.g., 5" />
-          </div>
-
-          <div>
-            <label data-i18n="printHours">Print time (hours) — per unit</label>
-            <input id="printHours" type="number" min="0" step="0.01" data-i18n-placeholder="ph_printHours" placeholder="From slicer (e.g., 6)" />
-          </div>
-
-          <div>
-            <label data-i18n="gramsUsed">Filament used (grams) — per unit</label>
-            <input id="gramsUsed" type="number" min="0" step="1" data-i18n-placeholder="ph_gramsUsed" placeholder="From slicer (e.g., 100)" />
-          </div>
-
-          <div>
-            <label data-i18n="spoolPrice">Spool price ($)</label>
-            <input id="spoolPrice" type="number" min="0" step="0.01" data-i18n-placeholder="ph_spoolPrice" placeholder="e.g., 20" />
-          </div>
-
-          <div>
-            <label data-i18n="spoolWeight">Spool weight (grams)</label>
-            <input id="spoolWeight" type="number" min="1" step="1" data-i18n-placeholder="ph_spoolWeight" placeholder="Usually 1000" />
-          </div>
-
-          <div>
-            <label data-i18n="wastePct">Waste factor (%)</label>
-            <input id="wastePct" type="number" min="0" step="0.1" data-i18n-placeholder="ph_wastePct" placeholder="e.g., 5" />
-          </div>
-
-          <div>
-            <label data-i18n="packagingCost">Packaging cost ($) — per unit</label>
-            <input id="packagingCost" type="number" min="0" step="0.01" data-i18n-placeholder="ph_packagingCost" placeholder="e.g., 0.75" />
-          </div>
-
-          <div>
-            <label data-i18n="consumablesCost">Consumables cost ($) — per unit</label>
-            <input id="consumablesCost" type="number" min="0" step="0.01" data-i18n-placeholder="ph_consumablesCost" placeholder="e.g., 0.50" />
-          </div>
-
-          <div class="advanced-only">
-            <label data-i18n="powerKW">Power draw (kW)</label>
-            <input id="powerKW" type="number" min="0" step="0.001" data-i18n-placeholder="ph_powerKW" placeholder="e.g., 0.115" />
-          </div>
-
-          <div class="advanced-only">
-            <label data-i18n="elecRate">Electricity rate ($/kWh)</label>
-            <input id="elecRate" type="number" min="0" step="0.001" data-i18n-placeholder="ph_elecRate" placeholder="e.g., 0.146" />
-          </div>
-
-          <div>
-            <label data-i18n="laborRate">Labor rate ($/hr)</label>
-            <input id="laborRate" type="number" min="0" step="0.01" data-i18n-placeholder="ph_laborRate" placeholder="e.g., 40" />
-          </div>
-
-          <div>
-            <label data-i18n="laborMin">Active labor (minutes)</label>
-            <input id="laborMin" type="number" min="0" step="1" data-i18n-placeholder="ph_laborMin" placeholder="e.g., 35" />
-          </div>
-
-          <div class="advanced-only">
-            <label data-i18n="overheadPct">Overhead (%)</label>
-            <input id="overheadPct" type="number" min="0" step="0.1" data-i18n-placeholder="ph_overheadPct" placeholder="e.g., 10" />
-          </div>
-
-          <div class="advanced-only">
-            <label data-i18n="profitPct">Profit margin (%)</label>
-            <input id="profitPct" type="number" min="0" step="0.1" data-i18n-placeholder="ph_profitPct" placeholder="e.g., 15" />
-          </div>
-
-          <div class="advanced-only">
-            <label data-i18n="minFee">Minimum job fee ($)</label>
-            <input id="minFee" type="number" min="0" step="0.01" data-i18n-placeholder="ph_minFee" placeholder="e.g., 25" />
-          </div>
-        </div>
-
-        <div class="note" data-i18n-html="batchNote">
-          Batch note: Quantity multiplies <b>print time, filament, packaging, consumables</b>. Labor can be total or per unit (checkbox).
-        </div>
-
-        <div class="note" data-i18n-html="bulkNote">
-          Bulk discount applies to the <b>batch total</b> (before platform fees). It will not drop below <b>your total cost</b>.
-        </div>
-
-        <div class="advanced-only">
-          <div class="divider"></div>
-
-          <div class="sec-title">
-            <h2 data-i18n="machineDepTitle">Machine depreciation</h2>
-            <span class="pill" data-i18n="addsMachineCost">Adds machine cost</span>
-          </div>
-
-          <div class="fields">
-            <div>
-              <label data-i18n="printerPrice">Printer price ($)</label>
-              <input id="printerPrice" type="number" min="0" step="0.01" data-i18n-placeholder="ph_printerPrice" placeholder="e.g., 2200" />
+              <label>Invoice #</label>
+              <input id="invoiceNo" />
             </div>
             <div>
-              <label data-i18n="printerLifeHours">Printer lifetime (hours)</label>
-              <input id="printerLifeHours" type="number" min="0" step="1" data-i18n-placeholder="ph_printerLifeHours" placeholder="e.g., 7000" />
+              <label>Job Date</label>
+              <input id="jobDate" type="date" />
             </div>
             <div>
-              <label data-i18n="maintenancePerHr">Maintenance ($/hr) (optional)</label>
-              <input id="maintenancePerHr" type="number" min="0" step="0.01" data-i18n-placeholder="ph_maintenancePerHr" placeholder="e.g., 0.10" />
+              <label>Status</label>
+              <select id="status">
+                <option value="Unpaid">Unpaid</option>
+                <option value="Paid">Paid</option>
+                <option value="Estimate">Estimate</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row2" style="margin-top:10px;">
+            <div>
+              <label>Customer Name</label>
+              <input id="custName" placeholder="Customer name" />
             </div>
             <div>
-              <label data-i18n="deprPerHr">Calculated depreciation ($/hr)</label>
-              <input id="deprPerHrDisplay" type="text" class="mono" disabled placeholder="—" />
+              <label>Customer Phone (optional)</label>
+              <input id="custPhone" placeholder="(###) ###-####" />
+            </div>
+          </div>
+
+          <div class="row2" style="margin-top:10px;">
+            <div>
+              <label>Service Address</label>
+              <input id="custAddress" placeholder="Service address" />
+            </div>
+            <div>
+              <label>Email (optional)</label>
+              <input id="custEmail" placeholder="email@example.com" />
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:10px;">
+            <div>
+              <label>Notes / Scope</label>
+              <textarea id="notes" placeholder="Describe the job, warranty, payment terms, etc."></textarea>
             </div>
           </div>
         </div>
 
-        <div class="advanced-only">
-          <div class="divider"></div>
-
-          <div class="sec-title">
-            <h2 data-i18n="platformFeesTitle">Platform fees (optional)</h2>
-            <span class="pill" data-i18n="grossUpSupported">Gross-up supported</span>
+        <div class="card" style="margin-top:12px;">
+          <h2>Pricing Assistant Settings</h2>
+          <div class="muted">
+            These settings power the suggestions. Nothing is locked — you can always override rates.
           </div>
 
-          <div class="row" style="margin-bottom:8px;">
-            <label class="toggle">
-              <input id="includePlatformFees" type="checkbox" />
-              <span data-i18n="includePlatformFees">Include platform fees in final price</span>
-            </label>
+          <div class="row3" style="margin-top:10px;">
+            <div>
+              <label>Target labor rate ($/hr)</label>
+              <input id="setLaborRate" type="number" step="0.01" />
+            </div>
+            <div>
+              <label>Overhead (%)</label>
+              <input id="setOverheadPct" type="number" step="0.1" />
+            </div>
+            <div>
+              <label>Profit (%)</label>
+              <input id="setProfitPct" type="number" step="0.1" />
+            </div>
           </div>
 
-          <div class="fields">
+          <div class="row3" style="margin-top:10px;">
             <div>
-              <label data-i18n="platformFeePct">Fee %</label>
-              <input id="platformFeePct" type="number" min="0" step="0.01" data-i18n-placeholder="ph_platformFeePct" placeholder="e.g., 6.5" />
+              <label>Travel time per job (minutes)</label>
+              <input id="setTravelMins" type="number" step="1" />
             </div>
             <div>
-              <label data-i18n="platformFixedFee">Fixed fee ($)</label>
-              <input id="platformFixedFee" type="number" min="0" step="0.01" data-i18n-placeholder="ph_platformFixedFee" placeholder="e.g., 0.25" />
+              <label>Minimum job fee ($)</label>
+              <input id="setMinJobFee" type="number" step="0.01" />
             </div>
             <div>
-              <label data-i18n="platformListingFee">Listing fee ($)</label>
-              <input id="platformListingFee" type="number" min="0" step="0.01" data-i18n-placeholder="ph_platformListingFee" placeholder="e.g., 0.20" />
+              <label>Helper labor minutes (setup/cleanup)</label>
+              <input id="setHelperMins" type="number" step="1" />
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <h2 style="margin-top:0;">Production Rates + Material Costs</h2>
+
+          <div class="row3">
+            <div>
+              <label>Mowing production (sq ft / hr)</label>
+              <input id="rateMowSqftHr" type="number" step="1" />
             </div>
             <div>
-              <label data-i18n="platformNotes">Platform notes</label>
-              <input id="platformNotes" type="text" data-i18n-placeholder="ph_platformNotes" placeholder="Optional" />
+              <label>Edging/Trimming (linear ft / hr)</label>
+              <input id="rateEdgeLfHr" type="number" step="1" />
+            </div>
+            <div>
+              <label>Weeding (sq ft / hr)</label>
+              <input id="rateWeedSqftHr" type="number" step="1" />
+            </div>
+          </div>
+
+          <div class="row3" style="margin-top:10px;">
+            <div>
+              <label>Mulch install (cu yd / hr)</label>
+              <input id="rateMulchCuydHr" type="number" step="0.01" />
+            </div>
+            <div>
+              <label>Rock/Gravel (tons / hr)</label>
+              <input id="rateRockTonHr" type="number" step="0.01" />
+            </div>
+            <div>
+              <label>Soil/Topsoil (cu yd / hr)</label>
+              <input id="rateSoilCuydHr" type="number" step="0.01" />
+            </div>
+          </div>
+
+          <div class="row3" style="margin-top:10px;">
+            <div>
+              <label>Sod install (sq ft / hr)</label>
+              <input id="rateSodSqftHr" type="number" step="1" />
+            </div>
+            <div>
+              <label>Hedge trimming (linear ft / hr)</label>
+              <input id="rateHedgeLfHr" type="number" step="1" />
+            </div>
+            <div>
+              <label>Bush trimming (bushes / hr)</label>
+              <input id="rateBushPerHr" type="number" step="1" />
+            </div>
+          </div>
+
+          <div class="row3" style="margin-top:10px;">
+            <div>
+              <label>Leaf cleanup (sq ft / hr)</label>
+              <input id="rateLeafSqftHr" type="number" step="1" />
+            </div>
+            <div>
+              <label>Dump fee default ($)</label>
+              <input id="matDumpFee" type="number" step="0.01" />
+            </div>
+            <div>
+              <label>Supplies / misc per job ($)</label>
+              <input id="matSupplies" type="number" step="0.01" />
+            </div>
+          </div>
+
+          <div class="row3" style="margin-top:10px;">
+            <div>
+              <label>Mulch material cost ($/cu yd)</label>
+              <input id="matMulch" type="number" step="0.01" />
+            </div>
+            <div>
+              <label>Rock/Gravel material ($/ton)</label>
+              <input id="matRock" type="number" step="0.01" />
+            </div>
+            <div>
+              <label>Soil/Topsoil material ($/cu yd)</label>
+              <input id="matSoil" type="number" step="0.01" />
+            </div>
+          </div>
+
+          <div class="row2" style="margin-top:10px;">
+            <div>
+              <label>Sod material cost ($/sq ft)</label>
+              <input id="matSod" type="number" step="0.01" />
+            </div>
+            <div>
+              <label>Tax (%) (optional)</label>
+              <input id="taxPct" type="number" step="0.1" />
+            </div>
+          </div>
+
+          <div class="details">
+            <div class="muted">
+              Tip: For suggestions, the app estimates labor time using your production rates + helper minutes + travel minutes,
+              then adds overhead and profit. You can apply suggestions per line with <span class="kbd">Use Suggestion</span>.
             </div>
           </div>
         </div>
 
-        <div class="advanced-only">
-          <div class="divider"></div>
-
-          <div class="sec-title">
-            <h2 data-i18n="jobToolsTitle">Job tools</h2>
-            <span class="pill" data-i18n="saveExport">Save + export</span>
+        <div class="card" style="margin-top:12px;">
+          <h2>Line Items</h2>
+          <div class="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="min-width:200px;">Service</th>
+                  <th style="min-width:250px;">Measurements (for suggestion)</th>
+                  <th style="min-width:120px;">Qty</th>
+                  <th style="min-width:130px;">Rate</th>
+                  <th style="min-width:140px;">Line Total</th>
+                  <th style="min-width:260px;">Assistant</th>
+                  <th class="noPrint" style="min-width:110px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="itemsBody"></tbody>
+            </table>
           </div>
 
-          <div class="fields">
-            <div>
-              <label data-i18n="jobName">Job name (optional)</label>
-              <input id="jobName" type="text" data-i18n-placeholder="ph_jobName" placeholder="e.g., Dragon keychain batch" />
-            </div>
-            <div>
-              <label data-i18n="jobNotes">Notes (optional)</label>
-              <input id="jobNotes" type="text" data-i18n-placeholder="ph_jobNotes" placeholder="e.g., Black, 2 copies" />
-            </div>
+          <div class="actions noPrint" style="margin-top:12px;">
+            <button class="btn primary" id="btnAddCustom" type="button">➕ Add Custom Item</button>
+            <button class="btn" id="btnAddDefaults" type="button">📌 Restore Default Services</button>
           </div>
 
-          <div class="btns">
-            <button id="saveJobBtn" type="button" data-i18n="saveJob">Save job to history</button>
-            <button id="exportJobsBtn" class="secondary" type="button" data-i18n="exportJobs">Export jobs JSON</button>
-            <button id="importJobsBtn" class="secondary" type="button" data-i18n="importJobs">Import jobs JSON</button>
-            <button id="clearJobsBtn" class="danger" type="button" data-i18n="clearJobs">Clear job history</button>
+          <div class="muted" style="margin-top:10px;">
+            Market note: suggestions are based on your settings + measurements. Always adjust for your local market and job complexity.
           </div>
-        </div>
-
-        <div class="btns">
-          <button id="resetBtn" class="warn" type="button" data-i18n="resetAll">Reset (clear all)</button>
-          <button id="copyBtn" class="secondary" type="button" data-i18n="copyQuote">Copy quote</button>
-        </div>
-
-        <div class="note advanced-only">
-          <span data-i18n="grossUpNote">Platform fee uses gross-up:</span>
-          <span class="mono" style="color:#cbd5e1;">gross = (target + fixed + listing) / (1 - fee%)</span>
-        </div>
-
-        <div class="note" id="beginnerHint" data-i18n-html="beginnerTip">
-          Beginner tip: Use slicer values for <b>Print time</b> and <b>Filament grams</b>. Toggle Advanced later for electricity, margins, fees, and depreciation.
         </div>
       </div>
 
-      <div class="card">
-        <div class="sec-title">
-          <h2 data-i18n="estimateTitle">Estimate</h2>
-          <span id="status" class="tiny" data-i18n="status_enterValues">Enter values to calculate</span>
-        </div>
-
-        <div class="breakdown" id="breakdown"></div>
-
-        <div class="total">
-          <div class="k" data-i18n="finalPriceTotal">Final Price (total)</div>
-          <div class="v" id="finalPrice">$0.00</div>
-        </div>
-
-        <div class="total" style="margin-top:10px; background: rgba(59,130,246,.10); border:1px solid rgba(59,130,246,.35);">
-          <div class="k" data-i18n="finalPriceUnit">Final Price (per unit)</div>
-          <div class="v" id="finalPricePerUnit">$0.00</div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="sec-title">
-          <h2 data-i18n="profitView">Profit view</h2>
-          <span class="pill" data-i18n="simple">Simple</span>
-        </div>
-
-        <div class="breakdown" id="profitBox"></div>
-
-        <div class="divider advanced-only"></div>
-
-        <div class="advanced-only">
-          <div class="sec-title">
-            <h2 data-i18n="jobHistoryTitle">Job history</h2>
-            <span class="pill" id="jobsCountPill">0 saved</span>
+      <div class="rightCol">
+        <div class="card">
+          <h2>Business Info</h2>
+          <div class="row">
+            <div>
+              <label>Business Name</label>
+              <input id="bizName" />
+            </div>
+            <div>
+              <label>Phone</label>
+              <input id="bizPhone" />
+            </div>
+            <div>
+              <label>Address</label>
+              <input id="bizAddress" />
+            </div>
           </div>
 
-          <div class="jobs" id="jobsList">
-            <div class="note" data-i18n="noSavedJobs">No saved jobs yet. Use “Save job to history”.</div>
+          <div class="hr"></div>
+
+          <h2>Totals</h2>
+          <div class="totals">
+            <div class="totRow"><div class="k">Subtotal</div><div id="subTotal">$0.00</div></div>
+            <div class="totRow">
+              <div class="k">Tax</div>
+              <div id="taxTotal">$0.00</div>
+            </div>
+            <div class="totRow">
+              <div class="k">Discount (optional)</div>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <input id="discountAmt" type="number" step="0.01" style="width:120px;" />
+              </div>
+            </div>
+            <div class="totRow big"><div class="k">Grand Total</div><div id="grandTotal">$0.00</div></div>
           </div>
 
-          <div class="tiny" data-i18n="storedLocally">Stored locally in your browser (localStorage).</div>
+          <div class="hr"></div>
+
+          <div class="actions noPrint">
+            <button class="btn info" id="btnQuoteEmail" type="button">✉️ Copy Summary</button>
+          </div>
+          <div class="muted" id="summaryHint" style="margin-top:10px;">
+            “Copy Summary” puts a clean invoice summary on your clipboard for texting/emailing customers.
+          </div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- PWA floating buttons -->
+  <div class="pwa-fab noPrint" aria-label="PWA controls">
+    <button class="btn" id="btnPwaSettings" type="button" title="PWA Settings">⚙️</button>
+    <button class="btn primary" id="btnInstall" type="button" style="display:none;" title="Install app">Install</button>
+  </div>
+
+  <!-- PWA Settings Modal -->
+  <div class="modal-backdrop" id="pwaModalBackdrop" role="dialog" aria-modal="true" aria-label="PWA Settings">
+    <div class="modal">
+      <h3>PWA Settings (App Name + Icon)</h3>
+      <div class="muted">
+        To change the icon later: upload a PNG to your repo (example: <span class="kbd">icon-512.png</span>) or use any HTTPS image URL, paste it below, and Save.
+        If the app is already installed, you may need to remove & reinstall to see the new home screen icon (browser behavior).
+      </div>
+
+      <div class="row2" style="margin-top:12px;">
+        <div>
+          <label for="pwaName">App name</label>
+          <input id="pwaName" placeholder="e.g., Anchored Landscaping Invoice" />
+        </div>
+        <div>
+          <label for="pwaIconUrl">Icon image URL (PNG recommended)</label>
+          <input id="pwaIconUrl" placeholder="https://your-site.com/icon-512.png" />
+        </div>
+      </div>
+
+      <div class="preview">
+        <img id="pwaIconPreview" alt="Icon preview" />
+        <div>
+          <div id="pwaNamePreview" style="font-weight:900;">App Name</div>
+          <div class="muted" id="pwaIconPreviewText">Using default icon</div>
+        </div>
+      </div>
+
+      <div class="actions" style="margin-top:12px; justify-content:flex-end;">
+        <button class="btn" id="btnClosePwa" type="button">Close</button>
+        <button class="btn" id="btnResetPwa" type="button">Reset</button>
+        <button class="btn primary" id="btnSavePwa" type="button">Save</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    const $ = (id) => document.getElementById(id);
+    /***********************
+     * Storage + Defaults
+     ***********************/
+    const STORE_KEY = "anchored_landscape_invoice_v1";
+    const PWA_STORE_KEY = "anchored_landscape_pwa_settings_v1";
 
-    // ---------- i18n ----------
-    const I18N = {
-      en: {
-        appTitle: "3D Print Price Calculator",
-        subTitle: "Beginner Mode keeps it simple. Your settings are remembered.",
-        languageLabel: "Language",
-        beginnerMode: "Beginner Mode",
+    const fmt = new Intl.NumberFormat("en-US", { style:"currency", currency:"USD" });
+    const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+    const num = (v) => {
+      const x = parseFloat(v);
+      return Number.isFinite(x) ? x : 0;
+    };
 
-        presetsTitle: "Presets (optional)",
-        nonForcing: "Non-forcing",
-        printerPreset: "Printer preset",
-        filamentPreset: "Filament preset",
-        platformPreset: "Platform preset",
-        applyPrinter: "Apply printer",
-        applyFilament: "Apply filament",
-        applyPlatform: "Apply platform",
-        applyEmptyOnly: "Apply presets to <b>empty fields only</b>",
-        autoLoadDefaults: "Auto-load saved defaults",
-        printerPresetNote: "Printer preset can fill <b>power</b>, <b>price</b>, <b>lifetime hours</b>, and <b>maintenance</b>. You can always edit them.",
-        saveDefaults: "Save defaults",
-        loadDefaults: "Load defaults",
-        clearDefaults: "Clear saved defaults",
+    function todayISO(){
+      const d = new Date();
+      const tzOff = d.getTimezoneOffset() * 60000;
+      return new Date(Date.now() - tzOff).toISOString().slice(0,10);
+    }
 
-        jobInputs: "Job inputs",
-        updatesAsYouType: "Updates as you type",
+    function newInvoiceNumber(){
+      const d = new Date();
+      const y = d.getFullYear().toString().slice(-2);
+      const m = String(d.getMonth()+1).padStart(2,"0");
+      const day = String(d.getDate()).padStart(2,"0");
+      const rand = Math.floor(Math.random()*900 + 100); // 100-999
+      return `AL-${y}${m}${day}-${rand}`;
+    }
 
-        quantity: "Quantity",
-        laborPerUnit: "Labor minutes are per unit",
-        bulkDiscountPct: "Bulk discount (%) — applies to batch total",
-        batchNote: "Batch note: Quantity multiplies <b>print time, filament, packaging, consumables</b>. Labor can be total or per unit (checkbox).",
-        bulkNote: "Bulk discount applies to the <b>batch total</b> (before platform fees). It will not drop below <b>your total cost</b>.",
-
-        printHours: "Print time (hours) — per unit",
-        gramsUsed: "Filament used (grams) — per unit",
-        spoolPrice: "Spool price ($)",
-        spoolWeight: "Spool weight (grams)",
-        wastePct: "Waste factor (%)",
-
-        packagingCost: "Packing & Shipping ($) — per unit",
-
-        consumablesCost: "Consumables cost ($) — per unit",
-
-        powerKW: "Power draw (kW)",
-        elecRate: "Electricity rate ($/kWh)",
-        laborRate: "Labor rate ($/hr)",
-        laborMin: "Active labor (minutes)",
-        overheadPct: "Overhead (%)",
-        profitPct: "Profit margin (%)",
-        minFee: "Minimum job fee ($)",
-
-        machineDepTitle: "Machine depreciation",
-        addsMachineCost: "Adds machine cost",
-        printerPrice: "Printer price ($)",
-        printerLifeHours: "Printer lifetime (hours)",
-        maintenancePerHr: "Maintenance ($/hr) (optional)",
-        deprPerHr: "Calculated depreciation ($/hr)",
-
-        platformFeesTitle: "Platform fees (optional)",
-        grossUpSupported: "Gross-up supported",
-        includePlatformFees: "Include platform fees in final price",
-        platformFeePct: "Fee %",
-        platformFixedFee: "Fixed fee ($)",
-        platformListingFee: "Listing fee ($)",
-        platformNotes: "Platform notes",
-        grossUpNote: "Platform fee uses gross-up:",
-
-        jobToolsTitle: "Job tools",
-        saveExport: "Save + export",
-        jobName: "Job name (optional)",
-        jobNotes: "Notes (optional)",
-        saveJob: "Save job to history",
-        exportJobs: "Export jobs JSON",
-        importJobs: "Import jobs JSON",
-        clearJobs: "Clear job history",
-
-        resetAll: "Reset (clear all)",
-        copyQuote: "Copy quote",
-        beginnerTip: "Beginner tip: Use slicer values for <b>Print time</b> and <b>Filament grams</b>. Toggle Advanced later for electricity, margins, fees, and depreciation.",
-
-        estimateTitle: "Estimate",
-        finalPriceTotal: "Final Price (total)",
-        finalPriceUnit: "Final Price (per unit)",
-
-        profitView: "Profit view",
-        simple: "Simple",
-        pv_totalCost: "Total cost (materials + labor + machine + overhead)",
-        pv_profitDollars: "Profit ($)",
-        pv_profitPct: "Profit (%)",
-        pv_costPerUnit: "Cost (per unit)",
-        pv_profitPerUnit: "Profit (per unit)",
-
-        jobHistoryTitle: "Job history",
-        noSavedJobs: "No saved jobs yet. Use “Save job to history”.",
-        storedLocally: "Stored locally in your browser (localStorage).",
-
-        // placeholders
-        ph_quantity: "e.g., 10",
-        ph_bulkDiscountPct: "e.g., 5",
-        ph_printHours: "From slicer (e.g., 6)",
-        ph_gramsUsed: "From slicer (e.g., 100)",
-        ph_spoolPrice: "e.g., 20",
-        ph_spoolWeight: "Usually 1000",
-        ph_wastePct: "e.g., 5",
-        ph_packagingCost: "e.g., 0.75",
-        ph_consumablesCost: "e.g., 0.50",
-        ph_powerKW: "e.g., 0.115",
-        ph_elecRate: "e.g., 0.146",
-        ph_laborRate: "e.g., 40",
-        ph_laborMin: "e.g., 35",
-        ph_overheadPct: "e.g., 10",
-        ph_profitPct: "e.g., 15",
-        ph_minFee: "e.g., 25",
-        ph_printerPrice: "e.g., 2200",
-        ph_printerLifeHours: "e.g., 7000",
-        ph_maintenancePerHr: "e.g., 0.10",
-        ph_platformFeePct: "e.g., 6.5",
-        ph_platformFixedFee: "e.g., 0.25",
-        ph_platformListingFee: "e.g., 0.20",
-        ph_platformNotes: "Optional",
-        ph_jobName: "e.g., Dragon keychain batch",
-        ph_jobNotes: "e.g., Black, 2 copies",
-
-        // status/messages
-        status_enterValues: "Enter values to calculate",
-        status_updated: "Updated",
-        status_presetEmptyOnly: "Preset applied (empty fields only)",
-        status_presetOverwrite: "Preset applied (overwrote fields)",
-        status_defaultsSaved: "Defaults saved ✅",
-        status_defaultsLoaded: "Defaults loaded ✅",
-        status_noDefaults: "No saved defaults found",
-        status_defaultsCleared: "Saved defaults cleared",
-        status_jobSaved: "Job saved ✅",
-        status_jobLoaded: "Loaded job from history",
-        status_jobDeleted: "Deleted job",
-        status_jobsCleared: "Job history cleared",
-        status_copyOk: "Copied ✅",
-        status_importFailed: "Import failed",
-        status_importOk: (n) => `Imported ${n} jobs ✅`,
-        status_exportOk: "Jobs JSON copied ✅",
-        status_platformPctTooHigh: "Platform fee % too high; used fixed fees only",
-        status_beginnerOn: "Beginner Mode ON",
-        status_beginnerOff: "Beginner Mode OFF",
-
-        // prompts/alerts
-        alert_enterValuesFirst: "Enter some values first, then copy the quote.",
-        alert_exportCopied: "Jobs JSON copied. Paste into a text file for backup.",
-        prompt_copyThisJSON: "Copy this JSON:",
-        prompt_pasteJobsJSON: "Paste exported jobs JSON here:",
-        alert_importFailed: "Import failed: invalid JSON.",
-        confirm_clearJobs: "Clear ALL job history? This cannot be undone.",
-
-        // breakdown
-        bd_qty: "Quantity",
-        bd_timeTotal: "Total print time",
-        bd_material: "Material (incl. waste)",
-        bd_packaging: "Packaging",
-        bd_consumables: "Consumables",
-        bd_electricity: "Electricity",
-        bd_machine: "Machine (depr + maint)",
-        bd_labor: "Active labor",
-        bd_base: "Base subtotal",
-        bd_overhead: "Overhead",
-        bd_profit: "Profit (target)",
-        bd_target: "Target before platform fees",
-        bd_bulkDiscount: "Bulk discount",
-        bd_targetAfterDiscount: "Target after discount",
-        bd_platform: "Platform fees added",
-        bd_minApplied: "Minimum fee applied?",
-
-        // jobs
-        jobs_savedPill: (n) => `${n} saved`,
-        jobs_meta: (final, qty, time, filament) => `Final: ${final} • Qty: ${qty} • Time: ${time}h • Filament: ${filament}g`,
-        jobs_untitled: "Untitled job",
-        btn_load: "Load",
-        btn_delete: "Delete",
-
-        // presets labels
-        preset_selectPrinter: "— Select a printer —",
-        preset_selectFilament: "— Select a filament —",
-        preset_selectPlatform: "— Select a platform —",
-
-        // Printer names (EN)
-        p_bambu_a1mini: "Bambu Lab A1 mini",
-        p_bambu_a1: "Bambu Lab A1",
-        p_bambu_p1p: "Bambu Lab P1P",
-        p_bambu_p1s: "Bambu Lab P1S",
-        p_bambu_x1c: "Bambu Lab X1 Carbon",
-
-        p_prusa_mini: "Prusa MINI+",
-        p_prusa_mk3s: "Prusa MK3S+",
-        p_prusa_mk4: "Prusa MK4 / MK4S",
-        p_prusa_xl: "Prusa XL",
-
-        p_creality_ender3v2: "Creality Ender 3 V2",
-        p_creality_ender3s1: "Creality Ender 3 S1 / S1 Pro",
-        p_creality_ender5: "Creality Ender 5 / Ender 5 S1",
-        p_creality_k1: "Creality K1",
-        p_creality_k1max: "Creality K1 Max",
-
-        p_elegoo_n3p: "Elegoo Neptune 3 Pro",
-        p_elegoo_n4p: "Elegoo Neptune 4 Pro",
-        p_elegoo_n4max: "Elegoo Neptune 4 Max",
-
-        p_anycubic_kobra2: "Anycubic Kobra 2",
-        p_anycubic_kobra2pro: "Anycubic Kobra 2 Pro",
-        p_anycubic_kobra2max: "Anycubic Kobra 2 Max",
-
-        p_qidi_xplus3: "QIDI X-Plus 3",
-        p_qidi_xmax3: "QIDI X-Max 3",
-
-        p_generic_budget: "Generic: Budget open-frame FDM",
-        p_generic_enclosed: "Generic: Enclosed FDM",
-        p_generic_corexy: "Generic: CoreXY fast printer",
-        p_generic_voron24: "Voron 2.4 (generic profile)",
-
-        // Filament
-        preset_pla: "PLA",
-        preset_petg: "PETG",
-        preset_abs: "ABS",
-        preset_tpu: "TPU",
-        preset_nylon: "Nylon",
-
-        // Platforms
-        preset_etsy: "Etsy (starter)",
-        preset_amazon: "Amazon (starter)",
-        preset_shopify: "Shopify (starter)",
-        preset_ebay: "eBay (starter)",
-        preset_adjust: "Adjust if needed",
-        preset_varies: "Varies by category",
-        preset_typical: "Typical card processing"
+    const DEFAULT_STATE = {
+      biz: {
+        name: "Anchored Landscaping LLC",
+        phone: "217-597-8466",
+        address: "303 James St, Saint Joseph, IL 61873"
       },
-      es: {
-        appTitle: "Calculadora de Precio para Impresión 3D",
-        subTitle: "Modo Principiante lo mantiene simple. Se recuerdan tus ajustes.",
-        languageLabel: "Idioma",
-        beginnerMode: "Modo Principiante",
+      invoice: {
+        no: "",
+        date: "",
+        status: "Unpaid",
+        custName: "",
+        custPhone: "",
+        custEmail: "",
+        custAddress: "",
+        notes: ""
+      },
+      totals: {
+        taxPct: 0,
+        discountAmt: 0
+      },
+      assistant: {
+        laborRate: 55,
+        overheadPct: 12,
+        profitPct: 20,
+        travelMins: 20,
+        helperMins: 10,
 
-        presetsTitle: "Preajustes (opcional)",
-        nonForcing: "No obliga valores",
-        printerPreset: "Preajuste de impresora",
-        filamentPreset: "Preajuste de filamento",
-        platformPreset: "Preajuste de plataforma",
-        applyPrinter: "Aplicar impresora",
-        applyFilament: "Aplicar filamento",
-        applyPlatform: "Aplicar plataforma",
-        applyEmptyOnly: "Aplicar preajustes solo a <b>campos vacíos</b>",
-        autoLoadDefaults: "Cargar valores guardados automáticamente",
-        printerPresetNote: "El preajuste puede llenar <b>consumo</b>, <b>precio</b>, <b>vida útil</b> y <b>mantenimiento</b>. Puedes editar todo.",
-        saveDefaults: "Guardar valores",
-        loadDefaults: "Cargar valores",
-        clearDefaults: "Borrar valores guardados",
+        // production rates
+        mowSqftHr: 12000,
+        edgeLfHr: 900,
+        weedSqftHr: 600,
 
-        jobInputs: "Datos del trabajo",
-        updatesAsYouType: "Se actualiza al escribir",
+        mulchCuydHr: 2.0,
+        rockTonHr: 1.2,
+        soilCuydHr: 2.0,
 
-        quantity: "Cantidad",
-        laborPerUnit: "Mano de obra (minutos) por unidad",
-        bulkDiscountPct: "Descuento por volumen (%) — se aplica al total",
-        batchNote: "Nota: La cantidad multiplica <b>tiempo, filamento, empaque, consumibles</b>. La mano de obra puede ser total o por unidad (casilla).",
-        bulkNote: "El descuento se aplica al <b>total del lote</b> (antes de comisiones). No bajará de <b>tu costo total</b>.",
+        sodSqftHr: 500,
+        hedgeLfHr: 250,
+        bushPerHr: 10,
 
-        printHours: "Tiempo de impresión (horas) — por unidad",
-        gramsUsed: "Filamento usado (gramos) — por unidad",
-        spoolPrice: "Precio del rollo ($)",
-        spoolWeight: "Peso del rollo (gramos)",
-        wastePct: "Desperdicio (%)",
+        leafSqftHr: 2500,
 
-        packagingCost: "Empaque y envío ($) — por unidad",
+        // materials
+        dumpFee: 45,
+        supplies: 10,
+        mulchMat: 42,
+        rockMat: 55,
+        soilMat: 38,
+        sodMat: 0.55,
 
-        consumablesCost: "Consumibles ($) — por unidad",
-
-        powerKW: "Consumo (kW)",
-        elecRate: "Costo de electricidad ($/kWh)",
-        laborRate: "Mano de obra ($/hr)",
-        laborMin: "Mano de obra activa (minutos)",
-        overheadPct: "Gastos generales (%)",
-        profitPct: "Margen de ganancia (%)",
-        minFee: "Mínimo por trabajo ($)",
-
-        machineDepTitle: "Depreciación de la máquina",
-        addsMachineCost: "Agrega costo de máquina",
-        printerPrice: "Precio de la impresora ($)",
-        printerLifeHours: "Vida útil (horas)",
-        maintenancePerHr: "Mantenimiento ($/hr) (opcional)",
-        deprPerHr: "Depreciación calculada ($/hr)",
-
-        platformFeesTitle: "Comisiones de plataforma (opcional)",
-        grossUpSupported: "Ajuste por comisión",
-        includePlatformFees: "Incluir comisiones en el precio final",
-        platformFeePct: "Comisión %",
-        platformFixedFee: "Tarifa fija ($)",
-        platformListingFee: "Tarifa de listado ($)",
-        platformNotes: "Notas de plataforma",
-        grossUpNote: "Comisión con ajuste:",
-
-        jobToolsTitle: "Herramientas",
-        saveExport: "Guardar + exportar",
-        jobName: "Nombre del trabajo (opcional)",
-        jobNotes: "Notas (opcional)",
-        saveJob: "Guardar en historial",
-        exportJobs: "Exportar historial JSON",
-        importJobs: "Importar historial JSON",
-        clearJobs: "Borrar historial",
-
-        resetAll: "Reiniciar (borrar todo)",
-        copyQuote: "Copiar cotización",
-        beginnerTip: "Tip: Usa los valores del slicer para <b>Tiempo de impresión</b> y <b>Gramos de filamento</b>. Activa Avanzado después para electricidad, márgenes, comisiones y depreciación.",
-
-        estimateTitle: "Estimación",
-        finalPriceTotal: "Precio Final (total)",
-        finalPriceUnit: "Precio Final (por unidad)",
-
-        profitView: "Vista de ganancia",
-        simple: "Simple",
-        pv_totalCost: "Costo total (materiales + mano de obra + máquina + gastos)",
-        pv_profitDollars: "Ganancia ($)",
-        pv_profitPct: "Ganancia (%)",
-        pv_costPerUnit: "Costo (por unidad)",
-        pv_profitPerUnit: "Ganancia (por unidad)",
-
-        jobHistoryTitle: "Historial",
-        noSavedJobs: "Aún no hay trabajos guardados. Usa “Guardar en historial”.",
-        storedLocally: "Guardado localmente en tu navegador (localStorage).",
-
-        // placeholders
-        ph_quantity: "ej., 10",
-        ph_bulkDiscountPct: "ej., 5",
-        ph_printHours: "Del slicer (ej., 6)",
-        ph_gramsUsed: "Del slicer (ej., 100)",
-        ph_spoolPrice: "ej., 20",
-        ph_spoolWeight: "Normalmente 1000",
-        ph_wastePct: "ej., 5",
-        ph_packagingCost: "ej., 0.75",
-        ph_consumablesCost: "ej., 0.50",
-        ph_powerKW: "ej., 0.115",
-        ph_elecRate: "ej., 0.146",
-        ph_laborRate: "ej., 40",
-        ph_laborMin: "ej., 35",
-        ph_overheadPct: "ej., 10",
-        ph_profitPct: "ej., 15",
-        ph_minFee: "ej., 25",
-        ph_printerPrice: "ej., 2200",
-        ph_printerLifeHours: "ej., 7000",
-        ph_maintenancePerHr: "ej., 0.10",
-        ph_platformFeePct: "ej., 6.5",
-        ph_platformFixedFee: "ej., 0.25",
-        ph_platformListingFee: "ej., 0.20",
-        ph_platformNotes: "Opcional",
-        ph_jobName: "ej., Lote de llaveros",
-        ph_jobNotes: "ej., Negro, 2 piezas",
-
-        // status/messages
-        status_enterValues: "Ingresa valores para calcular",
-        status_updated: "Actualizado",
-        status_presetEmptyOnly: "Preajuste aplicado (solo campos vacíos)",
-        status_presetOverwrite: "Preajuste aplicado (sobrescribió campos)",
-        status_defaultsSaved: "Valores guardados ✅",
-        status_defaultsLoaded: "Valores cargados ✅",
-        status_noDefaults: "No hay valores guardados",
-        status_defaultsCleared: "Valores guardados borrados",
-        status_jobSaved: "Trabajo guardado ✅",
-        status_jobLoaded: "Trabajo cargado del historial",
-        status_jobDeleted: "Trabajo eliminado",
-        status_jobsCleared: "Historial borrado",
-        status_copyOk: "Copiado ✅",
-        status_importFailed: "Falló la importación",
-        status_importOk: (n) => `Importados ${n} trabajos ✅`,
-        status_exportOk: "JSON del historial copiado ✅",
-        status_platformPctTooHigh: "Comisión % demasiado alta; se usó solo tarifa fija",
-        status_beginnerOn: "Modo Principiante ACTIVADO",
-        status_beginnerOff: "Modo Principiante DESACTIVADO",
-
-        // prompts/alerts
-        alert_enterValuesFirst: "Primero ingresa valores y luego copia la cotización.",
-        alert_exportCopied: "JSON copiado. Pégalo en un archivo de texto para respaldarlo.",
-        prompt_copyThisJSON: "Copia este JSON:",
-        prompt_pasteJobsJSON: "Pega aquí el JSON exportado:",
-        alert_importFailed: "Falló la importación: JSON inválido.",
-        confirm_clearJobs: "¿Borrar TODO el historial? Esto no se puede deshacer.",
-
-        // breakdown
-        bd_qty: "Cantidad",
-        bd_timeTotal: "Tiempo total de impresión",
-        bd_material: "Material (incl. desperdicio)",
-        bd_packaging: "Empaque",
-        bd_consumables: "Consumibles",
-        bd_electricity: "Electricidad",
-        bd_machine: "Máquina (depr + mant)",
-        bd_labor: "Mano de obra activa",
-        bd_base: "Subtotal base",
-        bd_overhead: "Gastos generales",
-        bd_profit: "Ganancia (objetivo)",
-        bd_target: "Objetivo antes de comisiones",
-        bd_bulkDiscount: "Descuento por volumen",
-        bd_targetAfterDiscount: "Objetivo después del descuento",
-        bd_platform: "Comisiones agregadas",
-        bd_minApplied: "¿Aplicó mínimo?",
-
-        // jobs
-        jobs_savedPill: (n) => `${n} guardados`,
-        jobs_meta: (final, qty, time, filament) => `Final: ${final} • Cant: ${qty} • Tiempo: ${time}h • Filamento: ${filament}g`,
-        jobs_untitled: "Trabajo sin nombre",
-        btn_load: "Cargar",
-        btn_delete: "Eliminar",
-
-        // presets labels
-        preset_selectPrinter: "— Selecciona una impresora —",
-        preset_selectFilament: "— Selecciona un filamento —",
-        preset_selectPlatform: "— Selecciona una plataforma —",
-
-        // Printer names (ES)
-        p_bambu_a1mini: "Bambu Lab A1 mini",
-        p_bambu_a1: "Bambu Lab A1",
-        p_bambu_p1p: "Bambu Lab P1P",
-        p_bambu_p1s: "Bambu Lab P1S",
-        p_bambu_x1c: "Bambu Lab X1 Carbon",
-
-        p_prusa_mini: "Prusa MINI+",
-        p_prusa_mk3s: "Prusa MK3S+",
-        p_prusa_mk4: "Prusa MK4 / MK4S",
-        p_prusa_xl: "Prusa XL",
-
-        p_creality_ender3v2: "Creality Ender 3 V2",
-        p_creality_ender3s1: "Creality Ender 3 S1 / S1 Pro",
-        p_creality_ender5: "Creality Ender 5 / Ender 5 S1",
-        p_creality_k1: "Creality K1",
-        p_creality_k1max: "Creality K1 Max",
-
-        p_elegoo_n3p: "Elegoo Neptune 3 Pro",
-        p_elegoo_n4p: "Elegoo Neptune 4 Pro",
-        p_elegoo_n4max: "Elegoo Neptune 4 Max",
-
-        p_anycubic_kobra2: "Anycubic Kobra 2",
-        p_anycubic_kobra2pro: "Anycubic Kobra 2 Pro",
-        p_anycubic_kobra2max: "Anycubic Kobra 2 Max",
-
-        p_qidi_xplus3: "QIDI X-Plus 3",
-        p_qidi_xmax3: "QIDI X-Max 3",
-
-        p_generic_budget: "Genérico: FDM económico abierto",
-        p_generic_enclosed: "Genérico: FDM cerrado",
-        p_generic_corexy: "Genérico: CoreXY rápido",
-        p_generic_voron24: "Voron 2.4 (perfil genérico)",
-
-        // Filament
-        preset_pla: "PLA",
-        preset_petg: "PETG",
-        preset_abs: "ABS",
-        preset_tpu: "TPU",
-        preset_nylon: "Nylon",
-
-        // Platforms
-        preset_etsy: "Etsy (base)",
-        preset_amazon: "Amazon (base)",
-        preset_shopify: "Shopify (base)",
-        preset_ebay: "eBay (base)",
-        preset_adjust: "Ajusta si es necesario",
-        preset_varies: "Varía por categoría",
-        preset_typical: "Procesamiento típico de tarjeta"
-      }
+        minJobFee: 45
+      },
+      items: [] // filled below
     };
 
-    function currentLang(){
-      const settings = loadJSON(LS_SETTINGS_KEY, { lang:"en" });
-      return (settings && (settings.lang === "es" || settings.lang === "en")) ? settings.lang : "en";
-    }
-
-    function t(key){
-      const lang = currentLang();
-      const pack = I18N[lang] || I18N.en;
-      return pack[key] ?? (I18N.en[key] ?? key);
-    }
-
-    function setLang(lang){
-      const s = loadJSON(LS_SETTINGS_KEY, {});
-      s.lang = (lang === "es") ? "es" : "en";
-      saveJSON(LS_SETTINGS_KEY, s);
-    }
-
-    // ---------------- Printer profiles ----------------
-    const PRINTER_PRESETS = {
-      none: { nameKey: "preset_selectPrinter", fields: {} },
-
-      bambu_a1mini: { nameKey: "p_bambu_a1mini", fields: { powerKW: 0.085, printerPrice: 299, printerLifeHours: 7000, maintenancePerHr: 0.05 } },
-      bambu_a1:     { nameKey: "p_bambu_a1",     fields: { powerKW: 0.110, printerPrice: 399, printerLifeHours: 7000, maintenancePerHr: 0.06 } },
-      bambu_p1p:    { nameKey: "p_bambu_p1p",    fields: { powerKW: 0.120, printerPrice: 599, printerLifeHours: 8000, maintenancePerHr: 0.07 } },
-      bambu_p1s:    { nameKey: "p_bambu_p1s",    fields: { powerKW: 0.115, printerPrice: 699, printerLifeHours: 8000, maintenancePerHr: 0.07 } },
-      bambu_x1c:    { nameKey: "p_bambu_x1c",    fields: { powerKW: 0.150, printerPrice: 1199, printerLifeHours: 9000, maintenancePerHr: 0.09 } },
-
-      prusa_mini:   { nameKey: "p_prusa_mini",   fields: { powerKW: 0.090, printerPrice: 459, printerLifeHours: 9000, maintenancePerHr: 0.06 } },
-      prusa_mk3s:   { nameKey: "p_prusa_mk3s",   fields: { powerKW: 0.120, printerPrice: 749, printerLifeHours: 10000, maintenancePerHr: 0.07 } },
-      prusa_mk4:    { nameKey: "p_prusa_mk4",    fields: { powerKW: 0.130, printerPrice: 1099, printerLifeHours: 11000, maintenancePerHr: 0.08 } },
-      prusa_xl:     { nameKey: "p_prusa_xl",     fields: { powerKW: 0.220, printerPrice: 2499, printerLifeHours: 12000, maintenancePerHr: 0.12 } },
-
-      ender3v2:     { nameKey: "p_creality_ender3v2", fields: { powerKW: 0.120, printerPrice: 279, printerLifeHours: 6000, maintenancePerHr: 0.06 } },
-      ender3s1:     { nameKey: "p_creality_ender3s1", fields: { powerKW: 0.140, printerPrice: 399, printerLifeHours: 6500, maintenancePerHr: 0.07 } },
-      ender5:       { nameKey: "p_creality_ender5",   fields: { powerKW: 0.160, printerPrice: 499, printerLifeHours: 7000, maintenancePerHr: 0.08 } },
-      creality_k1:  { nameKey: "p_creality_k1",       fields: { powerKW: 0.250, printerPrice: 599, printerLifeHours: 8000, maintenancePerHr: 0.09 } },
-      creality_k1max:{nameKey: "p_creality_k1max",    fields: { powerKW: 0.300, printerPrice: 899, printerLifeHours: 8500, maintenancePerHr: 0.10 } },
-
-      neptune3pro:  { nameKey: "p_elegoo_n3p",   fields: { powerKW: 0.120, printerPrice: 299, printerLifeHours: 6500, maintenancePerHr: 0.06 } },
-      neptune4pro:  { nameKey: "p_elegoo_n4p",   fields: { powerKW: 0.150, printerPrice: 329, printerLifeHours: 7000, maintenancePerHr: 0.07 } },
-      neptune4max:  { nameKey: "p_elegoo_n4max", fields: { powerKW: 0.200, printerPrice: 479, printerLifeHours: 7500, maintenancePerHr: 0.08 } },
-
-      kobra2:       { nameKey: "p_anycubic_kobra2",    fields: { powerKW: 0.140, printerPrice: 269, printerLifeHours: 6500, maintenancePerHr: 0.06 } },
-      kobra2pro:    { nameKey: "p_anycubic_kobra2pro", fields: { powerKW: 0.160, printerPrice: 329, printerLifeHours: 7000, maintenancePerHr: 0.07 } },
-      kobra2max:    { nameKey: "p_anycubic_kobra2max", fields: { powerKW: 0.220, printerPrice: 469, printerLifeHours: 7500, maintenancePerHr: 0.08 } },
-
-      qidi_xplus3:  { nameKey: "p_qidi_xplus3",  fields: { powerKW: 0.250, printerPrice: 699, printerLifeHours: 8500, maintenancePerHr: 0.10 } },
-      qidi_xmax3:   { nameKey: "p_qidi_xmax3",   fields: { powerKW: 0.320, printerPrice: 999, printerLifeHours: 9000, maintenancePerHr: 0.12 } },
-
-      generic_budget:{ nameKey: "p_generic_budget", fields: { powerKW: 0.120, printerPrice: 250, printerLifeHours: 6000, maintenancePerHr: 0.06 } },
-      generic_enclosed:{nameKey: "p_generic_enclosed", fields: { powerKW: 0.180, printerPrice: 600, printerLifeHours: 8000, maintenancePerHr: 0.08 } },
-      generic_corexy:{ nameKey: "p_generic_corexy", fields: { powerKW: 0.260, printerPrice: 1000, printerLifeHours: 9000, maintenancePerHr: 0.10 } },
-      voron24:      { nameKey: "p_generic_voron24", fields: { powerKW: 0.300, printerPrice: 1500, printerLifeHours: 10000, maintenancePerHr: 0.12 } }
-    };
-
-    const FILAMENT_PRESETS = {
-      none: { nameKey: "preset_selectFilament", fields: {} },
-      pla:  { nameKey: "preset_pla",  fields: { wastePct: 5 } },
-      petg: { nameKey: "preset_petg", fields: { wastePct: 6 } },
-      abs:  { nameKey: "preset_abs",  fields: { wastePct: 7 } },
-      tpu:  { nameKey: "preset_tpu",  fields: { wastePct: 8 } },
-      nylon:{ nameKey: "preset_nylon",fields: { wastePct: 10 } }
-    };
-
-    const PLATFORM_PRESETS = {
-      none: { nameKey: "preset_selectPlatform", fields: {} },
-      etsy:   { nameKey: "preset_etsy",   fields: { platformFeePct: 6.5, platformFixedFee: 0.25, platformListingFee: 0.20, platformNotes: "" } },
-      amazon: { nameKey: "preset_amazon", fields: { platformFeePct: 15.0, platformFixedFee: 0.00, platformListingFee: 0.00, platformNotes: "" } },
-      shopify:{ nameKey: "preset_shopify",fields: { platformFeePct: 2.9, platformFixedFee: 0.30, platformListingFee: 0.00, platformNotes: "" } },
-      ebay:   { nameKey: "preset_ebay",   fields: { platformFeePct: 13.0, platformFixedFee: 0.00, platformListingFee: 0.00, platformNotes: "" } }
-    };
-
-    function localizedPlatformNotes(platformKey){
-      if (platformKey === "etsy") return t("preset_adjust");
-      if (platformKey === "amazon") return t("preset_varies");
-      if (platformKey === "shopify") return t("preset_typical");
-      if (platformKey === "ebay") return t("preset_varies");
-      return "";
-    }
-
-    // Storage keys (kept same to preserve your saved data)
-    const LS_DEFAULTS_KEY = "calc_defaults_v3";
-    const LS_JOBS_KEY = "calc_jobs_v3";
-    const LS_SETTINGS_KEY = "calc_settings_v6";
-
-    // Inputs managed
-    const inputIds = [
-      "quantity","bulkDiscountPct","printHours","gramsUsed","spoolPrice","spoolWeight","wastePct",
-      "packagingCost","consumablesCost",
-      "powerKW","elecRate","laborRate","laborMin","overheadPct","profitPct","minFee",
-      "printerPrice","printerLifeHours","maintenancePerHr",
-      "platformFeePct","platformFixedFee","platformListingFee","platformNotes",
-      "jobName","jobNotes"
+    const DEFAULT_SERVICES = [
+      { id: cryptoId(), service:"Mowing", unit:"per cut", qty:1, rate:55, measureType:"mow", measures:{ sqft: 6000 }, enabled:true },
+      { id: cryptoId(), service:"Trimming/Edging", unit:"flat", qty:1, rate:35, measureType:"edge", measures:{ linearft: 200 }, enabled:true },
+      { id: cryptoId(), service:"Mulch install", unit:"cubic yard", qty:2, rate:85, measureType:"mulch", measures:{ cuyd: 2 }, enabled:true },
+      { id: cryptoId(), service:"Rock/Gravel", unit:"ton", qty:1, rate:110, measureType:"rock", measures:{ tons: 1 }, enabled:true },
+      { id: cryptoId(), service:"Soil/Topsoil", unit:"yard", qty:2, rate:75, measureType:"soil", measures:{ cuyd: 2 }, enabled:true },
+      { id: cryptoId(), service:"Sod install", unit:"sq ft", qty:500, rate:1.25, measureType:"sod", measures:{ sqft: 500 }, enabled:true },
+      { id: cryptoId(), service:"Leaf cleanup", unit:"hour", qty:2, rate:65, measureType:"leaf", measures:{ sqft: 6000 }, enabled:true },
+      { id: cryptoId(), service:"Bush trimming", unit:"per bush", qty:8, rate:12, measureType:"bush", measures:{ count: 8 }, enabled:true },
+      { id: cryptoId(), service:"Hedge trimming", unit:"linear ft", qty:60, rate:3.25, measureType:"hedge", measures:{ linearft: 60 }, enabled:true },
+      { id: cryptoId(), service:"Spring/Fall cleanup", unit:"flat", qty:1, rate:220, measureType:"cleanup", measures:{ sqft: 8000 }, enabled:true },
+      { id: cryptoId(), service:"Weeding", unit:"hour", qty:2, rate:60, measureType:"weed", measures:{ sqft: 1200 }, enabled:true },
+      { id: cryptoId(), service:"Haul-away/Dump fee", unit:"flat", qty:1, rate:45, measureType:"haul", measures:{ }, enabled:true },
     ];
-    const clearState = Object.fromEntries(inputIds.map(id => [id, ""]));
 
-    function money(n){
-      const v = Number.isFinite(n) ? n : 0;
-      return v.toLocaleString(undefined, { style:"currency", currency:"USD" });
+    function cryptoId(){
+      if (crypto?.randomUUID) return crypto.randomUUID();
+      return "id-" + Math.random().toString(16).slice(2) + Date.now().toString(16);
     }
 
-    function num(id){
-      const el = $(id);
-      if (!el) return 0;
-      const raw = el.value;
-      if (raw === "" || raw === null || raw === undefined) return 0;
-      const v = parseFloat(raw);
-      return Number.isFinite(v) ? v : 0;
-    }
-
-    function intOr1(id){
-      const el = $(id);
-      if (!el) return 1;
-      const raw = el.value;
-      if (raw === "" || raw === null || raw === undefined) return 1;
-      const v = parseInt(raw, 10);
-      return Number.isFinite(v) && v > 0 ? v : 1;
-    }
-
-    function saveJSON(key, obj){ localStorage.setItem(key, JSON.stringify(obj)); }
-    function loadJSON(key, fallback=null){
+    function loadState(){
       try{
-        const raw = localStorage.getItem(key);
-        if (!raw) return fallback;
-        return JSON.parse(raw);
+        const raw = localStorage.getItem(STORE_KEY);
+        if(!raw) return null;
+        const parsed = JSON.parse(raw);
+        return parsed;
       }catch(e){
-        return fallback;
-      }
-    }
-
-    function setSelectOptions(selectEl, presets){
-      if (!selectEl) return;
-      const current = selectEl.value;
-      selectEl.innerHTML = "";
-      for (const [key, obj] of Object.entries(presets)){
-        const opt = document.createElement("option");
-        opt.value = key;
-        opt.textContent = t(obj.nameKey);
-        selectEl.appendChild(opt);
-      }
-      selectEl.value = (current && presets[current]) ? current : "none";
-    }
-
-    function refreshAllPresetSelects(){
-      setSelectOptions($("printerPreset"), PRINTER_PRESETS);
-      setSelectOptions($("filamentPreset"), FILAMENT_PRESETS);
-      setSelectOptions($("platformPreset"), PLATFORM_PRESETS);
-    }
-
-    function isEmptyField(id){
-      const el = $(id);
-      if (!el) return true;
-      return el.value === "" || el.value === null || el.value === undefined;
-    }
-
-    function applyFields(fields){
-      const emptyOnly = $("applyEmptyOnly")?.checked ?? true;
-      for (const [id, value] of Object.entries(fields)){
-        if (!$(id)) continue;
-        if (emptyOnly && !isEmptyField(id)) continue;
-        $(id).value = value;
-      }
-      calc();
-      $("status").textContent = emptyOnly ? t("status_presetEmptyOnly") : t("status_presetOverwrite");
-      $("status").dataset.i18nStatusKey = "";
-    }
-
-    function getState(){
-      const state = {};
-      inputIds.forEach(id => state[id] = ($(id) ? $(id).value : ""));
-      state.includePlatformFees = $("includePlatformFees")?.checked ?? false;
-      state.applyEmptyOnly = $("applyEmptyOnly")?.checked ?? true;
-      state.autoLoadDefaults = $("autoLoadDefaults")?.checked ?? true;
-      state.printerPreset = $("printerPreset")?.value ?? "none";
-      state.filamentPreset = $("filamentPreset")?.value ?? "none";
-      state.platformPreset = $("platformPreset")?.value ?? "none";
-      state.laborPerUnit = $("laborPerUnit")?.checked ?? false;
-      return state;
-    }
-
-    function setState(state){
-      inputIds.forEach(id => { if ($(id)) $(id).value = (state && Object.prototype.hasOwnProperty.call(state,id)) ? state[id] : ""; });
-      if ($("includePlatformFees") && typeof state?.includePlatformFees === "boolean") $("includePlatformFees").checked = state.includePlatformFees;
-      if ($("applyEmptyOnly") && typeof state?.applyEmptyOnly === "boolean") $("applyEmptyOnly").checked = state.applyEmptyOnly;
-      if ($("autoLoadDefaults") && typeof state?.autoLoadDefaults === "boolean") $("autoLoadDefaults").checked = state.autoLoadDefaults;
-      if ($("laborPerUnit") && typeof state?.laborPerUnit === "boolean") $("laborPerUnit").checked = state.laborPerUnit;
-      if ($("printerPreset") && state?.printerPreset) $("printerPreset").value = state.printerPreset;
-      if ($("filamentPreset") && state?.filamentPreset) $("filamentPreset").value = state.filamentPreset;
-      if ($("platformPreset") && state?.platformPreset) $("platformPreset").value = state.platformPreset;
-      calc();
-    }
-
-    function setStatusKey(key){
-      const el = $("status");
-      if (!el) return;
-      el.textContent = t(key);
-      el.dataset.i18nStatusKey = key;
-    }
-
-    function renderEmpty(){
-      $("breakdown").innerHTML = `
-        <div class="line-item"><div class="k">${t("bd_qty")}</div><div class="v">1</div></div>
-        <div class="line-item"><div class="k">${t("bd_timeTotal")}</div><div class="v">0.00 h</div></div>
-        <div class="line-item"><div class="k">${t("bd_material")}</div><div class="v">$0.00</div></div>
-        <div class="line-item"><div class="k">${t("bd_packaging")}</div><div class="v">$0.00</div></div>
-        <div class="line-item"><div class="k">${t("bd_consumables")}</div><div class="v">$0.00</div></div>
-        <div class="line-item"><div class="k">${t("bd_electricity")}</div><div class="v">$0.00</div></div>
-        <div class="line-item"><div class="k">${t("bd_machine")}</div><div class="v">$0.00</div></div>
-        <div class="line-item"><div class="k">${t("bd_labor")}</div><div class="v">$0.00</div></div>
-        <div class="line-item"><div class="k">${t("bd_base")}</div><div class="v">$0.00</div></div>
-        <div class="line-item"><div class="k">${t("bd_overhead")}</div><div class="v">$0.00</div></div>
-        <div class="line-item"><div class="k">${t("bd_profit")}</div><div class="v">$0.00</div></div>
-        <div class="line-item"><div class="k">${t("bd_target")}</div><div class="v">$0.00</div></div>
-        <div class="line-item"><div class="k">${t("bd_bulkDiscount")}</div><div class="v">$0.00</div></div>
-        <div class="line-item"><div class="k">${t("bd_targetAfterDiscount")}</div><div class="v">$0.00</div></div>
-        <div class="line-item"><div class="k">${t("bd_platform")}</div><div class="v">$0.00</div></div>
-        <div class="line-item"><div class="k">${t("bd_minApplied")}</div><div class="v">No</div></div>
-      `;
-      $("profitBox").innerHTML = `
-        <div class="line-item"><div class="k">${t("pv_totalCost")}</div><div class="v">$0.00</div></div>
-        <div class="line-item"><div class="k">${t("pv_profitDollars")}</div><div class="v">$0.00</div></div>
-        <div class="line-item"><div class="k">${t("pv_profitPct")}</div><div class="v">0.0%</div></div>
-        <div class="line-item"><div class="k">${t("pv_costPerUnit")}</div><div class="v">$0.00</div></div>
-        <div class="line-item"><div class="k">${t("pv_profitPerUnit")}</div><div class="v">$0.00</div></div>
-      `;
-      $("finalPrice").textContent = "$0.00";
-      $("finalPricePerUnit").textContent = "$0.00";
-      setStatusKey("status_enterValues");
-      if ($("deprPerHrDisplay")) $("deprPerHrDisplay").value = "—";
-    }
-
-    function calcDepreciationPerHr(){
-      const price = num("printerPrice");
-      const life = num("printerLifeHours");
-      if (price <= 0 || life <= 0) return 0;
-      return price / life;
-    }
-
-    function calc(){
-      const includePlatformFees = $("includePlatformFees")?.checked ?? false;
-      const anyInput = inputIds.some(id => ($(id) && $(id).value !== "")) || includePlatformFees;
-      if (!anyInput){
-        renderEmpty();
         return null;
       }
+    }
+    function saveState(state){
+      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    }
 
-      const qty = Math.max(1, intOr1("quantity"));
+    function mergeDefaults(partial){
+      const s = structuredClone(DEFAULT_STATE);
 
-      // Per-unit inputs
-      const printHoursUnit = num("printHours");
-      const gramsUsedUnit = num("gramsUsed");
+      // items default
+      s.items = structuredClone(DEFAULT_SERVICES);
 
-      const bulkDiscountPct = Math.max(0, num("bulkDiscountPct")) / 100;
+      if(!partial) return s;
 
-      const spoolPrice = num("spoolPrice");
-      const spoolWeight = Math.max(1, num("spoolWeight"));
-      const wastePct = num("wastePct") / 100;
+      // shallow merges
+      if(partial.biz) s.biz = { ...s.biz, ...partial.biz };
+      if(partial.invoice) s.invoice = { ...s.invoice, ...partial.invoice };
+      if(partial.totals) s.totals = { ...s.totals, ...partial.totals };
+      if(partial.assistant) s.assistant = { ...s.assistant, ...partial.assistant };
 
-      const packagingUnit = Math.max(0, num("packagingCost"));
-      const consumablesUnit = Math.max(0, num("consumablesCost"));
-
-      const powerKW = num("powerKW");
-      const elecRate = num("elecRate");
-
-      const laborRate = num("laborRate");
-      const laborMinInput = num("laborMin");
-      const laborPerUnit = $("laborPerUnit")?.checked ?? false;
-
-      const overheadPct = num("overheadPct") / 100;
-      const profitPct = num("profitPct") / 100;
-      const minFee = num("minFee");
-
-      // Totals (batch)
-      const printHours = printHoursUnit * qty;
-      const gramsUsed = gramsUsedUnit * qty;
-      const packaging = packagingUnit * qty;
-      const consumables = consumablesUnit * qty;
-
-      const deprPerHr = calcDepreciationPerHr();
-      const maintPerHr = num("maintenancePerHr");
-      const machineCost = printHours * (Math.max(0, deprPerHr) + Math.max(0, maintPerHr));
-      if ($("deprPerHrDisplay")) $("deprPerHrDisplay").value = deprPerHr > 0 ? money(deprPerHr) + " / hr" : "—";
-
-      const platformFeePct = num("platformFeePct") / 100;
-      const platformFixedFee = num("platformFixedFee");
-      const platformListingFee = num("platformListingFee");
-
-      const costPerGram = spoolPrice / spoolWeight;
-      const effectiveGrams = gramsUsed * (1 + Math.max(0, wastePct));
-      const materialCost = effectiveGrams * costPerGram;
-
-      const electricityCost = printHours * powerKW * elecRate;
-
-      const laborMinTotal = laborPerUnit ? (laborMinInput * qty) : laborMinInput;
-      const laborHours = laborMinTotal / 60;
-      const laborCost = laborHours * laborRate;
-
-      const directCost = materialCost + packaging + consumables + electricityCost + machineCost + laborCost;
-
-      const overheadCost = directCost * Math.max(0, overheadPct);
-      const costWithOverhead = directCost + overheadCost;
-
-      const profitTarget = costWithOverhead * Math.max(0, profitPct);
-      const targetBeforeFees = costWithOverhead + profitTarget;
-
-      const targetWithMin = Math.max(targetBeforeFees, Math.max(0, minFee));
-      const minApplied = targetWithMin > targetBeforeFees;
-
-      // Bulk discount (only meaningful when qty > 1)
-      let bulkDiscountAmt = 0;
-      if (qty > 1 && bulkDiscountPct > 0){
-        bulkDiscountAmt = targetWithMin * bulkDiscountPct;
+      // items: accept saved items if present
+      if(Array.isArray(partial.items) && partial.items.length){
+        s.items = partial.items.map(it => ({
+          id: it.id || cryptoId(),
+          service: it.service ?? "Service",
+          unit: it.unit ?? "flat",
+          qty: Number.isFinite(+it.qty) ? +it.qty : 1,
+          rate: Number.isFinite(+it.rate) ? +it.rate : 0,
+          measureType: it.measureType ?? "custom",
+          measures: it.measures ?? {},
+          enabled: it.enabled !== false
+        }));
       }
+      return s;
+    }
 
-      // Discounted target (never below your cost, and never below minFee if you set one)
-      let discountedTarget = targetWithMin - bulkDiscountAmt;
-      const floor = Math.max(costWithOverhead, Math.max(0, minFee));
-      if (discountedTarget < floor) discountedTarget = floor;
+    let STATE = mergeDefaults(loadState());
 
-      // If we had to floor it, recompute the displayed discount as actual difference
-      bulkDiscountAmt = Math.max(0, targetWithMin - discountedTarget);
+    /***********************
+     * UI refs
+     ***********************/
+    const $ = (id) => document.getElementById(id);
 
-      let final = discountedTarget;
-      let platformAdded = 0;
+    const refs = {
+      invoiceNo: $("invoiceNo"),
+      jobDate: $("jobDate"),
+      status: $("status"),
+      custName: $("custName"),
+      custPhone: $("custPhone"),
+      custEmail: $("custEmail"),
+      custAddress: $("custAddress"),
+      notes: $("notes"),
 
-      if (includePlatformFees){
-        const pct = Math.max(0, platformFeePct);
-        const fixed = Math.max(0, platformFixedFee) + Math.max(0, platformListingFee);
+      bizName: $("bizName"),
+      bizPhone: $("bizPhone"),
+      bizAddress: $("bizAddress"),
 
-        if (pct >= 0.999){
-          final = discountedTarget + fixed;
-          platformAdded = fixed;
-          setStatusKey("status_platformPctTooHigh");
-        } else {
-          const gross = (discountedTarget + fixed) / (1 - pct);
-          final = gross;
-          platformAdded = gross - discountedTarget;
+      setLaborRate: $("setLaborRate"),
+      setOverheadPct: $("setOverheadPct"),
+      setProfitPct: $("setProfitPct"),
+      setTravelMins: $("setTravelMins"),
+      setMinJobFee: $("setMinJobFee"),
+      setHelperMins: $("setHelperMins"),
+
+      rateMowSqftHr: $("rateMowSqftHr"),
+      rateEdgeLfHr: $("rateEdgeLfHr"),
+      rateWeedSqftHr: $("rateWeedSqftHr"),
+      rateMulchCuydHr: $("rateMulchCuydHr"),
+      rateRockTonHr: $("rateRockTonHr"),
+      rateSoilCuydHr: $("rateSoilCuydHr"),
+      rateSodSqftHr: $("rateSodSqftHr"),
+      rateHedgeLfHr: $("rateHedgeLfHr"),
+      rateBushPerHr: $("rateBushPerHr"),
+      rateLeafSqftHr: $("rateLeafSqftHr"),
+
+      matDumpFee: $("matDumpFee"),
+      matSupplies: $("matSupplies"),
+      matMulch: $("matMulch"),
+      matRock: $("matRock"),
+      matSoil: $("matSoil"),
+      matSod: $("matSod"),
+
+      taxPct: $("taxPct"),
+      discountAmt: $("discountAmt"),
+
+      itemsBody: $("itemsBody"),
+
+      subTotal: $("subTotal"),
+      taxTotal: $("taxTotal"),
+      grandTotal: $("grandTotal"),
+
+      btnNewInvoice: $("btnNewInvoice"),
+      btnSave: $("btnSave"),
+      btnExport: $("btnExport"),
+      btnResetAll: $("btnResetAll"),
+      btnAddCustom: $("btnAddCustom"),
+      btnAddDefaults: $("btnAddDefaults"),
+      btnQuoteEmail: $("btnQuoteEmail"),
+
+      appTitle: $("appTitle"),
+      appSub: $("appSub"),
+    };
+
+    /***********************
+     * Pricing Assistant
+     ***********************/
+    function hoursFromProduction(amount, perHour){
+      const ph = Math.max(1e-6, num(perHour));
+      return Math.max(0, num(amount) / ph);
+    }
+
+    function calcSuggestedForItem(item){
+      const A = STATE.assistant;
+      const laborRate = num(A.laborRate);
+      const overheadPct = clamp(num(A.overheadPct)/100, 0, 0.95);
+      const profitPct = clamp(num(A.profitPct)/100, 0, 2.0); // allow >100% markup if desired
+      const travelHrs = Math.max(0, num(A.travelMins))/60;
+      const helperHrs = Math.max(0, num(A.helperMins))/60;
+
+      // Base "per job" extras
+      const supplies = Math.max(0, num(A.supplies));
+      let material = 0;
+      let laborHrs = 0;
+      let noteBits = [];
+
+      const mt = item.measureType;
+      const m = item.measures || {};
+
+      if(mt === "mow"){
+        const sqft = Math.max(0, num(m.sqft));
+        laborHrs += hoursFromProduction(sqft, A.mowSqftHr);
+        noteBits.push(`Mow: ${sqft.toLocaleString()} sq ft`);
+      } else if(mt === "edge"){
+        const lf = Math.max(0, num(m.linearft));
+        laborHrs += hoursFromProduction(lf, A.edgeLfHr);
+        noteBits.push(`Edge: ${lf.toLocaleString()} linear ft`);
+      } else if(mt === "weed"){
+        const sqft = Math.max(0, num(m.sqft));
+        laborHrs += hoursFromProduction(sqft, A.weedSqftHr);
+        noteBits.push(`Weed: ${sqft.toLocaleString()} sq ft`);
+      } else if(mt === "mulch"){
+        const cuyd = Math.max(0, num(m.cuyd));
+        laborHrs += hoursFromProduction(cuyd, A.mulchCuydHr);
+        material += cuyd * Math.max(0, num(A.mulchMat));
+        noteBits.push(`Mulch: ${cuyd} cu yd`);
+      } else if(mt === "rock"){
+        const tons = Math.max(0, num(m.tons));
+        laborHrs += hoursFromProduction(tons, A.rockTonHr);
+        material += tons * Math.max(0, num(A.rockMat));
+        noteBits.push(`Rock: ${tons} tons`);
+      } else if(mt === "soil"){
+        const cuyd = Math.max(0, num(m.cuyd));
+        laborHrs += hoursFromProduction(cuyd, A.soilCuydHr);
+        material += cuyd * Math.max(0, num(A.soilMat));
+        noteBits.push(`Soil: ${cuyd} cu yd`);
+      } else if(mt === "sod"){
+        const sqft = Math.max(0, num(m.sqft));
+        laborHrs += hoursFromProduction(sqft, A.sodSqftHr);
+        material += sqft * Math.max(0, num(A.sodMat));
+        noteBits.push(`Sod: ${sqft.toLocaleString()} sq ft`);
+      } else if(mt === "hedge"){
+        const lf = Math.max(0, num(m.linearft));
+        laborHrs += hoursFromProduction(lf, A.hedgeLfHr);
+        noteBits.push(`Hedge: ${lf.toLocaleString()} linear ft`);
+      } else if(mt === "bush"){
+        const count = Math.max(0, num(m.count));
+        laborHrs += hoursFromProduction(count, A.bushPerHr);
+        noteBits.push(`Bushes: ${count}`);
+      } else if(mt === "leaf"){
+        const sqft = Math.max(0, num(m.sqft));
+        // leaf cleanup can also be manually estimated via qty (hours) if unit is hour
+        laborHrs += hoursFromProduction(sqft, A.leafSqftHr);
+        noteBits.push(`Leaf area: ${sqft.toLocaleString()} sq ft`);
+      } else if(mt === "cleanup"){
+        // spring/fall cleanup: treat as leaf/weed blend using sqft
+        const sqft = Math.max(0, num(m.sqft));
+        const leafH = hoursFromProduction(sqft, A.leafSqftHr);
+        const weedH = hoursFromProduction(sqft * 0.15, A.weedSqftHr); // small portion
+        laborHrs += leafH + weedH;
+        noteBits.push(`Cleanup area: ${sqft.toLocaleString()} sq ft`);
+      } else if(mt === "haul"){
+        material += Math.max(0, num(A.dumpFee));
+        noteBits.push(`Dump fee`);
+      } else {
+        // custom: if user puts qty hours and unit is hour, we use that as labor hours
+        if((item.unit || "").toLowerCase().includes("hour")){
+          laborHrs += Math.max(0, num(item.qty));
+          noteBits.push(`Hours: ${Math.max(0,num(item.qty))}`);
         }
       }
 
-      const totalCost = costWithOverhead + platformAdded; // discount reduces price, not cost
-      const profitDollars = final - totalCost;
-      const profitPctActual = (final > 0) ? (profitDollars / final) : 0;
+      // Add helper + travel to labor hours (per line suggestion)
+      // If the line is purely "haul/dump fee", keep helper/travel smaller:
+      const isHaul = (mt === "haul");
+      const extraLabor = isHaul ? (travelHrs * 0.5 + helperHrs * 0.25) : (travelHrs + helperHrs);
+      laborHrs += extraLabor;
 
-      const finalPerUnit = final / qty;
-      const costPerUnit = totalCost / qty;
-      const profitPerUnit = profitDollars / qty;
+      const labor = laborHrs * laborRate;
 
-      const breakdown = [
-        ["bd_qty", qty, "qty"],
-        ["bd_timeTotal", printHours, "hours"],
-        ["bd_material", materialCost, "money"],
-        ["bd_packaging", packaging, "money"],
-        ["bd_consumables", consumables, "money"],
-        ["bd_electricity", electricityCost, "money"],
-        ["bd_machine", machineCost, "money"],
-        ["bd_labor", laborCost, "money"],
-        ["bd_base", directCost, "money"],
-        ["bd_overhead", overheadCost, "money"],
-        ["bd_profit", (targetWithMin - costWithOverhead), "money"],
-        ["bd_target", targetWithMin, "money"],
-        ["bd_bulkDiscount", -bulkDiscountAmt, "moneySigned"],
-        ["bd_targetAfterDiscount", discountedTarget, "money"],
-        ["bd_platform", platformAdded, "money"],
-        ["bd_minApplied", minApplied ? 1 : 0, "bool"]
-      ];
+      const baseCost = labor + material + supplies;
+      const overhead = baseCost * overheadPct;
+      const costWithOverhead = baseCost + overhead;
+      const suggestedTotal = Math.max(num(A.minJobFee), costWithOverhead * (1 + profitPct));
 
-      $("breakdown").innerHTML = breakdown.map(([key,v,type]) => {
-        const label = t(key);
-        const lang = currentLang();
-        const yes = (lang === "es") ? "Sí" : "Yes";
-        const no  = (lang === "es") ? "No" : "No";
-        let val = "";
-        if (type === "bool") val = v ? yes : no;
-        else if (type === "hours") val = `${(Number(v)||0).toFixed(2)} h`;
-        else if (type === "qty") val = `${v}`;
-        else if (type === "moneySigned"){
-          const n = Number(v) || 0;
-          const sign = n < 0 ? "-" : "";
-          val = sign + money(Math.abs(n));
-        } else val = money(v);
-        return `<div class="line-item"><div class="k">${label}</div><div class="v">${val}</div></div>`;
-      }).join("");
+      const qty = Math.max(0, num(item.qty));
+      const perUnit = qty > 0 ? (suggestedTotal / qty) : suggestedTotal;
 
-      $("finalPrice").textContent = money(final);
-      $("finalPricePerUnit").textContent = money(finalPerUnit);
-
-      $("profitBox").innerHTML = `
-        <div class="line-item"><div class="k">${t("pv_totalCost")}</div><div class="v">${money(totalCost)}</div></div>
-        <div class="line-item"><div class="k">${t("pv_profitDollars")}</div><div class="v">${money(profitDollars)}</div></div>
-        <div class="line-item"><div class="k">${t("pv_profitPct")}</div><div class="v">${(profitPctActual*100).toFixed(1)}%</div></div>
-        <div class="line-item"><div class="k">${t("pv_costPerUnit")}</div><div class="v">${money(costPerUnit)}</div></div>
-        <div class="line-item"><div class="k">${t("pv_profitPerUnit")}</div><div class="v">${money(profitPerUnit)}</div></div>
-      `;
-
-      setStatusKey("status_updated");
+      // Undercharge check vs current line
+      const currentLine = qty * Math.max(0, num(item.rate));
+      const marginGap = suggestedTotal - currentLine;
 
       return {
-        final, qty, finalPerUnit,
-        totalCost, profitDollars, profitPctActual,
-        printHours, gramsUsed, effectiveGrams,
-        materialCost, packaging, consumables,
-        electricityCost, machineCost, laborCost,
-        overheadCost, targetWithMin, discountedTarget,
-        platformAdded, minApplied, laborMinTotal,
-        bulkDiscountAmt
+        suggestedTotal,
+        suggestedRate: perUnit,
+        breakdown: {
+          laborHrs,
+          labor,
+          material,
+          supplies,
+          overhead,
+          costWithOverhead,
+          profit: costWithOverhead * profitPct,
+          note: noteBits.join(" • ")
+        },
+        marginGap
       };
     }
 
-    // Jobs
-    function loadJobs(){ const jobs = loadJSON(LS_JOBS_KEY, []); return Array.isArray(jobs) ? jobs : []; }
-    function saveJobs(jobs){ saveJSON(LS_JOBS_KEY, jobs); renderJobs(); }
+    /***********************
+     * Render Items
+     ***********************/
+    function measurementEditorHTML(item){
+      const mt = item.measureType;
+      const m = item.measures || {};
 
-    function formatDate(iso){
-      try{ return new Date(iso).toLocaleString(); }
-      catch(e){ return iso; }
+      const input = (key, label, placeholder="0", step="1") => `
+        <div style="display:grid; gap:6px; margin-top:6px;">
+          <div class="cellMini">${label}</div>
+          <input data-mid="${item.id}" data-mkey="${key}" type="number" step="${step}" value="${escapeAttr(m[key] ?? "")}" placeholder="${placeholder}" />
+        </div>
+      `;
+
+      const select = `
+        <div style="display:grid; gap:6px;">
+          <div class="cellMini">Type</div>
+          <select data-mid="${item.id}" data-mtype="1">
+            ${[
+              ["mow","Mowing (sq ft)"],
+              ["edge","Trimming/Edging (linear ft)"],
+              ["mulch","Mulch (cu yd)"],
+              ["rock","Rock/Gravel (tons)"],
+              ["soil","Soil/Topsoil (cu yd)"],
+              ["sod","Sod (sq ft)"],
+              ["leaf","Leaf cleanup (sq ft)"],
+              ["bush","Bush trimming (count)"],
+              ["hedge","Hedge trimming (linear ft)"],
+              ["cleanup","Spring/Fall cleanup (sq ft)"],
+              ["weed","Weeding (sq ft)"],
+              ["haul","Haul-away/Dump fee"],
+              ["custom","Custom (hours if unit=hour)"],
+            ].map(([v,t])=>`<option value="${v}" ${v===mt?"selected":""}>${t}</option>`).join("")}
+          </select>
+        </div>
+      `;
+
+      let fields = "";
+      if(mt==="mow") fields = input("sqft","Area (sq ft)","6000","1");
+      else if(mt==="edge") fields = input("linearft","Length (linear ft)","200","1");
+      else if(mt==="mulch") fields = input("cuyd","Volume (cubic yards)","2","0.01");
+      else if(mt==="rock") fields = input("tons","Weight (tons)","1","0.01");
+      else if(mt==="soil") fields = input("cuyd","Volume (cubic yards)","2","0.01");
+      else if(mt==="sod") fields = input("sqft","Area (sq ft)","500","1");
+      else if(mt==="leaf") fields = input("sqft","Area (sq ft)","6000","1");
+      else if(mt==="bush") fields = input("count","Bush count","8","1");
+      else if(mt==="hedge") fields = input("linearft","Length (linear ft)","60","1");
+      else if(mt==="cleanup") fields = input("sqft","Area (sq ft)","8000","1");
+      else if(mt==="weed") fields = input("sqft","Area (sq ft)","1200","1");
+      else if(mt==="haul") fields = `<div class="cellMini" style="margin-top:6px;">Uses dump fee setting by default.</div>`;
+      else fields = `<div class="cellMini" style="margin-top:6px;">If unit is “hour”, quantity will be treated as labor hours for suggestions.</div>`;
+
+      return `<div style="min-width:240px;">${select}${fields}</div>`;
     }
-    function escapeHTML(s){
-      return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+
+    function escapeHtml(s){
+      return (s ?? "").toString().replace(/[&<>"']/g, (c)=>({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      }[c]));
+    }
+    function escapeAttr(s){
+      return escapeHtml(s).replace(/"/g, "&quot;");
     }
 
-    function renderJobs(){
-      const pill = $("jobsCountPill");
-      const list = $("jobsList");
-      if (!pill || !list) return;
+    function renderItems(){
+      refs.itemsBody.innerHTML = "";
 
-      const jobs = loadJobs();
-      pill.textContent = t("jobs_savedPill")(jobs.length);
+      STATE.items.forEach((item, idx) => {
+        const qty = Math.max(0, num(item.qty));
+        const rate = Math.max(0, num(item.rate));
+        const line = qty * rate;
 
-      if (!jobs.length){
-        list.innerHTML = `<div class="note" data-i18n="noSavedJobs">${t("noSavedJobs")}</div>`;
+        const sug = calcSuggestedForItem(item);
+        const sugRate = sug.suggestedRate;
+        const sugTotal = sug.suggestedTotal;
+
+        const gap = sug.marginGap;
+        const badge = gap <= 1
+          ? `<span class="pill good">✓ Near suggestion</span>`
+          : gap < 0
+            ? `<span class="pill good">✓ Above suggestion</span>`
+            : gap < 25
+              ? `<span class="pill warn">⚠ Slightly low</span>`
+              : `<span class="pill bad">⬇ Likely underpriced</span>`;
+
+        const breakdown = `
+          <div class="cellMini">
+            ${badge}
+            <div style="margin-top:6px;">
+              <div><b>Suggested total:</b> ${fmt.format(sugTotal)}</div>
+              <div><b>Suggested rate:</b> ${fmt.format(sugRate)} <span class="muted">/ ${escapeHtml(item.unit)}</span></div>
+            </div>
+            <div style="margin-top:6px;">
+              <span class="muted">${escapeHtml(sug.breakdown.note || "")}</span>
+            </div>
+            <details style="margin-top:8px;">
+              <summary class="muted" style="cursor:pointer;">View breakdown</summary>
+              <div class="cellMini" style="margin-top:8px;">
+                Labor: ${sug.breakdown.laborHrs.toFixed(2)} hrs × ${fmt.format(num(STATE.assistant.laborRate))} = <b>${fmt.format(sug.breakdown.labor)}</b><br/>
+                Material: <b>${fmt.format(sug.breakdown.material)}</b><br/>
+                Supplies/misc: <b>${fmt.format(sug.breakdown.supplies)}</b><br/>
+                Overhead (${num(STATE.assistant.overheadPct).toFixed(1)}%): <b>${fmt.format(sug.breakdown.overhead)}</b><br/>
+                Profit (${num(STATE.assistant.profitPct).toFixed(1)}%): <b>${fmt.format(sug.breakdown.profit)}</b><br/>
+                <div style="margin-top:6px;">Cost+OH: ${fmt.format(sug.breakdown.costWithOverhead)}</div>
+              </div>
+            </details>
+          </div>
+        `;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>
+            <div style="display:grid; gap:6px;">
+              <input data-id="${item.id}" data-field="service" value="${escapeAttr(item.service)}" />
+              <div class="cellMini">
+                Unit:
+                <select data-id="${item.id}" data-field="unit">
+                  ${["per cut","flat","cubic yard","ton","yard","sq ft","hour","per bush","linear ft"].map(u => `
+                    <option value="${u}" ${u===item.unit?"selected":""}>${u}</option>
+                  `).join("")}
+                </select>
+              </div>
+            </div>
+          </td>
+
+          <td>${measurementEditorHTML(item)}</td>
+
+          <td>
+            <input data-id="${item.id}" data-field="qty" type="number" step="0.01" value="${escapeAttr(item.qty)}" />
+            <div class="cellMini">Qty in units above</div>
+          </td>
+
+          <td>
+            <input data-id="${item.id}" data-field="rate" type="number" step="0.01" value="${escapeAttr(item.rate)}" />
+            <div class="cellMini">Rate per unit</div>
+          </td>
+
+          <td>
+            <div style="font-weight:900;">${fmt.format(line)}</div>
+            <div class="cellMini">Auto = Qty × Rate</div>
+          </td>
+
+          <td>
+            ${breakdown}
+            <div class="actions noPrint" style="margin-top:8px;">
+              <button class="btn small primary" data-act="useSugRate" data-id="${item.id}" type="button">Use Suggestion</button>
+              <button class="btn small" data-act="useSugTotal" data-id="${item.id}" type="button">Use Total as Flat</button>
+            </div>
+          </td>
+
+          <td class="noPrint">
+            <div class="actions" style="flex-direction:column; align-items:stretch;">
+              <button class="btn small danger" data-act="remove" data-id="${item.id}" type="button">Remove</button>
+            </div>
+          </td>
+        `;
+        refs.itemsBody.appendChild(tr);
+      });
+
+      recalcTotals();
+    }
+
+    function recalcTotals(){
+      const sub = STATE.items.reduce((sum, it) => {
+        const qty = Math.max(0, num(it.qty));
+        const rate = Math.max(0, num(it.rate));
+        return sum + qty*rate;
+      }, 0);
+
+      const taxPct = clamp(num(STATE.totals.taxPct)/100, 0, 0.25);
+      const tax = sub * taxPct;
+
+      const discount = Math.max(0, num(STATE.totals.discountAmt));
+      const grand = Math.max(0, sub + tax - discount);
+
+      refs.subTotal.textContent = fmt.format(sub);
+      refs.taxTotal.textContent = fmt.format(tax);
+      refs.grandTotal.textContent = fmt.format(grand);
+    }
+
+    /***********************
+     * Bind form -> state
+     ***********************/
+    function syncHeader(){
+      refs.appTitle.textContent = `${STATE.biz.name} — Invoice`;
+      refs.appSub.textContent = `${STATE.biz.phone} • ${STATE.biz.address}`;
+      document.title = `${STATE.biz.name} Invoice`;
+    }
+
+    function populateForm(){
+      // invoice
+      refs.invoiceNo.value = STATE.invoice.no || "";
+      refs.jobDate.value = STATE.invoice.date || "";
+      refs.status.value = STATE.invoice.status || "Unpaid";
+      refs.custName.value = STATE.invoice.custName || "";
+      refs.custPhone.value = STATE.invoice.custPhone || "";
+      refs.custEmail.value = STATE.invoice.custEmail || "";
+      refs.custAddress.value = STATE.invoice.custAddress || "";
+      refs.notes.value = STATE.invoice.notes || "";
+
+      // biz
+      refs.bizName.value = STATE.biz.name || "";
+      refs.bizPhone.value = STATE.biz.phone || "";
+      refs.bizAddress.value = STATE.biz.address || "";
+
+      // totals
+      refs.taxPct.value = STATE.totals.taxPct ?? 0;
+      refs.discountAmt.value = STATE.totals.discountAmt ?? 0;
+
+      // assistant settings
+      const A = STATE.assistant;
+      refs.setLaborRate.value = A.laborRate ?? 0;
+      refs.setOverheadPct.value = A.overheadPct ?? 0;
+      refs.setProfitPct.value = A.profitPct ?? 0;
+      refs.setTravelMins.value = A.travelMins ?? 0;
+      refs.setMinJobFee.value = A.minJobFee ?? 0;
+      refs.setHelperMins.value = A.helperMins ?? 0;
+
+      refs.rateMowSqftHr.value = A.mowSqftHr ?? 0;
+      refs.rateEdgeLfHr.value = A.edgeLfHr ?? 0;
+      refs.rateWeedSqftHr.value = A.weedSqftHr ?? 0;
+
+      refs.rateMulchCuydHr.value = A.mulchCuydHr ?? 0;
+      refs.rateRockTonHr.value = A.rockTonHr ?? 0;
+      refs.rateSoilCuydHr.value = A.soilCuydHr ?? 0;
+
+      refs.rateSodSqftHr.value = A.sodSqftHr ?? 0;
+      refs.rateHedgeLfHr.value = A.hedgeLfHr ?? 0;
+      refs.rateBushPerHr.value = A.bushPerHr ?? 0;
+
+      refs.rateLeafSqftHr.value = A.leafSqftHr ?? 0;
+
+      refs.matDumpFee.value = A.dumpFee ?? 0;
+      refs.matSupplies.value = A.supplies ?? 0;
+
+      refs.matMulch.value = A.mulchMat ?? 0;
+      refs.matRock.value = A.rockMat ?? 0;
+      refs.matSoil.value = A.soilMat ?? 0;
+      refs.matSod.value = A.sodMat ?? 0;
+
+      syncHeader();
+      renderItems();
+    }
+
+    function wireInputs(){
+      // invoice fields
+      const invMap = [
+        ["invoiceNo","no"],["jobDate","date"],["status","status"],
+        ["custName","custName"],["custPhone","custPhone"],["custEmail","custEmail"],["custAddress","custAddress"],
+        ["notes","notes"]
+      ];
+      invMap.forEach(([id,key])=>{
+        $(id).addEventListener("input", ()=>{
+          STATE.invoice[key] = $(id).value;
+          autoSave();
+        });
+        $(id).addEventListener("change", ()=>{
+          STATE.invoice[key] = $(id).value;
+          autoSave();
+        });
+      });
+
+      // business
+      refs.bizName.addEventListener("input", ()=>{ STATE.biz.name = refs.bizName.value; syncHeader(); autoSave(); });
+      refs.bizPhone.addEventListener("input", ()=>{ STATE.biz.phone = refs.bizPhone.value; syncHeader(); autoSave(); });
+      refs.bizAddress.addEventListener("input", ()=>{ STATE.biz.address = refs.bizAddress.value; syncHeader(); autoSave(); });
+
+      // totals
+      refs.taxPct.addEventListener("input", ()=>{ STATE.totals.taxPct = num(refs.taxPct.value); recalcTotals(); autoSave(); });
+      refs.discountAmt.addEventListener("input", ()=>{ STATE.totals.discountAmt = num(refs.discountAmt.value); recalcTotals(); autoSave(); });
+
+      // assistant: common handler
+      const bindA = (el, key) => {
+        el.addEventListener("input", ()=>{
+          STATE.assistant[key] = num(el.value);
+          renderItems(); // suggestions + totals refresh
+          autoSave();
+        });
+      };
+
+      bindA(refs.setLaborRate, "laborRate");
+      bindA(refs.setOverheadPct, "overheadPct");
+      bindA(refs.setProfitPct, "profitPct");
+      bindA(refs.setTravelMins, "travelMins");
+      bindA(refs.setMinJobFee, "minJobFee");
+      bindA(refs.setHelperMins, "helperMins");
+
+      bindA(refs.rateMowSqftHr, "mowSqftHr");
+      bindA(refs.rateEdgeLfHr, "edgeLfHr");
+      bindA(refs.rateWeedSqftHr, "weedSqftHr");
+
+      bindA(refs.rateMulchCuydHr, "mulchCuydHr");
+      bindA(refs.rateRockTonHr, "rockTonHr");
+      bindA(refs.rateSoilCuydHr, "soilCuydHr");
+
+      bindA(refs.rateSodSqftHr, "sodSqftHr");
+      bindA(refs.rateHedgeLfHr, "hedgeLfHr");
+      bindA(refs.rateBushPerHr, "bushPerHr");
+      bindA(refs.rateLeafSqftHr, "leafSqftHr");
+
+      bindA(refs.matDumpFee, "dumpFee");
+      bindA(refs.matSupplies, "supplies");
+      bindA(refs.matMulch, "mulchMat");
+      bindA(refs.matRock, "rockMat");
+      bindA(refs.matSoil, "soilMat");
+      bindA(refs.matSod, "sodMat");
+    }
+
+    function autoSave(){
+      // keep small; save on every edit is fine for localStorage
+      saveState(STATE);
+    }
+
+    /***********************
+     * Table events (delegation)
+     ***********************/
+    function findItem(id){
+      return STATE.items.find(x => x.id === id);
+    }
+
+    refs.itemsBody.addEventListener("input", (e)=>{
+      const t = e.target;
+      if(!(t instanceof HTMLElement)) return;
+
+      // service/unit/qty/rate
+      const id = t.getAttribute("data-id");
+      const field = t.getAttribute("data-field");
+      if(id && field){
+        const item = findItem(id);
+        if(!item) return;
+        if(field === "service") item.service = t.value;
+        if(field === "unit") item.unit = t.value;
+        if(field === "qty") item.qty = num(t.value);
+        if(field === "rate") item.rate = num(t.value);
+        renderItems();
+        autoSave();
         return;
       }
 
-      list.innerHTML = jobs.slice().reverse().map((job, idxFromEnd) => {
-        const idx = jobs.length - 1 - idxFromEnd;
-        const title = (job.jobName && job.jobName.trim()) ? job.jobName.trim() : t("jobs_untitled");
-        const notes = job.jobNotes ? job.jobNotes : "";
-        const metaLine = t("jobs_meta")(money(job.final), (job.qty || 1), (job.printHoursTotal || 0).toFixed(2), (job.gramsUsedTotal || 0));
-        const meta = `${formatDate(job.ts)} • ${metaLine}`;
-        return `
-          <div class="jobcard">
-            <div class="jobhead">
-              <div>
-                <div class="jobtitle">${escapeHTML(title)}</div>
-                <div class="jobmeta">${escapeHTML(meta)}${notes ? "<br/>" + escapeHTML(notes) : ""}</div>
-              </div>
-              <div class="jobactions">
-                <button class="secondary" type="button" onclick="window.__loadJob(${idx})">${escapeHTML(t("btn_load"))}</button>
-                <button class="danger" type="button" onclick="window.__deleteJob(${idx})">${escapeHTML(t("btn_delete"))}</button>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    window.__loadJob = (idx) => {
-      const jobs = loadJobs();
-      const job = jobs[idx];
-      if (!job) return;
-      inputIds.forEach(id => { if ($(id) && Object.prototype.hasOwnProperty.call(job, id)) $(id).value = job[id] ?? ""; });
-      if ($("includePlatformFees") && typeof job.includePlatformFees === "boolean") $("includePlatformFees").checked = job.includePlatformFees;
-      if ($("laborPerUnit") && typeof job.laborPerUnit === "boolean") $("laborPerUnit").checked = job.laborPerUnit;
-      setStatusKey("status_jobLoaded");
-      calc();
-    };
-
-    window.__deleteJob = (idx) => {
-      const jobs = loadJobs();
-      if (!jobs[idx]) return;
-      jobs.splice(idx, 1);
-      saveJobs(jobs);
-      setStatusKey("status_jobDeleted");
-    };
-
-    // Defaults
-    function saveDefaults(){
-      const state = getState();
-      state.jobName = "";
-      state.jobNotes = "";
-      saveJSON(LS_DEFAULTS_KEY, state);
-      setStatusKey("status_defaultsSaved");
-    }
-    function loadDefaults(){
-      const saved = loadJSON(LS_DEFAULTS_KEY, null);
-      if (!saved){ setStatusKey("status_noDefaults"); return; }
-      setState(saved);
-      setStatusKey("status_defaultsLoaded");
-    }
-    function clearDefaults(){
-      localStorage.removeItem(LS_DEFAULTS_KEY);
-      setStatusKey("status_defaultsCleared");
-    }
-
-    // Export/Import jobs
-    function exportJobs(){
-      const jobs = loadJobs();
-      const payload = { exportedAt: new Date().toISOString(), version: 9, jobs };
-      const text = JSON.stringify(payload, null, 2);
-      navigator.clipboard.writeText(text).then(() => {
-        setStatusKey("status_exportOk");
-        alert(t("alert_exportCopied"));
-      }).catch(() => {
-        setStatusKey("status_exportOk");
-        prompt(t("prompt_copyThisJSON"), text);
-      });
-    }
-
-    function importJobs(){
-      const pasted = prompt(t("prompt_pasteJobsJSON"));
-      if (!pasted) return;
-      try{
-        const obj = JSON.parse(pasted);
-        const incoming = Array.isArray(obj.jobs) ? obj.jobs : (Array.isArray(obj) ? obj : null);
-        if (!incoming) throw new Error("Invalid format");
-        const jobs = loadJobs();
-        saveJobs(jobs.concat(incoming).filter(Boolean));
-        $("status").textContent = t("status_importOk")(incoming.length);
-        $("status").dataset.i18nStatusKey = "";
-      }catch(e){
-        alert(t("alert_importFailed"));
-        setStatusKey("status_importFailed");
+      // measure inputs
+      const mid = t.getAttribute("data-mid");
+      const mkey = t.getAttribute("data-mkey");
+      if(mid && mkey){
+        const item = findItem(mid);
+        if(!item) return;
+        item.measures = item.measures || {};
+        item.measures[mkey] = num(t.value);
+        renderItems();
+        autoSave();
+        return;
       }
-    }
+    });
 
-    function clearJobs(){
-      if (!confirm(t("confirm_clearJobs"))) return;
-      localStorage.removeItem(LS_JOBS_KEY);
-      renderJobs();
-      setStatusKey("status_jobsCleared");
-    }
+    refs.itemsBody.addEventListener("change", (e)=>{
+      const t = e.target;
+      if(!(t instanceof HTMLElement)) return;
 
-    function copyQuote(){
-      const r = calc();
-      if (!r){ alert(t("alert_enterValuesFirst")); return; }
-      const lang = currentLang();
-      const header = (lang === "es") ? "Cotización de Impresión 3D" : "3D Print Quote";
-      const qtyLbl = (lang === "es") ? "Cantidad" : "Quantity";
-      const timeLbl = (lang === "es") ? "Tiempo total" : "Total time";
-      const filLbl = (lang === "es") ? "Filamento total" : "Total filament";
-      const discLbl = (lang === "es") ? "Descuento por volumen" : "Bulk discount";
-      const costLbl = (lang === "es") ? "Costo total" : "Total cost";
-      const profLbl = (lang === "es") ? "Ganancia" : "Profit";
-      const finalLbl = (lang === "es") ? "Final (total)" : "Final (total)";
-      const unitLbl = (lang === "es") ? "Final (por unidad)" : "Final (per unit)";
+      // measure type selector
+      const mid = t.getAttribute("data-mid");
+      const isType = t.getAttribute("data-mtype");
+      if(mid && isType){
+        const item = findItem(mid);
+        if(!item) return;
+        item.measureType = t.value;
+        // reset measures defaults lightly
+        const mt = item.measureType;
+        item.measures = {};
+        if(mt==="mow" || mt==="sod" || mt==="leaf" || mt==="cleanup" || mt==="weed") item.measures.sqft = 0;
+        if(mt==="edge" || mt==="hedge") item.measures.linearft = 0;
+        if(mt==="mulch" || mt==="soil") item.measures.cuyd = 0;
+        if(mt==="rock") item.measures.tons = 0;
+        if(mt==="bush") item.measures.count = 0;
+
+        renderItems();
+        autoSave();
+        return;
+      }
+
+      // unit dropdown
+      const id = t.getAttribute("data-id");
+      const field = t.getAttribute("data-field");
+      if(id && field){
+        const item = findItem(id);
+        if(!item) return;
+        if(field === "unit") item.unit = t.value;
+        renderItems();
+        autoSave();
+      }
+    });
+
+    refs.itemsBody.addEventListener("click", (e)=>{
+      const t = e.target;
+      if(!(t instanceof HTMLElement)) return;
+      const act = t.getAttribute("data-act");
+      const id = t.getAttribute("data-id");
+      if(!act || !id) return;
+
+      const item = findItem(id);
+      if(!item) return;
+
+      if(act === "remove"){
+        STATE.items = STATE.items.filter(x => x.id !== id);
+        renderItems();
+        autoSave();
+        return;
+      }
+
+      const sug = calcSuggestedForItem(item);
+
+      if(act === "useSugRate"){
+        item.rate = Math.max(0, sug.suggestedRate);
+        renderItems();
+        autoSave();
+        return;
+      }
+
+      if(act === "useSugTotal"){
+        // make it a flat line: qty=1 and unit=flat
+        item.unit = "flat";
+        item.qty = 1;
+        item.rate = Math.max(0, sug.suggestedTotal);
+        renderItems();
+        autoSave();
+        return;
+      }
+    });
+
+    /***********************
+     * Buttons
+     ***********************/
+    refs.btnAddCustom.addEventListener("click", ()=>{
+      STATE.items.push({
+        id: cryptoId(),
+        service: "Custom service",
+        unit: "flat",
+        qty: 1,
+        rate: 0,
+        measureType: "custom",
+        measures: {},
+        enabled: true
+      });
+      renderItems();
+      autoSave();
+    });
+
+    refs.btnAddDefaults.addEventListener("click", ()=>{
+      // restore default services (replaces current)
+      STATE.items = structuredClone(DEFAULT_SERVICES).map(it => ({...it, id: cryptoId()}));
+      renderItems();
+      autoSave();
+    });
+
+    refs.btnNewInvoice.addEventListener("click", ()=>{
+      STATE.invoice.no = newInvoiceNumber();
+      STATE.invoice.date = todayISO();
+      STATE.invoice.status = "Unpaid";
+      STATE.invoice.custName = "";
+      STATE.invoice.custPhone = "";
+      STATE.invoice.custEmail = "";
+      STATE.invoice.custAddress = "";
+      STATE.invoice.notes = "";
+      STATE.totals.discountAmt = 0;
+
+      populateForm();
+      autoSave();
+    });
+
+    refs.btnSave.addEventListener("click", ()=>{
+      autoSave();
+      alert("Saved on this device.");
+    });
+
+    refs.btnExport.addEventListener("click", ()=>{
+      window.print();
+    });
+
+    refs.btnResetAll.addEventListener("click", ()=>{
+      const ok = confirm("Reset everything (business info, settings, invoice, items) on this device?");
+      if(!ok) return;
+      localStorage.removeItem(STORE_KEY);
+      STATE = mergeDefaults(null);
+      // set fresh invoice
+      STATE.invoice.no = newInvoiceNumber();
+      STATE.invoice.date = todayISO();
+      saveState(STATE);
+      populateForm();
+      alert("Reset complete.");
+    });
+
+    refs.btnQuoteEmail.addEventListener("click", async ()=>{
+      const sub = STATE.items.reduce((sum, it)=> sum + Math.max(0,num(it.qty))*Math.max(0,num(it.rate)), 0);
+      const tax = sub * clamp(num(STATE.totals.taxPct)/100, 0, 0.25);
+      const discount = Math.max(0, num(STATE.totals.discountAmt));
+      const grand = Math.max(0, sub + tax - discount);
+
+      const lines = STATE.items.map(it=>{
+        const qty = Math.max(0,num(it.qty));
+        const rate = Math.max(0,num(it.rate));
+        const line = qty*rate;
+        return `• ${it.service} — ${qty} ${it.unit} × ${rate.toFixed(2)} = ${line.toFixed(2)}`;
+      });
 
       const text =
-`${header}
-- ${qtyLbl}: ${r.qty}
-- ${timeLbl}: ${r.printHours.toFixed(2)} hr
-- ${filLbl}: ${r.gramsUsed} g
-- ${discLbl}: ${money(r.bulkDiscountAmt)}
-- ${costLbl}: ${money(r.totalCost)}
-- ${profLbl}: ${money(r.profitDollars)} (${(r.profitPctActual*100).toFixed(1)}%)
-- ${finalLbl}: ${money(r.final)}
-- ${unitLbl}: ${money(r.finalPerUnit)}`;
+`${STATE.biz.name}
+${STATE.biz.phone} | ${STATE.biz.address}
 
-      navigator.clipboard.writeText(text)
-        .then(() => setStatusKey("status_copyOk"))
-        .catch(() => alert(text));
-    }
+Invoice: ${STATE.invoice.no}
+Date: ${STATE.invoice.date}
+Status: ${STATE.invoice.status}
 
-    function resetAll(){
-      setState(clearState);
-      if ($("includePlatformFees")) $("includePlatformFees").checked = false;
-      if ($("applyEmptyOnly")) $("applyEmptyOnly").checked = true;
-      if ($("printerPreset")) $("printerPreset").value = "none";
-      if ($("filamentPreset")) $("filamentPreset").value = "none";
-      if ($("platformPreset")) $("platformPreset").value = "none";
-      if ($("laborPerUnit")) $("laborPerUnit").checked = false;
-      renderEmpty();
-    }
+Customer: ${STATE.invoice.custName}
+Address: ${STATE.invoice.custAddress}
 
-    function applyBeginnerModeUI(isBeginner){
-      const root = $("appRoot");
-      if (!root) return;
-      root.classList.toggle("beginner", !!isBeginner);
-      const hint = $("beginnerHint");
-      if (hint) hint.style.display = isBeginner ? "block" : "none";
-      setStatusKey(isBeginner ? "status_beginnerOn" : "status_beginnerOff");
-    }
+Items:
+${lines.join("\n")}
 
-    function applyI18nToDOM(){
-      const lang = currentLang();
-      document.documentElement.lang = lang;
+Subtotal: ${sub.toFixed(2)}
+Tax (${num(STATE.totals.taxPct).toFixed(1)}%): ${tax.toFixed(2)}
+Discount: ${discount.toFixed(2)}
+TOTAL: ${grand.toFixed(2)}
 
-      document.querySelectorAll("[data-i18n]").forEach(el => {
-        const key = el.getAttribute("data-i18n");
-        el.innerHTML = t(key);
-      });
+Notes:
+${STATE.invoice.notes}`.trim();
 
-      document.querySelectorAll("[data-i18n-html]").forEach(el => {
-        const key = el.getAttribute("data-i18n-html");
-        el.innerHTML = t(key);
-      });
-
-      document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
-        const key = el.getAttribute("data-i18n-placeholder");
-        el.setAttribute("placeholder", t(key));
-      });
-
-      const statusEl = $("status");
-      if (statusEl){
-        const k = statusEl.dataset.i18nStatusKey;
-        if (k) statusEl.textContent = t(k);
+      try{
+        await navigator.clipboard.writeText(text);
+        alert("Summary copied to clipboard.");
+      }catch{
+        // fallback
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        alert("Summary copied.");
       }
+    });
 
-      refreshAllPresetSelects();
-      renderJobs();
-      calc();
+    /***********************
+     * Init invoice defaults
+     ***********************/
+    function ensureInvoiceDefaults(){
+      if(!STATE.invoice.no) STATE.invoice.no = newInvoiceNumber();
+      if(!STATE.invoice.date) STATE.invoice.date = todayISO();
     }
 
-    function init(){
-      refreshAllPresetSelects();
+    /**********************************************************************
+     * PWA (single-file) — dynamic manifest + inline service worker + icon change
+     **********************************************************************/
+    function defaultIconDataUrl() {
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#22c55e"/>
+              <stop offset="1" stop-color="#111827"/>
+            </linearGradient>
+          </defs>
+          <rect width="512" height="512" rx="96" fill="url(#g)"/>
+          <g fill="#e5e7eb" opacity="0.96">
+            <path d="M256 110c-68 0-124 56-124 124 0 41 20 78 52 101v57c0 11 9 20 20 20h104c11 0 20-9 20-20v-57c32-23 52-60 52-101 0-68-56-124-124-124zm62 212-22 16v54H216v-54l-22-16c-26-18-42-48-42-80 0-57 47-104 104-104s104 47 104 104c0 32-16 62-42 80z"/>
+            <rect x="212" y="404" width="88" height="22" rx="11"/>
+          </g>
+        </svg>
+      `.trim();
+      return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+    }
 
-      // Apply buttons
-      $("applyPrinterBtn")?.addEventListener("click", () => {
-        const key = $("printerPreset").value;
-        const fields = PRINTER_PRESETS[key]?.fields || {};
-        applyFields(fields);
-      });
-
-      $("applyFilamentBtn")?.addEventListener("click", () => applyFields(FILAMENT_PRESETS[$("filamentPreset").value]?.fields || {}));
-
-      $("applyPlatformBtn")?.addEventListener("click", () => {
-        const key = $("platformPreset").value;
-        const baseFields = PLATFORM_PRESETS[key]?.fields || {};
-        const fields = { ...baseFields };
-        if (key && key !== "none") fields.platformNotes = localizedPlatformNotes(key);
-        applyFields(fields);
-      });
-
-      // Recalc on input
-      inputIds.forEach(id => { if ($(id)) $(id).addEventListener("input", calc); });
-      $("includePlatformFees")?.addEventListener("change", calc);
-      $("laborPerUnit")?.addEventListener("change", calc);
-
-      // Defaults buttons
-      $("saveDefaultsBtn")?.addEventListener("click", saveDefaults);
-      $("loadDefaultsBtn")?.addEventListener("click", loadDefaults);
-      $("clearDefaultsBtn")?.addEventListener("click", clearDefaults);
-
-      // Job actions
-      $("saveJobBtn")?.addEventListener("click", () => {
-        const r = calc();
-        if (!r){ alert(t("alert_enterValuesFirst")); return; }
-        const jobs = loadJobs();
-        const record = {
-          ts: new Date().toISOString(),
-          jobName: $("jobName")?.value || "",
-          jobNotes: $("jobNotes")?.value || "",
-
-          // state
-          quantity: $("quantity")?.value || "",
-          bulkDiscountPct: $("bulkDiscountPct")?.value || "",
-          laborPerUnit: $("laborPerUnit")?.checked || false,
-
-          printHours: $("printHours")?.value || "",
-          gramsUsed: $("gramsUsed")?.value || "",
-          spoolPrice: $("spoolPrice")?.value || "",
-          spoolWeight: $("spoolWeight")?.value || "",
-          wastePct: $("wastePct")?.value || "",
-          packagingCost: $("packagingCost")?.value || "",
-          consumablesCost: $("consumablesCost")?.value || "",
-          powerKW: $("powerKW")?.value || "",
-          elecRate: $("elecRate")?.value || "",
-          laborRate: $("laborRate")?.value || "",
-          laborMin: $("laborMin")?.value || "",
-          overheadPct: $("overheadPct")?.value || "",
-          profitPct: $("profitPct")?.value || "",
-          minFee: $("minFee")?.value || "",
-          printerPrice: $("printerPrice")?.value || "",
-          printerLifeHours: $("printerLifeHours")?.value || "",
-          maintenancePerHr: $("maintenancePerHr")?.value || "",
-          includePlatformFees: $("includePlatformFees")?.checked || false,
-          platformFeePct: $("platformFeePct")?.value || "",
-          platformFixedFee: $("platformFixedFee")?.value || "",
-          platformListingFee: $("platformListingFee")?.value || "",
-          platformNotes: $("platformNotes")?.value || "",
-
-          // computed summary
-          qty: r.qty,
-          printHoursTotal: r.printHours,
-          gramsUsedTotal: r.gramsUsed,
-          final: r.final
+    function loadPwaSettings() {
+      try {
+        const raw = localStorage.getItem(PWA_STORE_KEY);
+        if (!raw) return { name: `${STATE.biz.name} Invoice`, iconUrl: "" };
+        const parsed = JSON.parse(raw);
+        return {
+          name: (parsed.name || `${STATE.biz.name} Invoice`).toString(),
+          iconUrl: (parsed.iconUrl || "").toString()
         };
-        jobs.push(record);
-        saveJobs(jobs);
-        setStatusKey("status_jobSaved");
-      });
+      } catch {
+        return { name: `${STATE.biz.name} Invoice`, iconUrl: "" };
+      }
+    }
+    function savePwaSettings(settings) {
+      localStorage.setItem(PWA_STORE_KEY, JSON.stringify(settings));
+    }
 
-      $("exportJobsBtn")?.addEventListener("click", exportJobs);
-      $("importJobsBtn")?.addEventListener("click", importJobs);
-      $("clearJobsBtn")?.addEventListener("click", clearJobs);
+    let currentManifestObjectUrl = null;
 
-      $("resetBtn")?.addEventListener("click", resetAll);
-      $("copyBtn")?.addEventListener("click", copyQuote);
+    function buildManifest(settings) {
+      const iconUrl = settings.iconUrl?.trim() || defaultIconDataUrl();
+      const name = settings.name?.trim() || `${STATE.biz.name} Invoice`;
 
-      // Settings (keep same key; force lightMode off and strip it from saved settings)
-      const settings = loadJSON(LS_SETTINGS_KEY, { beginnerMode: true, autoLoadDefaults: true, lang:"en" });
-      if (settings && "lightMode" in settings){
-        delete settings.lightMode;
-        saveJSON(LS_SETTINGS_KEY, settings);
+      if (currentManifestObjectUrl) {
+        URL.revokeObjectURL(currentManifestObjectUrl);
+        currentManifestObjectUrl = null;
       }
 
-      const langDefault = (settings.lang === "es") ? "es" : "en";
-      if ($("langSelect")) $("langSelect").value = langDefault;
-      setLang(langDefault);
-      $("langSelect")?.addEventListener("change", (e) => {
-        setLang(e.target.value);
-        applyI18nToDOM();
-      });
+      const manifest = {
+        name,
+        short_name: name.length > 12 ? name.slice(0, 12) : name,
+        start_url: "./",
+        scope: "./",
+        display: "standalone",
+        background_color: "#0b1220",
+        theme_color: "#111827",
+        icons: [
+          { src: iconUrl, sizes: "192x192", type: iconUrl.startsWith("data:image/svg") ? "image/svg+xml" : "image/png", purpose: "any maskable" },
+          { src: iconUrl, sizes: "512x512", type: iconUrl.startsWith("data:image/svg") ? "image/svg+xml" : "image/png", purpose: "any maskable" }
+        ]
+      };
 
-      const beginnerDefault = (typeof settings.beginnerMode === "boolean") ? settings.beginnerMode : true;
-      $("beginnerMode").checked = beginnerDefault;
-      applyBeginnerModeUI(beginnerDefault);
-      $("beginnerMode").addEventListener("change", (e) => {
-        const on = e.target.checked;
-        applyBeginnerModeUI(on);
-        const s = loadJSON(LS_SETTINGS_KEY, {});
-        s.beginnerMode = on;
-        saveJSON(LS_SETTINGS_KEY, s);
-      });
+      const blob = new Blob([JSON.stringify(manifest)], { type: "application/manifest+json" });
+      currentManifestObjectUrl = URL.createObjectURL(blob);
 
-      applyI18nToDOM();
+      let link = document.querySelector('link[rel="manifest"]');
+      if (!link) {
+        link = document.createElement("link");
+        link.rel = "manifest";
+        document.head.appendChild(link);
+      }
+      link.href = currentManifestObjectUrl;
 
-      renderEmpty();
-      renderJobs();
+      // update previews
+      const iconPreview = document.getElementById("pwaIconPreview");
+      const namePreview = document.getElementById("pwaNamePreview");
+      const iconPreviewText = document.getElementById("pwaIconPreviewText");
+      if (iconPreview) iconPreview.src = iconUrl;
+      if (namePreview) namePreview.textContent = name;
+      if (iconPreviewText) iconPreviewText.textContent = settings.iconUrl?.trim() ? "Using your icon URL" : "Using default icon";
+    }
 
-      const autoLoad = (typeof settings.autoLoadDefaults === "boolean") ? settings.autoLoadDefaults : true;
-      if ($("autoLoadDefaults")) $("autoLoadDefaults").checked = autoLoad;
+    async function registerInlineServiceWorker(iconUrlToCache) {
+      if (!("serviceWorker" in navigator)) return;
 
-      $("autoLoadDefaults")?.addEventListener("change", (e) => {
-        const s = loadJSON(LS_SETTINGS_KEY, {});
-        s.autoLoadDefaults = !!e.target.checked;
-        saveJSON(LS_SETTINGS_KEY, s);
-      });
+      const swCode = `
+        const CACHE = "anchored-landscape-invoice-cache-v1";
+        self.addEventListener("install", (event) => {
+          event.waitUntil((async () => {
+            const cache = await caches.open(CACHE);
+            await cache.addAll(["./"]);
+          })());
+          self.skipWaiting();
+        });
 
-      if (autoLoad){
-        const saved = loadJSON(LS_DEFAULTS_KEY, null);
-        if (saved) setState(saved);
+        self.addEventListener("activate", (event) => {
+          event.waitUntil((async () => {
+            const keys = await caches.keys();
+            await Promise.all(keys.map(k => k === CACHE ? null : caches.delete(k)));
+            await self.clients.claim();
+          })());
+        });
+
+        self.addEventListener("fetch", (event) => {
+          const req = event.request;
+          if (req.method !== "GET") return;
+
+          event.respondWith((async () => {
+            const cache = await caches.open(CACHE);
+            const cached = await cache.match(req);
+            if (cached) return cached;
+
+            try {
+              const fresh = await fetch(req);
+              if (fresh && fresh.ok) cache.put(req, fresh.clone());
+              return fresh;
+            } catch (e) {
+              if (req.mode === "navigate") {
+                const fallback = await cache.match("./");
+                if (fallback) return fallback;
+              }
+              throw e;
+            }
+          })());
+        });
+
+        self.addEventListener("message", (event) => {
+          const data = event.data || {};
+          if (data.type === "PRECACHE_URL" && data.url) {
+            event.waitUntil((async () => {
+              try{
+                const cache = await caches.open(CACHE);
+                await cache.add(data.url);
+              }catch(e){}
+            })());
+          }
+        });
+      `.trim();
+
+      const blob = new Blob([swCode], { type: "text/javascript" });
+      const swUrl = URL.createObjectURL(blob);
+
+      try {
+        const reg = await navigator.serviceWorker.register(swUrl, { scope: "./" });
+        setTimeout(() => URL.revokeObjectURL(swUrl), 5000);
+
+        if (iconUrlToCache && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({ type: "PRECACHE_URL", url: iconUrlToCache });
+        } else {
+          setTimeout(() => {
+            if (iconUrlToCache && navigator.serviceWorker.controller) {
+              navigator.serviceWorker.controller.postMessage({ type: "PRECACHE_URL", url: iconUrlToCache });
+            }
+          }, 1200);
+        }
+        return reg;
+      } catch (e) {
+        console.warn("Service worker registration failed:", e);
       }
     }
 
-    init();
+    // Install prompt
+    let deferredPrompt = null;
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btn = document.getElementById("btnInstall");
+      if (btn) btn.style.display = "inline-flex";
+    });
+    window.addEventListener("appinstalled", () => {
+      deferredPrompt = null;
+      const btn = document.getElementById("btnInstall");
+      if (btn) btn.style.display = "none";
+    });
+    async function handleInstall(){
+      if(!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      const btn = document.getElementById("btnInstall");
+      if (btn) btn.style.display = "none";
+    }
+
+    // PWA modal UI
+    function openPwaModal() {
+      const backdrop = document.getElementById("pwaModalBackdrop");
+      if (backdrop) backdrop.style.display = "flex";
+      const s = loadPwaSettings();
+      const nameInput = document.getElementById("pwaName");
+      const iconInput = document.getElementById("pwaIconUrl");
+      if (nameInput) nameInput.value = s.name || "";
+      if (iconInput) iconInput.value = s.iconUrl || "";
+      buildManifest(s);
+    }
+    function closePwaModal(){
+      const backdrop = document.getElementById("pwaModalBackdrop");
+      if (backdrop) backdrop.style.display = "none";
+    }
+    function wirePwaUi(){
+      const btnSettings = document.getElementById("btnPwaSettings");
+      const btnClose = document.getElementById("btnClosePwa");
+      const btnSave = document.getElementById("btnSavePwa");
+      const btnReset = document.getElementById("btnResetPwa");
+      const btnInstall = document.getElementById("btnInstall");
+      const backdrop = document.getElementById("pwaModalBackdrop");
+
+      if(btnSettings) btnSettings.addEventListener("click", openPwaModal);
+      if(btnClose) btnClose.addEventListener("click", closePwaModal);
+      if(btnInstall) btnInstall.addEventListener("click", handleInstall);
+      if(backdrop){
+        backdrop.addEventListener("click", (e)=>{
+          if(e.target === backdrop) closePwaModal();
+        });
+      }
+
+      const nameInput = document.getElementById("pwaName");
+      const iconInput = document.getElementById("pwaIconUrl");
+      const liveUpdate = ()=>{
+        buildManifest({
+          name: (nameInput?.value || "").trim() || `${STATE.biz.name} Invoice`,
+          iconUrl: (iconInput?.value || "").trim()
+        });
+      };
+      if(nameInput) nameInput.addEventListener("input", liveUpdate);
+      if(iconInput) iconInput.addEventListener("input", liveUpdate);
+
+      if(btnSave){
+        btnSave.addEventListener("click", ()=>{
+          const s = {
+            name: (nameInput?.value || "").trim() || `${STATE.biz.name} Invoice`,
+            iconUrl: (iconInput?.value || "").trim()
+          };
+          savePwaSettings(s);
+          buildManifest(s);
+
+          if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+            const iconUrl = s.iconUrl?.trim();
+            if (iconUrl) navigator.serviceWorker.controller.postMessage({ type: "PRECACHE_URL", url: iconUrl });
+          }
+
+          closePwaModal();
+          alert("Saved. Refresh for best results. If already installed, you may need to remove & reinstall to update the home screen icon.");
+        });
+      }
+      if(btnReset){
+        btnReset.addEventListener("click", ()=>{
+          localStorage.removeItem(PWA_STORE_KEY);
+          const s = loadPwaSettings();
+          if(nameInput) nameInput.value = s.name;
+          if(iconInput) iconInput.value = s.iconUrl;
+          buildManifest(s);
+        });
+      }
+    }
+
+    /***********************
+     * Boot
+     ***********************/
+    ensureInvoiceDefaults();
+    populateForm();
+    wireInputs();
+    wirePwaUi();
+
+    // Build manifest + SW
+    (async function initPwa(){
+      const s = loadPwaSettings();
+      buildManifest(s);
+      await registerInlineServiceWorker(s.iconUrl?.trim() || "");
+    })();
+
+    // Save on unload as backup
+    window.addEventListener("beforeunload", ()=> autoSave());
   </script>
 </body>
 </html>
